@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34322.80
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cube.Server", "Cube.Server\Cube.Server.csproj", "{F6E211C1-BCC0-42A1-865E-C3A3BA6CEDEA}"
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "cube.client", "cube.client\cube.client.esproj", "{A7ABD7D4-5392-4734-83A3-E965C1641664}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F6E211C1-BCC0-42A1-865E-C3A3BA6CEDEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6E211C1-BCC0-42A1-865E-C3A3BA6CEDEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6E211C1-BCC0-42A1-865E-C3A3BA6CEDEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6E211C1-BCC0-42A1-865E-C3A3BA6CEDEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7ABD7D4-5392-4734-83A3-E965C1641664}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7ABD7D4-5392-4734-83A3-E965C1641664}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7ABD7D4-5392-4734-83A3-E965C1641664}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{A7ABD7D4-5392-4734-83A3-E965C1641664}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7ABD7D4-5392-4734-83A3-E965C1641664}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7ABD7D4-5392-4734-83A3-E965C1641664}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7803F9AA-8D21-49F9-922D-40A102D3506E}
+	EndGlobalSection
+EndGlobal
