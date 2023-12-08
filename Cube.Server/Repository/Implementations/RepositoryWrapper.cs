@@ -4,7 +4,7 @@ namespace Cube.Server.Repository.Implementations
 {
     public class RepositoryWrapper : IRepositoryWrapper
     {
-        private RepositoryContext _context;
+        private readonly RepositoryContext _context;
         private IUserRepository _userRepository;
         private IMessageRepository _messageRepository;
 
