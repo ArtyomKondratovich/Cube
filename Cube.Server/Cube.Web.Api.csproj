@@ -24,13 +24,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\cube.client\cube.client.esproj">
+    <ProjectReference Include="..\Cube.Application\Cube.Application.csproj" />
+    <ProjectReference Include="..\cube.client\Cube.Web.Vue.esproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Services\" />
   </ItemGroup>
 
 </Project>

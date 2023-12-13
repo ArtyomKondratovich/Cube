@@ -1,21 +1,21 @@
-﻿using Cube.Server.Models;
-using Cube.Server.Models.Dto;
-using Cube.Server.Models.ResultObjects;
-using Cube.Server.Repository.Interfaces;
+﻿using Cube.EntityFramework;
 using Microsoft.AspNetCore.Mvc;
+using Cube.Core.Models;
+using Cube.Application.Repository.Message.Dto;
 
-namespace Cube.Server.Repository.Implementations
+
+namespace Cube.Application.Repository.Message
 {
     public class MessageRepository : IMessageRepository
     {
-        private readonly RepositoryContext _contex;
+        private readonly CubeDbContext _contex;
 
-        public MessageRepository(RepositoryContext contex) 
+        public MessageRepository(CubeDbContext contex)
         {
             _contex = contex;
         }
 
-        public Result DeleteMessage(DeleteMessageDto dto)
+        public async Task<Result> DeleteMessage(DeleteMessageDto dto)
         {
             var result = new Result()
             {
@@ -24,7 +24,7 @@ namespace Cube.Server.Repository.Implementations
                 Errors = new List<string>()
             };
 
-            var message = _contex.Messages.Find(dto.Id);
+            var message = await _contex.Messages.FindAsync(dto.Id);
 
             if (message == null)
             {
@@ -40,7 +40,7 @@ namespace Cube.Server.Repository.Implementations
             return result;
         }
 
-        public Result SendMessage(NewMessageDto dto)
+        public async Task<Result> SendMessage(NewMessageDto dto)
         {
             var result = new Result()
             {
@@ -51,8 +51,8 @@ namespace Cube.Server.Repository.Implementations
 
             if (_contex.Users != null)
             {
-                var sender = _contex.Users.Find(dto.SenderId);
-                var reciever = _contex.Users.Find(dto.RecieverId);
+                var sender = await _contex.Users.FindAsync(dto.SenderId);
+                var reciever = await _contex.Users.FindAsync(dto.RecieverId);
 
                 if (sender == null)
                 {
@@ -85,7 +85,7 @@ namespace Cube.Server.Repository.Implementations
                     _contex.Add(message);
                 }
             }
-            else 
+            else
             {
                 result.Errors.Add("Users not found");
             }
@@ -93,7 +93,7 @@ namespace Cube.Server.Repository.Implementations
             return result;
         }
 
-        public Result UpdateMessage(UpdateMessageDto dto)
+        public async Task<Result> UpdateMessage(UpdateMessageDto dto)
         {
             var result = new Result()
             {
@@ -102,7 +102,7 @@ namespace Cube.Server.Repository.Implementations
                 Errors = new List<string>()
             };
 
-            var message = _contex.Messages.Find(dto.Id);
+            var message = await _contex.Messages.FindAsync(dto.Id);
 
             if (message == null)
             {

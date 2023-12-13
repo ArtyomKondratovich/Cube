@@ -1,7 +1,6 @@
-﻿using Cube.Server.Models;
-using Cube.Server.Models.Dto;
-using Cube.Server.Models.ResultObjects;
-using Cube.Server.Repository.Interfaces;
+﻿using Cube.Application.Repository;
+using Cube.Application.Repository.Message.Dto;
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cube.Server.Controllers
@@ -17,9 +16,9 @@ namespace Cube.Server.Controllers
         }
 
         [HttpPost]
-        public Result SendMessage([FromBody] NewMessageDto newMessage)
+        public async Task<Result> SendMessage([FromBody] NewMessageDto newMessage)
         {
-            var result = _repository.Message.SendMessage(newMessage);
+            var result = await _repository.Message.SendMessage(newMessage);
 
             if (result.ReturnObject is bool value && value)
             {
@@ -30,9 +29,9 @@ namespace Cube.Server.Controllers
         }
 
         [HttpPost]
-        public Result UpdateMessage([FromBody] UpdateMessageDto dto)
+        public async Task<Result> UpdateMessage([FromBody] UpdateMessageDto dto)
         {
-            var result = _repository.Message.UpdateMessage(dto);
+            var result = await _repository.Message.UpdateMessage(dto);
 
             if (result.ReturnObject is bool value && value)
             {
@@ -43,9 +42,9 @@ namespace Cube.Server.Controllers
         }
 
         [HttpPost]
-        public Result DeleteMessage([FromBody] DeleteMessageDto dto) 
+        public async Task<Result> DeleteMessage([FromBody] DeleteMessageDto dto)
         {
-            var result = _repository.Message.DeleteMessage(dto);
+            var result = await _repository.Message.DeleteMessage(dto);
 
             if (result.ReturnObject is bool value && value)
             {

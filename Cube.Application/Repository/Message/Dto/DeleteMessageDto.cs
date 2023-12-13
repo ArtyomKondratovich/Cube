@@ -1,4 +1,4 @@
-﻿namespace Cube.Server.Models.Dto
+﻿namespace Cube.Application.Repository.Message.Dto
 {
     public class DeleteMessageDto
     {

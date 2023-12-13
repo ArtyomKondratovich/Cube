@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Cube.Server.Models.ResultObjects
+namespace Cube.Application.Repository
 {
     public class Result
     {

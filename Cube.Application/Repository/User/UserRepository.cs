@@ -1,15 +1,13 @@
-﻿using Cube.Server.Models;
-using Cube.Server.Models.Dto;
-using Cube.Server.Models.ResultObjects;
-using Cube.Server.Repository.Interfaces;
+﻿using Cube.EntityFramework;
 using Microsoft.AspNetCore.Mvc;
+using Cube.Application.Repository.User.Dto;
 
-namespace Cube.Server.Repository.Implementations
+namespace Cube.Application.Repository.User
 {
     public class UserRepository : IUserRepository
     {
-        private readonly RepositoryContext _contex;
-        public UserRepository(RepositoryContext context) 
+        private readonly CubeDbContext _contex;
+        public UserRepository(CubeDbContext context)
         {
             _contex = context;
         }
@@ -31,13 +29,13 @@ namespace Cube.Server.Repository.Implementations
                 {
                     result.Errors.Add("User not found");
                 }
-                else 
+                else
                 {
                     result.ReturnObject = user;
                     result.ActionResult = new OkResult();
                 }
             }
-            else 
+            else
             {
                 result.Errors.Add("Users not found");
             }

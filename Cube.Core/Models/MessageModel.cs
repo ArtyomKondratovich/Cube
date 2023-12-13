@@ -1,4 +1,4 @@
-﻿namespace Cube.Server.Models
+﻿namespace Cube.Core.Models
 {
     public class MessageModel
     {
