@@ -14,8 +14,4 @@
     <ProjectReference Include="..\Server.Repository\Cube.EntityFramework.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Repository\Chat\" />
-  </ItemGroup>
-
 </Project>

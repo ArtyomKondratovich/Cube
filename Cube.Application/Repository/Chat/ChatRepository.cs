@@ -67,7 +67,5 @@ namespace Cube.Application.Repository.Chat
 
             return response;
         }
-
-
     }
 }
