@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Cube.Core.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace Cube.EntityFramework
 {
@@ -9,7 +11,9 @@ namespace Cube.EntityFramework
 
         public DbSet<MessageModel> Messages { get; set; }
 
-        public CubeDbContext(DbContextOptions options) :
+        public DbSet<ChatModel> Chats { get; set; }
+
+        public CubeDbContext(DbContextOptions<CubeDbContext> options) :
             base(options)
         {
             // Database.EnsureCreated();

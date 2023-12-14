@@ -16,7 +16,7 @@ namespace Cube.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<Result> SendMessage([FromBody] NewMessageDto newMessage)
+        public async Task<Response> SendMessage([FromBody] NewMessageDto newMessage)
         {
             var result = await _repository.Message.SendMessage(newMessage);
 
@@ -29,7 +29,7 @@ namespace Cube.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<Result> UpdateMessage([FromBody] UpdateMessageDto dto)
+        public async Task<Response> UpdateMessage([FromBody] UpdateMessageDto dto)
         {
             var result = await _repository.Message.UpdateMessage(dto);
 
@@ -42,7 +42,7 @@ namespace Cube.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<Result> DeleteMessage([FromBody] DeleteMessageDto dto)
+        public async Task<Response> DeleteMessage([FromBody] DeleteMessageDto dto)
         {
             var result = await _repository.Message.DeleteMessage(dto);
 

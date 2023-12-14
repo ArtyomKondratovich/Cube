@@ -12,9 +12,9 @@ namespace Cube.Application.Repository.User
             _contex = context;
         }
 
-        public Result GetUserById(FindUserDto dto)
+        public Response GetUserById(FindUserDto dto)
         {
-            var result = new Result()
+            var result = new Response()
             {
                 ReturnObject = null,
                 ActionResult = new BadRequestResult(),

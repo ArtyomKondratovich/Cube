@@ -4,8 +4,8 @@ namespace Cube.Application.Repository.Message
 {
     public interface IMessageRepository
     {
-        Task<Result> SendMessage(NewMessageDto dto);
-        Task<Result> UpdateMessage(UpdateMessageDto dto);
-        Task<Result> DeleteMessage(DeleteMessageDto dto);
+        Task<Response> SendMessage(NewMessageDto dto);
+        Task<Response> UpdateMessage(UpdateMessageDto dto);
+        Task<Response> DeleteMessage(DeleteMessageDto dto);
     }
 }

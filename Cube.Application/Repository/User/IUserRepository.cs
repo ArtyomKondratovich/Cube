@@ -4,6 +4,6 @@ namespace Cube.Application.Repository.User
 {
     public interface IUserRepository
     {
-        Result GetUserById(FindUserDto dto);
+        Response GetUserById(FindUserDto dto);
     }
 }

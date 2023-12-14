@@ -2,7 +2,7 @@
 
 namespace Cube.Application.Repository
 {
-    public class Result
+    public class Response
     {
         public object? ReturnObject { get; set; }
         public IActionResult ActionResult { get; set; }

@@ -15,9 +15,9 @@ namespace Cube.Application.Repository.Message
             _contex = contex;
         }
 
-        public async Task<Result> DeleteMessage(DeleteMessageDto dto)
+        public async Task<Response> DeleteMessage(DeleteMessageDto dto)
         {
-            var result = new Result()
+            var result = new Response()
             {
                 ReturnObject = false,
                 ActionResult = new BadRequestResult(),
@@ -40,9 +40,9 @@ namespace Cube.Application.Repository.Message
             return result;
         }
 
-        public async Task<Result> SendMessage(NewMessageDto dto)
+        public async Task<Response> SendMessage(NewMessageDto dto)
         {
-            var result = new Result()
+            var result = new Response()
             {
                 ReturnObject = false,
                 ActionResult = new BadRequestResult(),
@@ -93,9 +93,9 @@ namespace Cube.Application.Repository.Message
             return result;
         }
 
-        public async Task<Result> UpdateMessage(UpdateMessageDto dto)
+        public async Task<Response> UpdateMessage(UpdateMessageDto dto)
         {
-            var result = new Result()
+            var result = new Response()
             {
                 ReturnObject = false,
                 ActionResult = new BadRequestResult(),
