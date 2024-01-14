@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Cube.Server.Controllers
 {
+    [Route("api/[controller]")]
     [ApiController]
     public class MessageController : ControllerBase
     {
@@ -16,6 +17,7 @@ namespace Cube.Server.Controllers
         }
 
         [HttpPost]
+        [Route("Send")]
         public async Task<Response> SendMessage([FromBody] NewMessageDto newMessage)
         {
             var result = await _repository.Message.SendMessage(newMessage);
@@ -29,6 +31,7 @@ namespace Cube.Server.Controllers
         }
 
         [HttpPost]
+        [Route("Update")]
         public async Task<Response> UpdateMessage([FromBody] UpdateMessageDto dto)
         {
             var result = await _repository.Message.UpdateMessage(dto);
@@ -42,6 +45,7 @@ namespace Cube.Server.Controllers
         }
 
         [HttpPost]
+        [Route("Delete")]
         public async Task<Response> DeleteMessage([FromBody] DeleteMessageDto dto)
         {
             var result = await _repository.Message.DeleteMessage(dto);
