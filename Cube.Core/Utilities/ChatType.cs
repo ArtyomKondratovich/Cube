@@ -1,4 +1,4 @@
-﻿namespace Cube.Core.Utilites
+﻿namespace Cube.Core.Utilities
 {
     public enum ChatType
     {

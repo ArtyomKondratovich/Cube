@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Cube.Application.Repository.Chat.Dto
+namespace Cube.EntityFramework.Repository.Chat.Dto
 {
-    public class NewChatDto
+    internal class NewChatDto
     {
-
     }
 }

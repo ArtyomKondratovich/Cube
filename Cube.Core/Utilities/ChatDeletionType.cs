@@ -1,4 +1,4 @@
-﻿namespace Cube.Application.Utilities
+﻿namespace Cube.Core.Utilities
 {
     public enum ChatDeletionType
     {

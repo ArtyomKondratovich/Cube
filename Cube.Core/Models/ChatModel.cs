@@ -1,4 +1,4 @@
-﻿using Cube.Core.Utilites;
+﻿using Cube.Core.Utilities;
 
 namespace Cube.Core.Models
 {

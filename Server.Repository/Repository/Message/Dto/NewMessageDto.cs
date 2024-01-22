@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Cube.Application.Repository.Message.Dto
+﻿namespace Cube.EntityFramework.Repository.Message.Dto
 {
     public class NewMessageDto
     {

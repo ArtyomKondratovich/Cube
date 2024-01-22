@@ -1,6 +1,6 @@
-﻿using Cube.Application.Utilities;
+﻿using Cube.Core.Utilities;
 
-namespace Cube.Application.Repository.Chat.Dto
+namespace Cube.EntityFramework.Repository.Chat.Dto
 {
     public class DeleteChatDto
     {
