@@ -1,49 +1,63 @@
 ﻿using Cube.EntityFramework;
 using Cube.Core.Models;
-using Cube.EntityFramework.Repository.Message.Dto;
+using Microsoft.EntityFrameworkCore;
 
 namespace Cube.Application.Repository.Message
 {
     public class MessageRepository : IMessageRepository
     {
-        private readonly CubeDbContext _dbContex;
+        private readonly CubeDbContext _dbContext;
 
         public MessageRepository(CubeDbContext contex)
         {
-            _dbContex = contex;
+            _dbContext = contex;
         }
 
-        public async Task<bool> DeleteMessage(DeleteMessageDto dto)
+        public async Task<MessageModel?> DeleteMessage(MessageModel model)
         {
-            var message = await _dbContex.Messages.FindAsync(dto.Id);
+            var message = _dbContext.Messages.Remove(model);
 
-            if (message == null) 
+            if (message != null)
             {
-                return false;
+                await _dbContext.SaveChangesAsync();
+
+                return message.Entity;
             }
 
-            _dbContex.Messages.Remove(message);
-
-            return await _dbContex.SaveChangesAsync() > 0;
+            return null;
         }
 
         public async Task<MessageModel?> GetMessageById(int id)
         {
-            return await _dbContex.Messages.FindAsync(id);
+            return await _dbContext.Messages.FindAsync(id);
         }
 
-        public async Task<bool> SendMessage(MessageModel model)
+        public async Task<MessageModel?> SendMessage(MessageModel model)
         {
-            await _dbContex.Messages.AddAsync(model);
+            var message = await _dbContext.Messages.AddAsync(model);
 
-            return await _dbContex.SaveChangesAsync() > 0;
+            if (message != null)
+            {
+                await _dbContext.SaveChangesAsync();
+
+                return message.Entity;
+            }
+
+            return null;
         }
 
-        public async Task<bool> UpdateMessage(MessageModel model)
+        public async Task<MessageModel?> UpdateMessage(MessageModel model)
         {
-            _dbContex.Messages.Update(model);
+            var message = _dbContext.Messages.Update(model);
 
-            return await _dbContex.SaveChangesAsync() > 0;
+            if (message != null)
+            {
+                await _dbContext.SaveChangesAsync();
+
+                return message.Entity;
+            }
+
+            return null;
         }
     }
 }

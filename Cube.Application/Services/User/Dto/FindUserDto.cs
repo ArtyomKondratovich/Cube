@@ -1,4 +1,4 @@
-﻿namespace Cube.EntityFramework.Repository.User.Dto
+﻿namespace Cube.Application.Services.User.Dto
 {
     public class FindUserDto
     {

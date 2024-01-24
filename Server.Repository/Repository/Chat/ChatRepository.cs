@@ -11,30 +11,31 @@ namespace Cube.EntityFramework.Repository.Chat
             _dbContext = dbContext;
         }
 
-        public async Task<bool> CreateChat(ChatModel model)
+        public async Task<ChatModel?> CreateChat(ChatModel model)
         {
             var chat = await _dbContext.Chats.AddAsync(model);
 
             if (chat != null)
             {
                 await _dbContext.SaveChangesAsync();
-                return true;
+             
+                return chat.Entity;
             }
 
-            return false;
+            return null;
         }
 
-        public async Task<bool> DeleteChat(ChatModel model)
+        public async Task<ChatModel?> DeleteChat(ChatModel model)
         {
             var chat = _dbContext.Chats.Remove(model);
 
             if (chat != null) 
             {
                 await _dbContext.SaveChangesAsync();
-                return true;
+                return chat.Entity;
             }
 
-            return false;
+            return null;
         }
 
         public List<ChatModel> GetAllUsersChats(int id)
@@ -42,6 +43,11 @@ namespace Cube.EntityFramework.Repository.Chat
             var usersChats = _dbContext.Chats.Where(c => c.Participants.Select(user => user.Id).Contains(id)).ToList();
 
             return usersChats;
+        }
+
+        public async Task<ChatModel?> GetChatById(int id)
+        {
+            return await _dbContext.Chats.FindAsync(id);
         }
     }
 }

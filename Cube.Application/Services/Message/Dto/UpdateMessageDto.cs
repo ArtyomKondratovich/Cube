@@ -1,4 +1,4 @@
-﻿namespace Cube.EntityFramework.Repository.Message.Dto
+﻿namespace Cube.Application.Services.Message.Dto
 {
     public class UpdateMessageDto
     {

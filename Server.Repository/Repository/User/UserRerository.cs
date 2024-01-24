@@ -2,20 +2,18 @@
 
 namespace Cube.EntityFramework.Repository.User
 {
-    public class UserPerository : IUserRepository
+    public class UserRerository : IUserRepository
     {
         private readonly CubeDbContext _dbContext;
 
-        public UserPerository(CubeDbContext context) 
+        public UserRerository(CubeDbContext context) 
         {
             _dbContext = context;
         }
 
         public async Task<UserModel?> GetUserById(int id)
         {
-            var user = await _dbContext.Users.FindAsync(id);
-
-            return user;
+            return await _dbContext.Users.FindAsync(id);
         }
     }
 }

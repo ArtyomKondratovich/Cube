@@ -1,6 +1,7 @@
-﻿using Cube.Application.Repository;
-using Cube.Application.Repository.Message.Dto;
-
+﻿using Cube.Application.Services;
+using Cube.Application.Services.Message;
+using Cube.Application.Services.Message.Dto;
+using Cube.Core.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cube.Server.Controllers
@@ -9,53 +10,32 @@ namespace Cube.Server.Controllers
     [ApiController]
     public class MessageController : ControllerBase
     {
-        private readonly IRepositoryWrapper _repository;
+        private readonly IMessageService _service;
 
-        public MessageController(IRepositoryWrapper repository)
+        public MessageController(IMessageService repository)
         {
-            _repository = repository;
+            _service = repository;
         }
 
         [HttpPost]
         [Route("Send")]
-        public async Task<Response> SendMessage([FromBody] NewMessageDto newMessage)
+        public async Task<Response<MessageModel>> SendMessage([FromBody] NewMessageDto newMessage)
         {
-            var result = await _repository.Message.SendMessage(newMessage);
-
-            if (result.ReturnObject is bool value && value)
-            {
-                _repository.Save();
-            }
-
-            return result;
+            return await _service.SendMessage(newMessage);
         }
 
         [HttpPost]
         [Route("Update")]
-        public async Task<Response> UpdateMessage([FromBody] UpdateMessageDto dto)
+        public async Task<Response<MessageModel>> UpdateMessage([FromBody] UpdateMessageDto dto)
         {
-            var result = await _repository.Message.UpdateMessage(dto);
-
-            if (result.ReturnObject is bool value && value)
-            {
-                _repository.Save();
-            }
-
-            return result;
+            return await _service.UpdateMessage(dto);
         }
 
         [HttpPost]
         [Route("Delete")]
-        public async Task<Response> DeleteMessage([FromBody] DeleteMessageDto dto)
+        public async Task<Response<MessageModel>> DeleteMessage([FromBody] DeleteMessageDto dto)
         {
-            var result = await _repository.Message.DeleteMessage(dto);
-
-            if (result.ReturnObject is bool value && value)
-            {
-                _repository.Save();
-            }
-
-            return result;
+            return await _service.DeleteMessage(dto);
         }
     }
 }

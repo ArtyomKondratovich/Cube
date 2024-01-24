@@ -4,9 +4,10 @@ namespace Cube.EntityFramework.Repository.Chat
 {
     public interface IChatRepository
     {
-        // ??
+        //
+        Task<ChatModel?> GetChatById(int id);
         List<ChatModel> GetAllUsersChats(int id);
-        Task<bool> CreateChat(ChatModel model);
-        Task<bool> DeleteChat(ChatModel model);
+        Task<ChatModel?> CreateChat(ChatModel model);
+        Task<ChatModel?> DeleteChat(ChatModel model);
     }
 }

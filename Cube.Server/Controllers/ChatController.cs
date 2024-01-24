@@ -1,6 +1,8 @@
-﻿using Cube.Application.Repository;
-using Cube.Application.Repository.User.Dto;
-using Cube.Application.Repository.Chat.Dto;
+﻿using Cube.Application.Services;
+using Cube.Application.Services.Chat;
+using Cube.Application.Services.Chat.Dto;
+using Cube.Application.Services.User.Dto;
+using Cube.Core.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cube.Web.Api.Controllers
@@ -8,38 +10,32 @@ namespace Cube.Web.Api.Controllers
     [ApiController]
     public class ChatController : ControllerBase
     {
-        private readonly IRepositoryWrapper _wrapper;
+        private readonly IChatService _service;
 
-        public ChatController(IRepositoryWrapper repository) 
+        public ChatController(IChatService service) 
         {
-            _wrapper = repository;
+            _service = service;
         }
 
         [HttpPost]
         [Route("GetAll")]
-        public async Task<Response> GetAllUsersChats([FromBody] FindUserDto dto)
+        public Response<List<ChatModel>> GetAllUsersChats([FromBody] FindUserDto dto)
         {
-            var result = await _wrapper.Chat.GetAllUsersChats(dto);
-
-            return result;
+            return _service.GetAllUsersChats(dto);
         }
 
         [HttpPost]
         [Route("Create")]
-        public async Task<Response> CreateChat([FromBody] NewChatDto dto)
+        public async Task<Response<ChatModel>> CreateChat([FromBody] NewChatDto dto)
         {
-            var result = await _wrapper.Chat.CreateChat(dto);
-
-            return result;
+            return await _service.CreateChat(dto);
         }
 
         [HttpPost]
         [Route("Delete")]
-        public async Task<Response> DeleteChat([FromBody] DeleteChatDto dto)
+        public async Task<Response<ChatModel>> DeleteChat([FromBody] DeleteChatDto dto)
         {
-            var result = await _wrapper.Chat.DeleteChat(dto);
-
-            return result;
+            return await _service.DeleteChat(dto);
         }
     }
 }
