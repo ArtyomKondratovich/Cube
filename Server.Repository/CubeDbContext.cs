@@ -1,7 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Cube.Core.Models;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace Cube.EntityFramework
 {

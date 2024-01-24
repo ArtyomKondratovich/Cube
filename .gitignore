@@ -361,3 +361,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Ignore appsettigs.json which consists a JWT secret and connection string to db
+appsetings.json
+ 
