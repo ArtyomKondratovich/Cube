@@ -363,5 +363,5 @@ MigrationBackup/
 FodyWeavers.xsd
 
 # Ignore appsettigs.json which consists a JWT secret and connection string to db
-*.json
+appsettings.json
  
