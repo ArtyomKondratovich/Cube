@@ -2,7 +2,7 @@
 using Cube.Core.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Cube.Application.Repository.Message
+namespace Cube.EntityFramework.Repository.Message
 {
     public class MessageRepository : IMessageRepository
     {

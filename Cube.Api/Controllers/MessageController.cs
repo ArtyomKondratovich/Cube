@@ -4,7 +4,7 @@ using Cube.Application.Services.Message.Dto;
 using Cube.Core.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Cube.Server.Controllers
+namespace Cube.Web.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

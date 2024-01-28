@@ -1,5 +1,5 @@
-﻿using Cube.Application.Repository.Message;
-using Cube.EntityFramework.Repository.Chat;
+﻿using Cube.EntityFramework.Repository.Chat;
+using Cube.EntityFramework.Repository.Message;
 using Cube.EntityFramework.Repository.User;
 
 namespace Cube.EntityFramework.Repository

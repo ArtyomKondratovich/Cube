@@ -1,6 +1,6 @@
 ﻿using Cube.Core.Models;
 
-namespace Cube.Application.Repository.Message
+namespace Cube.EntityFramework.Repository.Message
 {
     public interface IMessageRepository
     {
