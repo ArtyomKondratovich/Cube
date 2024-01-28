@@ -25,7 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Cube.Application\Cube.Application.csproj" />
-    <ProjectReference Include="..\cube.client\Cube.Web.Vue.esproj">
+    <ProjectReference Include="..\Cube.Client\Cube.Web.Vue.esproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
   </ItemGroup>
