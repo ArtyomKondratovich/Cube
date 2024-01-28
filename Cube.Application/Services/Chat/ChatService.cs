@@ -3,7 +3,6 @@ using Cube.Application.Services.User.Dto;
 using Cube.Core.Models;
 using Cube.Core.Utilities;
 using Cube.EntityFramework.Repository;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Cube.Application.Services.Chat
 {
@@ -16,80 +15,135 @@ namespace Cube.Application.Services.Chat
             _repository = repository;
         }
 
-        public async Task<Response<ChatModel>> CreateChat(NewChatDto dto)
+        public async Task<Response<ChatModel, CreateChatResult>> CreateChat(NewChatDto dto)
         {
-            var responce = new Response<ChatModel>
-            {
-                ActionResult = new BadRequestResult(),
-                Messages = new()
-            };
+            var responce = new Response<ChatModel, CreateChatResult>();
+            
 
             if (dto != null) 
             {
+                // checking chat name 
                 if (string.IsNullOrWhiteSpace(dto.Title))
                 {
                     responce.Messages.Add("NullOrEmptyTitle");
+                    responce.ResponseResult = CreateChatResult.ValidationError;
+                    return responce;
                 }
-                else
+
+                // checking the existence of participants
+                if (!dto.Patricipants.Exists(_repository))
                 {
-                    responce.ActionResult = new OkResult();
-                    responce.Value = await _repository.ChatRepository.CreateChat(new ChatModel
-                    {
-                        Title = dto.Title,
-                        ChatAdmin = dto.Admin,
-                        Type = dto.ChatType,
-                        Participants = dto.Patricipants
-                    });
+                    responce.ResponseResult = CreateChatResult.ParticipantsNotFound; 
+                    return responce;
+                }
+
+                // checking chat settings
+                var isProperlyCofigured = dto.Type switch
+                {
+                    ChatType.Private => dto.Admin == null,
+                    ChatType.Group => dto.Admin != null,
+                    _ => false
+                };
+
+                if (!isProperlyCofigured) 
+                {
+                    responce.ResponseResult = CreateChatResult.WrongChatSettings;
+                    return responce;
+                }
+
+                var chat = new ChatModel
+                {
+                    Title = dto.Title,
+                    ChatAdmin = dto.Admin,
+                    Type = dto.Type,
+                    Participants = dto.Patricipants
+                };
+
+                if (await _repository.ChatRepository.CreateChat(chat) != null)
+                {
+                    responce.ResponseResult = CreateChatResult.Success;
+                    responce.Value = chat;
+                    return responce;
                 }
             }
 
             return responce;
         }
 
-        public async Task<Response<ChatModel>> DeleteChat(DeleteChatDto dto)
+        public async Task<Response<ChatModel, DeleteChatResult>> DeleteChat(DeleteChatDto dto)
         {
-            var responce = new Response<ChatModel>
+            var response = new Response<ChatModel, DeleteChatResult>();
+
+            var chat = await _repository.ChatRepository.GetChatById(dto.Id);
+            var user = await _repository.UserRepository.GetUserById(dto.Id);
+
+            if (user == null)
             {
-                ActionResult = new BadRequestResult()
-            };
+                response.ResponseResult = DeleteChatResult.UserNotFound;
+                return response;
+            }
+
+            if (chat == null)
+            {
+                response.ResponseResult = DeleteChatResult.ChatNotFound;
+                return response;
+            }
+
+            
+            switch (dto.DeletionType)
+            {
+                case ChatDeletionType.RemoveFromMessageList:
+                    // Update Chat remove from particpants
+                    break;
+                case ChatDeletionType.RemoveAndDeleteMessages:
+                    // Update Chat remove users messages in messages
+                    break;
+                case ChatDeletionType.CompleteRemoval:
+                    break;
+            }
+            
+            return response;
+        }
+
+        public async Task<Response<List<ChatModel>, GetAllChatsResult>> GetAll(FindUserDto dto)
+        {
+
+            var response = new Response<List<ChatModel>, GetAllChatsResult>();
+
+            if (await _repository.UserRepository.GetUserById(dto.Id) == null)
+            {
+                response.ResponseResult = GetAllChatsResult.UserNotFound;
+                return response;
+            }
+
+            response.ResponseResult = GetAllChatsResult.Success;
+            response.Value = _repository.ChatRepository.GetAllUsersChats(dto.Id);
+
+            return response;
+        }
+
+        public async Task<Response<ChatModel, GetChatResult>> GetChatById(FindChatDto dto)
+        {
+            var response = new Response<ChatModel, GetChatResult>();
 
             var chat = await _repository.ChatRepository.GetChatById(dto.Id);
 
-            if (chat != null) 
+            if (chat == null)
             {
-                switch (dto.DeletionType)
-                {
-                    case ChatDeletionType.RemoveFromMessageList:
-                        // Update Chat remove from particpants
-                        break;
-                    case ChatDeletionType.RemoveAndDeleteMessages:
-                        // Update Chat remove users messages in messages
-                        break;
-                    case ChatDeletionType.CompleteRemoval:
-                        break;
-                }
+                response.ResponseResult = GetChatResult.ChatNotFound;
             }
-
-            return responce;
+            else
+            {
+                response.ResponseResult = GetChatResult.Success;
+                response.Value = chat;
+            }
+            
+            return response;
         }
 
-        public Response<List<ChatModel>> GetAllUsersChats(FindUserDto dto)
+        public Task<Response<ChatModel, UpdateChatResult>> UpdateChat(UpdateChatDto dto)
         {
-            
-            var responce = new Response<List<ChatModel>>
-            {
-                Value = _repository.ChatRepository.GetAllUsersChats(dto.Id),
-                ActionResult = new OkResult(),
-                Messages = new()
-            };
-
-            if (responce.Value == null)
-            {
-                responce.Messages.Add("User has no chats");
-                responce.ActionResult = new BadRequestResult();
-            }
-
-            return responce;
+            throw new NotImplementedException();
         }
     }
 }

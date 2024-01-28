@@ -1,7 +1,6 @@
 ﻿using Cube.Application.Services.Message.Dto;
 using Cube.Core.Models;
 using Cube.EntityFramework.Repository;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Cube.Application.Services.Message
 {
@@ -14,140 +13,138 @@ namespace Cube.Application.Services.Message
             _repository = repository;
         }
 
-        public async Task<Response<MessageModel>> DeleteMessage(DeleteMessageDto dto)
+        public async Task<Response<MessageModel, DeleteMessageResult>> DeleteMessage(DeleteMessageDto dto)
         {
-            var response = new Response<MessageModel> 
-            {
-                ActionResult = new BadRequestResult(),
-                Messages = new()
-            };
-
-            var message = await _repository.MessageRepository.GetMessageById(dto.Id);
-
-            if (message != null &&
-                await _repository.MessageRepository.DeleteMessage(message) != null)
-            {
-                response.Value = message;
-                response.ActionResult = new OkResult();
-            }
-            else
-            {
-                response.Messages.Add($"Message with id = {dto.Id} not found");
-            }
-
-            return response;
-        }
-
-        public async Task<Response<MessageModel>> GetMessageById(FindMessageDto dto)
-        {
-            var response = new Response<MessageModel> 
-            {
-                ActionResult = new BadRequestResult(),
-                Messages = new()
-            };
+            var response = new Response<MessageModel, DeleteMessageResult>();
 
             var message = await _repository.MessageRepository.GetMessageById(dto.Id);
 
             if (message == null)
             {
+                response.ResponseResult = DeleteMessageResult.MessageNotFound;
+                response.Messages.Add($"Message with id = {dto.Id} not found");
+            }
+            else if (await _repository.MessageRepository.DeleteMessage(message) != null)
+            {
+                response.ResponseResult = DeleteMessageResult.Success;
+                response.Value = message;
+            }
+
+            return response;
+        }
+
+        public async Task<Response<MessageModel, GetMessageResult>> GetMessageById(FindMessageDto dto)
+        {
+            var response = new Response<MessageModel, GetMessageResult>();
+
+            var message = await _repository.MessageRepository.GetMessageById(dto.Id);
+
+            if (message == null)
+            {
+                response.ResponseResult = GetMessageResult.MessageNotFound;
                 response.Messages.Add($"Message with id = {dto.Id} not found");
             }
             else 
             {
+                response.ResponseResult = GetMessageResult.Success;
                 response.Value = message;
             }
 
             return response;
         }
 
-        public async Task<Response<MessageModel>> SendMessage(NewMessageDto dto)
+        public async Task<Response<MessageModel, SendMessageResult>> SendMessage(NewMessageDto dto)
         {
-            var response = new Response<MessageModel> 
-            {
-                ActionResult = new BadRequestResult(),
-                Messages = new()
-            };
+            var response = new Response<MessageModel, SendMessageResult>(); 
+            
 
             var user = await _repository.UserRepository.GetUserById(dto.SenderId);
             var chat = await _repository.ChatRepository.GetChatById(dto.ChatId);
 
-            if (chat == null)
-            {
-                response.Messages.Add($"Chat with id = {dto.ChatId} not found");
-            }
-
             if (user == null)
             {
+                response.ResponseResult = SendMessageResult.UserNotFound;
                 response.Messages.Add($"User with id = {dto.SenderId} not found");
+                return response;
+            }
+
+            if (chat == null)
+            {
+                response.ResponseResult = SendMessageResult.ChatNotFound;
+                response.Messages.Add($"Chat with id = {dto.ChatId} not found");
+                return response;
             }
 
             if (string.IsNullOrWhiteSpace(dto.Message))
             {
-                response.Messages.Add("NotOrEmpty message");
+                response.ResponseResult = SendMessageResult.ValidationError;
+                response.Messages.Add("NullOrEmpty message");
+                return response;
             }
 
-            if (!response.Messages.Any())
+            var message = new MessageModel 
             {
-                var message = new MessageModel 
-                {
-                    Message = dto.Message,
-                    CreatedDate = DateTime.UtcNow,
-                    Sender = user,
-                    Chat = chat
-                };
+                Message = dto.Message,
+                CreatedDate = DateTime.UtcNow,
+                Sender = user,
+                Chat = chat
+            };
 
-                var value = await _repository.MessageRepository.SendMessage(message);
+            var value = await _repository.MessageRepository.SendMessage(message);
 
-                if (value != null)
-                {
-                    response.ActionResult = new OkResult();
-                    response.Value = value;
-                }
-
+            if (value == null)
+            {
+                response.ResponseResult = SendMessageResult.DataBaseError;
+            }
+            else
+            {
+                response.ResponseResult = SendMessageResult.Success;
+                response.Value = value;
             }
 
             return response;
         }
 
-        public async Task<Response<MessageModel>> UpdateMessage(UpdateMessageDto dto)
+        public async Task<Response<MessageModel, UpdateMessageResult>> UpdateMessage(UpdateMessageDto dto)
         {
-            var response = new Response<MessageModel> 
-            {
-                ActionResult = new BadRequestResult(),
-                Messages = new()
-            };
+            var response = new Response<MessageModel, UpdateMessageResult>();
 
             var message = await _repository.MessageRepository.GetMessageById(dto.Id);
+            var updater = await _repository.UserRepository.GetUserById(dto.UpdaterId);
+
+            if (updater == null)
+            {
+                response.ResponseResult = UpdateMessageResult.UserNotFound;
+                response.Messages.Add($"User with id = {dto.UpdaterId} not found");
+                return response;
+            }
 
             if (message == null)
             {
+                response.ResponseResult = UpdateMessageResult.MessageNotFound;
                 response.Messages.Add($"Message with id = {dto.Id} not found");
+                return response;
             }
-            else
+            
+            if (string.IsNullOrWhiteSpace(dto.NewMessage))
             {
-                if (string.IsNullOrWhiteSpace(dto.NewMessage) && 
-                    await _repository.MessageRepository.DeleteMessage(message) != null)
-                {
-                   response.Messages.Add($"Deleted message with id = {message.Id}");
-                   response.ActionResult = new OkResult();
-                   return response;
-                }
-                
-                if (!message.Message.Equals(dto.NewMessage))
-                {
-                    message.Message = dto.NewMessage;
-                    message.UpdateDate = DateTime.UtcNow;
-                    var result = await _repository.MessageRepository.UpdateMessage(message);
+                response.ResponseResult = UpdateMessageResult.NullOrEmptyNewMessage;
+                return response;
+            }
+            
+            if (!message.Message.Equals(dto.NewMessage))
+            {
+                message.Message = dto.NewMessage;
+                message.UpdateDate = DateTime.UtcNow;
+                var result = await _repository.MessageRepository.UpdateMessage(message);
 
-                    if (result != null)
-                    {
-                        response.Value = result;
-                    }
+                if (result != null)
+                {
+                    response.Value = result;
                 }
-
-                response.ActionResult = new OkResult();
             }
 
+            response.ResponseResult = UpdateMessageResult.Success;
             return response;
         }
     }

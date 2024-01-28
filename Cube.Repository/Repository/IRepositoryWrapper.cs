@@ -9,6 +9,5 @@ namespace Cube.EntityFramework.Repository
         public IUserRepository UserRepository { get; }
         public IMessageRepository MessageRepository { get; }
         public IChatRepository ChatRepository { get; }
-
     }
 }

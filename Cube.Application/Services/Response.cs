@@ -1,11 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Text.Json.Serialization;
 
 namespace Cube.Application.Services
 {
-    public class Response<T>
+    public class Response<TResult, TEnum> 
+        where TResult : class
+        where TEnum : Enum
     {
-        public T Value { get; set; }
-        public IActionResult ActionResult { get; set; }
+        public TResult Value { get; set; }
+
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public TEnum ResponseResult { get; set; }
+
         public List<string> Messages { get; set; }
     }
 }
