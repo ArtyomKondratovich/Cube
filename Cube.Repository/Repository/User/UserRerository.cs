@@ -1,4 +1,4 @@
-﻿using Cube.Core.Models;
+﻿using Cube.Core.Models.User;
 
 namespace Cube.EntityFramework.Repository.User
 {

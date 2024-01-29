@@ -1,4 +1,4 @@
-﻿using Cube.Core.Models;
+﻿using Cube.Core.Models.User;
 using Cube.Core.Utilities;
 
 namespace Cube.Application.Services.Chat.Dto

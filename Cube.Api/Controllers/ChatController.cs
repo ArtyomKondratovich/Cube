@@ -3,6 +3,7 @@ using Cube.Application.Services.Chat;
 using Cube.Application.Services.Chat.Dto;
 using Cube.Application.Services.User.Dto;
 using Cube.Core.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cube.Web.Api.Controllers
@@ -18,6 +19,7 @@ namespace Cube.Web.Api.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         [Route("GetAll")]
         public async Task<Response<List<ChatModel>, GetAllChatsResult>> GetAllUsersChats([FromBody] FindUserDto dto)
         {
@@ -25,6 +27,7 @@ namespace Cube.Web.Api.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         [Route("Create")]
         public async Task<Response<ChatModel, CreateChatResult>> CreateChat([FromBody] NewChatDto dto)
         {
@@ -32,6 +35,7 @@ namespace Cube.Web.Api.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         [Route("Delete")]
         public async Task<Response<ChatModel, DeleteChatResult>> DeleteChat([FromBody] DeleteChatDto dto)
         {

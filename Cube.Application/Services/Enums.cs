@@ -64,6 +64,19 @@
         NullOrEmptyNewMessage,
     }
 
+    public enum LoginResult
+    {
+        Success,
+        WrongLoginOrPassword
+    }
+
+    public enum RegisterResult
+    {
+        Success,
+        EmailAlreadyExists,
+        ValidationError
+    }
+
     public class Enums
     {
     }

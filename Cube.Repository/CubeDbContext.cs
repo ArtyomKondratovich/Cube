@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Cube.Core.Models;
+using Cube.Core.Models.User;
 
 namespace Cube.EntityFramework
 {
@@ -11,6 +12,8 @@ namespace Cube.EntityFramework
 
         public DbSet<ChatModel> Chats { get; set; }
 
+        public DbSet<AccountModel> Accounts { get; set; } 
+
         public CubeDbContext(DbContextOptions<CubeDbContext> options) :
             base(options)
         {
@@ -20,6 +23,7 @@ namespace Cube.EntityFramework
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace Cube.Core.Models
+﻿using Cube.Core.Models.User;
+
+namespace Cube.Core.Models
 {
     public class MessageModel
     {

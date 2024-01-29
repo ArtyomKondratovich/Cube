@@ -11,8 +11,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Extensions
+builder.ConfigureAuth();
 builder.ConfigureRepository();
 builder.ConfigureServices();
+
 
 var app = builder.Build();
 
@@ -28,10 +30,18 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseRouting();
+app.UseCors();
+
+app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
 
-app.MapFallbackToFile("/index.html");
+app.UseEndpoints(endpoints => 
+{
+    endpoints.MapControllers();
+});
+
+//app.MapFallbackToFile("/index.html");
 
 app.Run();
