@@ -22,15 +22,7 @@ namespace Cube.Web.Api.Controllers
         [HttpPost]
         public async Task<Response<string, LoginResult>> Login([FromBody] LoginDto dto)
         {
-            var response = await _service.Login(dto);
-
-            if (response.ResponseResult == LoginResult.Success)
-            {
-                var client = new HttpClient();
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", response.Value);
-            }
-
-            return response;
+            return await _service.Login(dto);
         }
 
         [Route("register")]
