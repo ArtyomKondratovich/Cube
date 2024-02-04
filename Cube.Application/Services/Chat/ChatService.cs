@@ -1,6 +1,8 @@
 ﻿using Cube.Application.Services.Chat.Dto;
 using Cube.Application.Services.User.Dto;
+using Cube.Application.Utilities;
 using Cube.Core.Models;
+using Cube.Core.Models.User;
 using Cube.Core.Utilities;
 using Cube.EntityFramework.Repository;
 
@@ -31,7 +33,7 @@ namespace Cube.Application.Services.Chat
                 }
 
                 // checking the existence of participants
-                if (!dto.Patricipants.Exists(_repository))
+                if (!dto.PatricipantsIds.IsEntitiesExist<UserModel, IRepositoryWrapper>(_repository))
                 {
                     responce.ResponseResult = CreateChatResult.ParticipantsNotFound; 
                     return responce;
@@ -40,10 +42,12 @@ namespace Cube.Application.Services.Chat
                 // checking chat settings
                 var isProperlyCofigured = dto.Type switch
                 {
-                    ChatType.Private => dto.Admin == null,
-                    ChatType.Group => dto.Admin != null,
+                    ChatType.Private => dto.AdminId == null,
+                    ChatType.Group => dto.AdminId != null,
                     _ => false
                 };
+
+                var chat = MapperConfig.InitializeAutomapper(_repository).Map<ChatModel>(dto);
 
                 if (!isProperlyCofigured) 
                 {
@@ -51,13 +55,7 @@ namespace Cube.Application.Services.Chat
                     return responce;
                 }
 
-                var chat = new ChatModel
-                {
-                    Title = dto.Title,
-                    ChatAdmin = dto.Admin,
-                    Type = dto.Type,
-                    Participants = dto.Patricipants
-                };
+               
 
                 if (await _repository.ChatRepository.CreateChat(chat) != null)
                 {

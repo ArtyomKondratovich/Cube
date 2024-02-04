@@ -64,13 +64,13 @@
         NullOrEmptyNewMessage,
     }
 
-    public enum LoginResult
+    public enum SignInResult
     {
         Success,
         WrongLoginOrPassword
     }
 
-    public enum RegisterResult
+    public enum SignUpResult
     {
         Success,
         EmailAlreadyExists,

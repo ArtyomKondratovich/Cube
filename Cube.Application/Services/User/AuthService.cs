@@ -8,20 +8,20 @@ using System.Security.Claims;
 
 namespace Cube.Application.Services.User
 {
-    public class UserService : IUserService
+    public class AuthService : IAuthService
     {
         private readonly IRepositoryWrapper _repository;
         private readonly IOptions<AuthOptions> _authOptions;
 
-        public UserService(IRepositoryWrapper repository, IOptions<AuthOptions> options)
+        public AuthService(IRepositoryWrapper repository, IOptions<AuthOptions> options)
         {
             _repository = repository;
             _authOptions = options;
         }
 
-        public async Task<Response<string, LoginResult>> Login(LoginDto dto)
+        public async Task<Response<string, SignInResult>> SignIn(SignInDto dto)
         {
-            var response = new Response<string, LoginResult>();
+            var response = new Response<string, SignInResult>();
 
             var account = await _repository.AccountRepository.GetAccount(dto.Email);
 
@@ -34,29 +34,29 @@ namespace Cube.Application.Services.User
                     var token = GenerateJWT(account);
 
                     response.Value = token;
-                    response.ResponseResult = LoginResult.Success;
+                    response.ResponseResult = SignInResult.Success;
                 }
                 else
                 {
-                    response.ResponseResult = LoginResult.WrongLoginOrPassword;
+                    response.ResponseResult = SignInResult.WrongLoginOrPassword;
                 }
 
                 return response;
             }
 
-            response.ResponseResult = LoginResult.WrongLoginOrPassword;
+            response.ResponseResult = SignInResult.WrongLoginOrPassword;
 
             return response;
         }
 
-        public async Task<Response<AccountModel, RegisterResult>> Register(RegisterDto dto)
+        public async Task<Response<AccountModel, SignUpResult>> SignUp(SignUpDto dto)
         {
-            var response = new Response<AccountModel, RegisterResult>();
+            var response = new Response<AccountModel, SignUpResult>();
             var existAccount = await _repository.AccountRepository.GetAccount(dto.Email);
 
             if (existAccount != null)
             {
-                response.ResponseResult = RegisterResult.EmailAlreadyExists;
+                response.ResponseResult = SignUpResult.EmailAlreadyExists;
                 return response;
             }
 
@@ -71,7 +71,7 @@ namespace Cube.Application.Services.User
 
             if (result != null) 
             {
-                response.ResponseResult = RegisterResult.Success;
+                response.ResponseResult = SignUpResult.Success;
                 response.Value = result;
                 return response;
             }

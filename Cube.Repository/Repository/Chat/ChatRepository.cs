@@ -49,5 +49,17 @@ namespace Cube.EntityFramework.Repository.Chat
         {
             return await _dbContext.Chats.FindAsync(id);
         }
+
+        public async Task<ICollection<ChatModel>> GetEntitiesByIds(ICollection<int> ids)
+        {
+            var entities = new List<ChatModel>();
+
+            foreach (var id in ids)
+            {
+                entities.Add(await _dbContext.Chats.FindAsync(id));
+            }
+
+            return entities;
+        }
     }
 }

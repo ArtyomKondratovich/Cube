@@ -26,25 +26,24 @@ namespace Cube.Application.Services
                 options => new ChatService(
                     options.GetRequiredService<IRepositoryWrapper>()
                     ));
-            builder.Services.AddScoped<IUserService>(
-                options => new UserService(
+            builder.Services.AddScoped<IAuthService>(
+                options => new AuthService(
                     options.GetRequiredService<IRepositoryWrapper>(),
                     options.GetRequiredService<IOptions<AuthOptions>>()
                     ));
         }
 
-        public static bool Exists<TModel, TWrapper>(this ICollection<TModel> values, TWrapper wrapper)
-            where TModel : class
+        public static bool IsEntitiesExist<TEntity, TWrapper>(this ICollection<int> ids, TWrapper wrapper)
+            where TEntity : class
             where TWrapper : IRepositoryWrapper
         {
-            switch (typeof(TModel))
+            switch (typeof(TEntity))
             {
                 case var t when t == typeof(MessageModel):
                     
-                    foreach (var item in values)
+                    foreach (var id in ids)
                     {
-                        var message = (MessageModel)(object)item;
-                        if (wrapper.MessageRepository.GetMessageById(message.Id) == null)
+                        if (wrapper.MessageRepository.GetMessageById(id) == null)
                         {
                             return false;
                         }
@@ -52,10 +51,9 @@ namespace Cube.Application.Services
                     return true;
                 case var t when t == typeof(ChatModel):
 
-                    foreach (var item in values)
+                    foreach (var id in ids)
                     {
-                        var chat = (ChatModel)(object)item;
-                        if (wrapper.ChatRepository.GetChatById(chat.Id) == null)
+                        if (wrapper.ChatRepository.GetChatById(id) == null)
                         {
                             return false;
                         }
@@ -63,10 +61,9 @@ namespace Cube.Application.Services
                     return true;
                 case var t when t == typeof(UserModel):
 
-                    foreach (var item in values)
+                    foreach (var id in ids)
                     {
-                        var user = (UserModel)(object)item;
-                        if (wrapper.UserRepository.GetUserById(user.Id) == null)
+                        if (wrapper.UserRepository.GetUserById(id) == null)
                         {
                             return false;
                         }
