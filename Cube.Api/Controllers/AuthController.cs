@@ -18,18 +18,18 @@ namespace Cube.Web.Api.Controllers
             _service = service;
         }
 
-        [Route("signin")]
+        [Route("login")]
         [HttpPost]
-        public async Task<Response<string, SignInResult>> SignIn([FromBody] SignInDto dto)
+        public async Task<Response<string, SignInResult>> Login([FromBody] SignInDto dto)
         {
-            return await _service.SignIn(dto);
+            return await _service.Login(dto);
         }
 
-        [Route("signup")]
+        [Route("register")]
         [HttpPost]
-        public async Task<Response<AccountEntity, SignUpResult>> SignUp([FromBody] SignUpDto dto)
+        public async Task<Response<AccountEntity, SignUpResult>> Register([FromBody] SignUpDto dto)
         {
-            return await _service.SignUp(dto);
+            return await _service.Register(dto);
         }
     }
 }

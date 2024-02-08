@@ -19,7 +19,7 @@ namespace Cube.Application.Services.User
             _authOptions = options;
         }
 
-        public async Task<Response<string, SignInResult>> SignIn(SignInDto dto)
+        public async Task<Response<string, SignInResult>> Login(SignInDto dto)
         {
             var response = new Response<string, SignInResult>();
 
@@ -49,7 +49,7 @@ namespace Cube.Application.Services.User
             return response;
         }
 
-        public async Task<Response<AccountEntity, SignUpResult>> SignUp(SignUpDto dto)
+        public async Task<Response<AccountEntity, SignUpResult>> Register(SignUpDto dto)
         {
             var response = new Response<AccountEntity, SignUpResult>();
             var existAccount = await _repository.AccountRepository.GetAccount(dto.Email);
