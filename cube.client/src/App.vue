@@ -1,47 +1,52 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
-</script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
+    <Nav />
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+    <main class="form-signin">
+        <router-view />
+    </main>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-}
+<script>
+    import Nav from "@/components/NavBar.vue";
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
+    export default {
+        components: { Nav }
+    }
+</script>
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
+<style>
+    .form-signin {
+        width: 100%;
+        max-width: 330px;
+        padding: 15px;
+        margin: auto;
+    }
 
-  .logo {
-    margin: 0 2rem 0 0;
-  }
+        .form-signin .checkbox {
+            font-weight: 400;
+        }
 
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
+        .form-signin .form-control {
+            position: relative;
+            box-sizing: border-box;
+            height: auto;
+            padding: 10px;
+            font-size: 16px;
+        }
+
+            .form-signin .form-control:focus {
+                z-index: 2;
+            }
+
+        .form-signin input[type="email"] {
+            margin-bottom: -1px;
+            border-bottom-right-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+
+        .form-signin input[type="password"] {
+            margin-bottom: 10px;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
 </style>
