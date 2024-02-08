@@ -19,21 +19,21 @@ namespace Cube.Web.Api.Controllers
 
         [HttpPost]
         [Route("send")]
-        public async Task<Response<MessageModel, SendMessageResult>> SendMessage([FromBody] NewMessageDto newMessage)
+        public async Task<Response<MessageEntity, SendMessageResult>> SendMessage([FromBody] NewMessageDto newMessage)
         {
             return await _service.SendMessage(newMessage);
         }
 
         [HttpPost]
         [Route("update")]
-        public async Task<Response<MessageModel, UpdateMessageResult>> UpdateMessage([FromBody] UpdateMessageDto dto)
+        public async Task<Response<MessageEntity, UpdateMessageResult>> UpdateMessage([FromBody] UpdateMessageDto dto)
         {
             return await _service.UpdateMessage(dto);
         }
 
         [HttpPost]
         [Route("delete")]
-        public async Task<Response<MessageModel, DeleteMessageResult>> DeleteMessage([FromBody] DeleteMessageDto dto)
+        public async Task<Response<MessageEntity, DeleteMessageResult>> DeleteMessage([FromBody] DeleteMessageDto dto)
         {
             return await _service.DeleteMessage(dto);
         }

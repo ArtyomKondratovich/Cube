@@ -6,13 +6,13 @@ namespace Cube.EntityFramework
 {
     public class CubeDbContext : DbContext
     {
-        public DbSet<UserModel> Users { get; set; }
+        public DbSet<UserEntity> Users { get; set; }
 
-        public DbSet<MessageModel> Messages { get; set; }
+        public DbSet<MessageEntity> Messages { get; set; }
 
-        public DbSet<ChatModel> Chats { get; set; }
+        public DbSet<ChatEntity> Chats { get; set; }
 
-        public DbSet<AccountModel> Accounts { get; set; } 
+        public DbSet<AccountEntity> Accounts { get; set; } 
 
         public CubeDbContext(DbContextOptions<CubeDbContext> options) :
             base(options)

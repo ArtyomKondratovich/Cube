@@ -4,9 +4,9 @@ namespace Cube.EntityFramework.Repository.Message
 {
     public interface IMessageRepository
     {
-        Task<MessageModel?> GetMessageById(int id);
-        Task<MessageModel?> SendMessage(MessageModel model);
-        Task<MessageModel?> UpdateMessage(MessageModel model);
-        Task<MessageModel?> DeleteMessage(MessageModel model);
+        Task<MessageEntity?> GetMessageById(int id);
+        Task<MessageEntity?> SendMessage(MessageEntity model);
+        Task<MessageEntity?> UpdateMessage(MessageEntity model);
+        Task<MessageEntity?> DeleteMessage(MessageEntity model);
     }
 }

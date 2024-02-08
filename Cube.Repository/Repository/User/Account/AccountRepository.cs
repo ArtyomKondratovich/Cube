@@ -12,7 +12,7 @@ namespace Cube.EntityFramework.Repository.User.Account
             _dbContext = dbContext;
         }
 
-        public async Task<AccountModel?> CreateAccount(AccountModel model)
+        public async Task<AccountEntity?> CreateAccount(AccountEntity model)
         {
             var account = await _dbContext.Accounts.AddAsync(model);
 
@@ -26,7 +26,7 @@ namespace Cube.EntityFramework.Repository.User.Account
             return null;
         }
 
-        public async Task<AccountModel?> GetAccount(string email)
+        public async Task<AccountEntity?> GetAccount(string email)
         {
             return await _dbContext.Accounts.FirstOrDefaultAsync(x => x.Email == email);
         }

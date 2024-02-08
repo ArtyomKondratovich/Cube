@@ -4,6 +4,7 @@ namespace Cube.EntityFramework.Repository.User
 {
     public interface IUserRepository
     {
-        Task<UserModel?> GetUserById(int id);
+        Task<UserEntity?> GetUserByIdAsync(int id);
+        UserEntity? GetUserById(int id);
     }
 }

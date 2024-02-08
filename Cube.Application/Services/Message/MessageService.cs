@@ -13,9 +13,9 @@ namespace Cube.Application.Services.Message
             _repository = repository;
         }
 
-        public async Task<Response<MessageModel, DeleteMessageResult>> DeleteMessage(DeleteMessageDto dto)
+        public async Task<Response<MessageEntity, DeleteMessageResult>> DeleteMessage(DeleteMessageDto dto)
         {
-            var response = new Response<MessageModel, DeleteMessageResult>();
+            var response = new Response<MessageEntity, DeleteMessageResult>();
 
             var message = await _repository.MessageRepository.GetMessageById(dto.Id);
 
@@ -33,9 +33,9 @@ namespace Cube.Application.Services.Message
             return response;
         }
 
-        public async Task<Response<MessageModel, GetMessageResult>> GetMessageById(FindMessageDto dto)
+        public async Task<Response<MessageEntity, GetMessageResult>> GetMessageById(FindMessageDto dto)
         {
-            var response = new Response<MessageModel, GetMessageResult>();
+            var response = new Response<MessageEntity, GetMessageResult>();
 
             var message = await _repository.MessageRepository.GetMessageById(dto.Id);
 
@@ -53,13 +53,13 @@ namespace Cube.Application.Services.Message
             return response;
         }
 
-        public async Task<Response<MessageModel, SendMessageResult>> SendMessage(NewMessageDto dto)
+        public async Task<Response<MessageEntity, SendMessageResult>> SendMessage(NewMessageDto dto)
         {
-            var response = new Response<MessageModel, SendMessageResult>(); 
+            var response = new Response<MessageEntity, SendMessageResult>(); 
             
 
-            var user = await _repository.UserRepository.GetUserById(dto.SenderId);
-            var chat = await _repository.ChatRepository.GetChatById(dto.ChatId);
+            var user = await _repository.UserRepository.GetUserByIdAsync(dto.SenderId);
+            var chat = await _repository.ChatRepository.GetChatByIdAsync(dto.ChatId);
 
             if (user == null)
             {
@@ -82,7 +82,7 @@ namespace Cube.Application.Services.Message
                 return response;
             }
 
-            var message = new MessageModel 
+            var message = new MessageEntity 
             {
                 Message = dto.Message,
                 CreatedDate = DateTime.UtcNow,
@@ -105,12 +105,12 @@ namespace Cube.Application.Services.Message
             return response;
         }
 
-        public async Task<Response<MessageModel, UpdateMessageResult>> UpdateMessage(UpdateMessageDto dto)
+        public async Task<Response<MessageEntity, UpdateMessageResult>> UpdateMessage(UpdateMessageDto dto)
         {
-            var response = new Response<MessageModel, UpdateMessageResult>();
+            var response = new Response<MessageEntity, UpdateMessageResult>();
 
             var message = await _repository.MessageRepository.GetMessageById(dto.Id);
-            var updater = await _repository.UserRepository.GetUserById(dto.UpdaterId);
+            var updater = await _repository.UserRepository.GetUserByIdAsync(dto.UpdaterId);
 
             if (updater == null)
             {

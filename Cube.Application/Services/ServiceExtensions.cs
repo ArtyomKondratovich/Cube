@@ -33,13 +33,17 @@ namespace Cube.Application.Services
                     ));
         }
 
-        public static bool IsEntitiesExist<TEntity, TWrapper>(this ICollection<int> ids, TWrapper wrapper)
+        public static bool IsEntitiesExist<TEntity>(this ICollection<int>? ids, IRepositoryWrapper wrapper)
             where TEntity : class
-            where TWrapper : IRepositoryWrapper
         {
+            if (ids == null)
+            {
+                return true;
+            }
+
             switch (typeof(TEntity))
             {
-                case var t when t == typeof(MessageModel):
+                case var t when t == typeof(MessageEntity):
                     
                     foreach (var id in ids)
                     {
@@ -49,21 +53,21 @@ namespace Cube.Application.Services
                         }
                     }
                     return true;
-                case var t when t == typeof(ChatModel):
+                case var t when t == typeof(ChatEntity):
 
                     foreach (var id in ids)
                     {
-                        if (wrapper.ChatRepository.GetChatById(id) == null)
+                        if (wrapper.ChatRepository.GetChatByIdAsync(id) == null)
                         {
                             return false;
                         }
                     }
                     return true;
-                case var t when t == typeof(UserModel):
+                case var t when t == typeof(UserEntity):
 
                     foreach (var id in ids)
                     {
-                        if (wrapper.UserRepository.GetUserById(id) == null)
+                        if (wrapper.UserRepository.GetUserByIdAsync(id) == null)
                         {
                             return false;
                         }
@@ -115,6 +119,53 @@ namespace Cube.Application.Services
             var sha = new SHA1Managed();
             var hash = sha.ComputeHash(Encoding.UTF8.GetBytes(plainText));
             return Convert.ToBase64String(hash);
+        }
+
+        public static bool TrySubParticipants(this ICollection<int> a, ICollection<int>? b, out ICollection<int>? result)
+        {
+            if (b == null)
+            {
+                result = a;
+                return true;
+            }
+
+            if (a.Count < b.Count)
+            {
+                result = null;
+                return false;
+            }
+
+            foreach (var number in b)
+            {
+                if (!a.Remove(number))
+                {
+                    result = null;
+                    return false;
+                }
+            }
+
+            result = a;
+            return true;
+        }
+
+        public static ICollection<int> AddParticipants(this ICollection<int> a, ICollection<int>? b)
+        {
+            if (b == null)
+            {
+                return a;
+            }
+
+            foreach (var number in b)
+            {
+                if (a.Contains(number))
+                {
+                    continue;
+                }
+
+                a.Add(number);
+            }
+
+            return a;
         }
     }
 }

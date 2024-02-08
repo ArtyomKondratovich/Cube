@@ -14,7 +14,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cube.Application", "Cube.Ap
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cube.Core", "Cube.Core\Cube.Core.csproj", "{76499FBB-F3F2-4A66-9B54-D7D9D2AE6A87}"
 EndProject
-Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "cube.client", "Cube.Client\cube.client.esproj", "{BEC79E83-7AD6-4E82-AFF7-6B50006878A2}"
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "cube.client", "Cube.ClientT\cube.client.esproj", "{6727C940-A8C0-4C05-AFC4-F8A7DA6993F0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,12 +38,12 @@ Global
 		{76499FBB-F3F2-4A66-9B54-D7D9D2AE6A87}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{76499FBB-F3F2-4A66-9B54-D7D9D2AE6A87}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{76499FBB-F3F2-4A66-9B54-D7D9D2AE6A87}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BEC79E83-7AD6-4E82-AFF7-6B50006878A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BEC79E83-7AD6-4E82-AFF7-6B50006878A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BEC79E83-7AD6-4E82-AFF7-6B50006878A2}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{BEC79E83-7AD6-4E82-AFF7-6B50006878A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BEC79E83-7AD6-4E82-AFF7-6B50006878A2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BEC79E83-7AD6-4E82-AFF7-6B50006878A2}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{6727C940-A8C0-4C05-AFC4-F8A7DA6993F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6727C940-A8C0-4C05-AFC4-F8A7DA6993F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6727C940-A8C0-4C05-AFC4-F8A7DA6993F0}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{6727C940-A8C0-4C05-AFC4-F8A7DA6993F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6727C940-A8C0-4C05-AFC4-F8A7DA6993F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6727C940-A8C0-4C05-AFC4-F8A7DA6993F0}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

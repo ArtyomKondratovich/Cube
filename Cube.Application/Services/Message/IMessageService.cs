@@ -5,9 +5,9 @@ namespace Cube.Application.Services.Message
 {
     public interface IMessageService
     {
-        public Task<Response<MessageModel, GetMessageResult>> GetMessageById(FindMessageDto dto);
-        public Task<Response<MessageModel, SendMessageResult>> SendMessage(NewMessageDto dto);
-        public Task<Response<MessageModel, DeleteMessageResult>> DeleteMessage(DeleteMessageDto dto);
-        public Task<Response<MessageModel, UpdateMessageResult>> UpdateMessage(UpdateMessageDto dto);
+        public Task<Response<MessageEntity, GetMessageResult>> GetMessageById(FindMessageDto dto);
+        public Task<Response<MessageEntity, SendMessageResult>> SendMessage(NewMessageDto dto);
+        public Task<Response<MessageEntity, DeleteMessageResult>> DeleteMessage(DeleteMessageDto dto);
+        public Task<Response<MessageEntity, UpdateMessageResult>> UpdateMessage(UpdateMessageDto dto);
     }
 }

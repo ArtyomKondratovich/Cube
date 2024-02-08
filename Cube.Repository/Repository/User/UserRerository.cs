@@ -11,9 +11,14 @@ namespace Cube.EntityFramework.Repository.User
             _dbContext = context;
         }
 
-        public async Task<UserModel?> GetUserById(int id)
+        public async Task<UserEntity?> GetUserByIdAsync(int id)
         {
             return await _dbContext.Users.FindAsync(id);
+        }
+
+        public UserEntity? GetUserById(int id) 
+        {
+            return _dbContext.Users.Find(id);
         }
     }
 }

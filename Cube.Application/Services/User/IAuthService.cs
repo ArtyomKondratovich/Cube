@@ -7,6 +7,6 @@ namespace Cube.Application.Services.User
     {
         public Task<Response<string, SignInResult>> SignIn(SignInDto dto);
 
-        public Task<Response<AccountModel, SignUpResult>> SignUp(SignUpDto dto);
+        public Task<Response<AccountEntity, SignUpResult>> SignUp(SignUpDto dto);
     }
 }

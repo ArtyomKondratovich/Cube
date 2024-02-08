@@ -27,7 +27,7 @@ namespace Cube.Web.Api.Controllers
 
         [Route("signup")]
         [HttpPost]
-        public async Task<Response<AccountModel, SignUpResult>> SignUp([FromBody] SignUpDto dto)
+        public async Task<Response<AccountEntity, SignUpResult>> SignUp([FromBody] SignUpDto dto)
         {
             return await _service.SignUp(dto);
         }

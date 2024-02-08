@@ -4,7 +4,7 @@ namespace Cube.EntityFramework.Repository.User.Account
 {
     public interface IAccountRepository
     {
-        Task<AccountModel?> GetAccount(string email);
-        Task<AccountModel?> CreateAccount(AccountModel model);
+        Task<AccountEntity?> GetAccount(string email);
+        Task<AccountEntity?> CreateAccount(AccountEntity model);
     }
 }

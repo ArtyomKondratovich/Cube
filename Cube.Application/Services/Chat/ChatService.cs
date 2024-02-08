@@ -1,6 +1,7 @@
 ﻿using Cube.Application.Services.Chat.Dto;
 using Cube.Application.Services.User.Dto;
 using Cube.Application.Utilities;
+using Cube.Application.Services;
 using Cube.Core.Models;
 using Cube.Core.Models.User;
 using Cube.Core.Utilities;
@@ -17,9 +18,9 @@ namespace Cube.Application.Services.Chat
             _repository = repository;
         }
 
-        public async Task<Response<ChatModel, CreateChatResult>> CreateChat(NewChatDto dto)
+        public async Task<Response<ChatEntity, CreateChatResult>> CreateChat(NewChatDto dto)
         {
-            var responce = new Response<ChatModel, CreateChatResult>();
+            var responce = new Response<ChatEntity, CreateChatResult>();
             
 
             if (dto != null) 
@@ -33,7 +34,7 @@ namespace Cube.Application.Services.Chat
                 }
 
                 // checking the existence of participants
-                if (!dto.PatricipantsIds.IsEntitiesExist<UserModel, IRepositoryWrapper>(_repository))
+                if (!dto.PatricipantsIds.IsEntitiesExist<UserEntity>(_repository))
                 {
                     responce.ResponseResult = CreateChatResult.ParticipantsNotFound; 
                     return responce;
@@ -47,15 +48,18 @@ namespace Cube.Application.Services.Chat
                     _ => false
                 };
 
-                var chat = MapperConfig.InitializeAutomapper(_repository).Map<ChatModel>(dto);
-
-                if (!isProperlyCofigured) 
+                if (!isProperlyCofigured)
                 {
                     responce.ResponseResult = CreateChatResult.WrongChatSettings;
                     return responce;
                 }
 
-               
+                var chat = MapperConfig.InitializeAutomapper(_repository).Map<ChatEntity>(dto);
+                chat.Participants = dto.PatricipantsIds
+                    .Select(id => _repository.UserRepository.GetUserById(id))
+                    .Where(user => user != null)
+                    .ToList();
+                chat.Admin = _repository.UserRepository.GetUserById(dto.AdminId??default);
 
                 if (await _repository.ChatRepository.CreateChat(chat) != null)
                 {
@@ -68,12 +72,12 @@ namespace Cube.Application.Services.Chat
             return responce;
         }
 
-        public async Task<Response<ChatModel, DeleteChatResult>> DeleteChat(DeleteChatDto dto)
+        public async Task<Response<ChatEntity, DeleteChatResult>> DeleteChat(DeleteChatDto dto)
         {
-            var response = new Response<ChatModel, DeleteChatResult>();
+            var response = new Response<ChatEntity, DeleteChatResult>();
 
-            var chat = await _repository.ChatRepository.GetChatById(dto.Id);
-            var user = await _repository.UserRepository.GetUserById(dto.Id);
+            var chat = await _repository.ChatRepository.GetChatByIdAsync(dto.Id);
+            var user = await _repository.UserRepository.GetUserByIdAsync(dto.Id);
 
             if (user == null)
             {
@@ -87,28 +91,59 @@ namespace Cube.Application.Services.Chat
                 return response;
             }
 
-            
+            var currentParticipants = chat.Participants.Select(x => x.Id).ToList();
+           
             switch (dto.DeletionType)
             {
                 case ChatDeletionType.RemoveFromMessageList:
                     // Update Chat remove from particpants
+                    currentParticipants.Remove(user.Id);
                     break;
                 case ChatDeletionType.RemoveAndDeleteMessages:
                     // Update Chat remove users messages in messages
+                    currentParticipants.Remove(user.Id);
+
+                    var usersMessages = chat.Messages.Where(x => x.Sender.Id == user.Id).ToList();
+                    foreach (var message in  usersMessages)
+                    {
+                        await _repository.MessageRepository.DeleteMessage(message);
+                    }
                     break;
-                case ChatDeletionType.CompleteRemoval:
+                case ChatDeletionType.CompleteRemoval when chat.Type == ChatType.Group:
+                    if (chat.Admin != null && chat.Admin.Id == user.Id)
+                    {
+                        currentParticipants = new List<int>();
+                        
+                        if (chat != null)
+                        {
+                            foreach (var message in chat.Messages)
+                            {
+                                await _repository.MessageRepository.DeleteMessage(message);
+                            }
+                        }
+                    }
+                    break;
+                default:
+                    chat.Participants = currentParticipants
+                        .Select(x => _repository.UserRepository.GetUserById(x))
+                        .ToList();
+                    chat = await _repository.ChatRepository.UpdateChat(chat);
+                    if (chat != null) 
+                    {
+                        response.ResponseResult = DeleteChatResult.Success;
+                        response.Value = chat;
+                    }
                     break;
             }
             
             return response;
         }
 
-        public async Task<Response<List<ChatModel>, GetAllChatsResult>> GetAll(FindUserDto dto)
+        public async Task<Response<List<ChatEntity>, GetAllChatsResult>> GetAll(FindUserDto dto)
         {
+            var response = new Response<List<ChatEntity>, GetAllChatsResult>();
 
-            var response = new Response<List<ChatModel>, GetAllChatsResult>();
-
-            if (await _repository.UserRepository.GetUserById(dto.Id) == null)
+            if (await _repository.UserRepository.GetUserByIdAsync(dto.Id) == null)
             {
                 response.ResponseResult = GetAllChatsResult.UserNotFound;
                 return response;
@@ -120,11 +155,11 @@ namespace Cube.Application.Services.Chat
             return response;
         }
 
-        public async Task<Response<ChatModel, GetChatResult>> GetChatById(FindChatDto dto)
+        public async Task<Response<ChatEntity, GetChatResult>> GetChatById(FindChatDto dto)
         {
-            var response = new Response<ChatModel, GetChatResult>();
+            var response = new Response<ChatEntity, GetChatResult>();
 
-            var chat = await _repository.ChatRepository.GetChatById(dto.Id);
+            var chat = await _repository.ChatRepository.GetChatByIdAsync(dto.Id);
 
             if (chat == null)
             {
@@ -139,9 +174,84 @@ namespace Cube.Application.Services.Chat
             return response;
         }
 
-        public Task<Response<ChatModel, UpdateChatResult>> UpdateChat(UpdateChatDto dto)
+        public async Task<Response<ChatEntity, UpdateChatResult>> UpdateChat(UpdateChatDto dto)
         {
-            throw new NotImplementedException();
+            var response = new Response<ChatEntity, UpdateChatResult>();
+
+            if (dto.IsModified)
+            {
+                var chat = await _repository.ChatRepository.GetChatByIdAsync(dto.Id);
+
+                if (chat == null)
+                {
+                    response.ResponseResult = UpdateChatResult.ChatNotFound;
+                    return response;
+                }
+
+                // check title
+                if (string.IsNullOrEmpty(dto.NewTitle)
+                    || dto.NewTitle.Equals(chat.Title))
+                {
+                    response.ResponseResult = UpdateChatResult.ValidationError;
+                    response.Messages = new List<string>
+                    {
+                        $"New title \"{dto.NewTitle}\" is empty or equal to old title \"{chat.Title}\""
+                    };
+                    return response;
+                }
+
+                chat.Title = dto.NewTitle;
+
+                // Check Participants
+                if (dto.RemovedParticipants.IsEntitiesExist<UserEntity>(_repository)
+                    && dto.NewParticipants.IsEntitiesExist<UserEntity>(_repository))
+                {
+                    var currentParticipants = chat.Participants.Select(x => x.Id).ToList();
+
+                    // remove if possible
+                    if (currentParticipants.TrySubParticipants(dto.RemovedParticipants, out var result))
+                    {
+                        chat.Participants = result.Select(x => _repository.UserRepository.GetUserById(x)).ToList();
+                    }
+                    else
+                    {
+                        response.ResponseResult = UpdateChatResult.DeletingParticipantsError;
+                        response.Messages = new List<string>
+                        {
+                            $"Can't sub participants from current"
+                        };
+
+                    }
+
+                    var sum = chat.Participants.Select(x => x.Id).ToList().AddParticipants(dto.NewParticipants);
+
+                    chat.Participants = sum.Select(x => _repository.UserRepository.GetUserById(x)).ToList();
+
+                    var updateResult = await _repository.ChatRepository.UpdateChat(chat);
+
+                    if (updateResult != null)
+                    {
+                        response.Value = updateResult;
+                        response.ResponseResult = UpdateChatResult.Success;
+                        return response;
+                    }
+                }
+                else 
+                {
+                    response.ResponseResult = UpdateChatResult.ParticipantsNotFound;
+                    response.Messages = new List<string> 
+                    {
+                        $"Deleted or new participants not found"
+                    };
+                    return response;
+                }
+            }
+            else 
+            {
+                response.ResponseResult = UpdateChatResult.NothingToUpdate;
+            }
+
+            return response;
         }
     }
 }

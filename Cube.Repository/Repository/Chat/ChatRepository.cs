@@ -11,7 +11,7 @@ namespace Cube.EntityFramework.Repository.Chat
             _dbContext = dbContext;
         }
 
-        public async Task<ChatModel?> CreateChat(ChatModel model)
+        public async Task<ChatEntity?> CreateChat(ChatEntity model)
         {
             var chat = await _dbContext.Chats.AddAsync(model);
 
@@ -25,7 +25,7 @@ namespace Cube.EntityFramework.Repository.Chat
             return null;
         }
 
-        public async Task<ChatModel?> DeleteChat(ChatModel model)
+        public async Task<ChatEntity?> DeleteChat(ChatEntity model)
         {
             var chat = _dbContext.Chats.Remove(model);
 
@@ -38,28 +38,51 @@ namespace Cube.EntityFramework.Repository.Chat
             return null;
         }
 
-        public List<ChatModel> GetAllUsersChats(int id)
+        public List<ChatEntity> GetAllUsersChats(int id)
         {
             var usersChats = _dbContext.Chats.Where(c => c.Participants.Select(user => user.Id).Contains(id)).ToList();
 
             return usersChats;
         }
 
-        public async Task<ChatModel?> GetChatById(int id)
+        public ChatEntity? GetChatById(int id)
+        {
+            return _dbContext.Chats.Find(id);
+        }
+
+        public async Task<ChatEntity?> GetChatByIdAsync(int id)
         {
             return await _dbContext.Chats.FindAsync(id);
         }
 
-        public async Task<ICollection<ChatModel>> GetEntitiesByIds(ICollection<int> ids)
+        public ICollection<ChatEntity> GetEntitiesByIds(ICollection<int> ids)
         {
-            var entities = new List<ChatModel>();
+            var entities = new List<ChatEntity>();
 
             foreach (var id in ids)
             {
-                entities.Add(await _dbContext.Chats.FindAsync(id));
+                var entity = _dbContext.Chats.Find(id);
+
+                if (entity != null)
+                {
+                    entities.Add(entity);
+                }
             }
 
             return entities;
+        }
+
+        public async Task<ChatEntity?> UpdateChat(ChatEntity entity)
+        {
+            var result = _dbContext.Chats.Update(entity);
+
+            if (result != null)
+            {
+                await _dbContext.SaveChangesAsync();
+                return result.Entity;
+            }
+
+            return null;
         }
     }
 }

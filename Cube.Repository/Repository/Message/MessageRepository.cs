@@ -13,7 +13,7 @@ namespace Cube.EntityFramework.Repository.Message
             _dbContext = contex;
         }
 
-        public async Task<MessageModel?> DeleteMessage(MessageModel model)
+        public async Task<MessageEntity?> DeleteMessage(MessageEntity model)
         {
             var message = _dbContext.Messages.Remove(model);
 
@@ -27,12 +27,12 @@ namespace Cube.EntityFramework.Repository.Message
             return null;
         }
 
-        public async Task<MessageModel?> GetMessageById(int id)
+        public async Task<MessageEntity?> GetMessageById(int id)
         {
             return await _dbContext.Messages.FindAsync(id);
         }
 
-        public async Task<MessageModel?> SendMessage(MessageModel model)
+        public async Task<MessageEntity?> SendMessage(MessageEntity model)
         {
             var message = await _dbContext.Messages.AddAsync(model);
 
@@ -46,7 +46,7 @@ namespace Cube.EntityFramework.Repository.Message
             return null;
         }
 
-        public async Task<MessageModel?> UpdateMessage(MessageModel model)
+        public async Task<MessageEntity?> UpdateMessage(MessageEntity model)
         {
             var message = _dbContext.Messages.Update(model);
 

@@ -31,7 +31,7 @@ builder.Services.AddSwaggerGen(options =>
                     Id = "Bearer"
                 }
             },
-            new string[] {}
+            Array.Empty<string>()
         }
     });
 });
@@ -40,6 +40,7 @@ builder.Services.AddSwaggerGen(options =>
 builder.ConfigureAuth();
 builder.ConfigureRepository();
 builder.ConfigureServices();
+
 
 var app = builder.Build();
 
@@ -56,13 +57,13 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseRouting();
-//app.UseCors(builder =>
-//{
-//    builder
-//        .WithOrigins("http://localhost:5173")
-//        .AllowAnyMethod()
-//        .AllowAnyHeader();
-//});
+app.UseCors(builder =>
+{
+    builder
+        .WithOrigins("http://localhost:5173")
+        .AllowAnyMethod()
+        .AllowAnyHeader();
+});
 
 app.UseAuthentication();
 app.UseAuthorization();

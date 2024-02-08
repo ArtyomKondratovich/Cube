@@ -49,9 +49,9 @@ namespace Cube.Application.Services.User
             return response;
         }
 
-        public async Task<Response<AccountModel, SignUpResult>> SignUp(SignUpDto dto)
+        public async Task<Response<AccountEntity, SignUpResult>> SignUp(SignUpDto dto)
         {
-            var response = new Response<AccountModel, SignUpResult>();
+            var response = new Response<AccountEntity, SignUpResult>();
             var existAccount = await _repository.AccountRepository.GetAccount(dto.Email);
 
             if (existAccount != null)
@@ -60,7 +60,7 @@ namespace Cube.Application.Services.User
                 return response;
             }
 
-            var account = new AccountModel() 
+            var account = new AccountEntity() 
             {
                 Email = dto.Email,
                 PasswordHash = dto.Password.GetHash(),
@@ -79,7 +79,7 @@ namespace Cube.Application.Services.User
             return response;
         }
 
-        private string GenerateJWT(AccountModel account)
+        private string GenerateJWT(AccountEntity account)
         {
             var authParams = _authOptions.Value;
 

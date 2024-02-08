@@ -2,7 +2,7 @@
 
 namespace Cube.Core.Models.User
 {
-    public class AccountModel
+    public class AccountEntity
     {
         public int Id { get; set; }
         public string Email { get; set; }

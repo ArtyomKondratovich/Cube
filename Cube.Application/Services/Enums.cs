@@ -9,7 +9,8 @@
     public enum GetAllChatsResult
     {
         Success,
-        UserNotFound
+        UserNotFound,
+        DataBaseError
     }
 
     public enum CreateChatResult
@@ -29,7 +30,12 @@
 
     public enum UpdateChatResult
     {
-
+        Success,
+        ChatNotFound,
+        NothingToUpdate,
+        ValidationError,
+        DeletingParticipantsError,
+        ParticipantsNotFound
     }
 
     public enum GetMessageResult
