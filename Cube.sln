@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.8.34322.80
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cube.Web.Api", "Cube.Api\Cube.Web.Api.csproj", "{F6E211C1-BCC0-42A1-865E-C3A3BA6CEDEA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D2E35063-B055-4295-B88A-EEFFD9364F6E} = {D2E35063-B055-4295-B88A-EEFFD9364F6E}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cube.EntityFramework", "Cube.Repository\Cube.EntityFramework.csproj", "{CDFC40CD-5B6F-4A1C-9465-445527E8BA74}"
 EndProject

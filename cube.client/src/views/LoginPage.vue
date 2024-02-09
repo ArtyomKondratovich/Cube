@@ -1,31 +1,54 @@
 <template>
-    <form class="form-signin">
-        <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
-
-        <div class="form-floating">
-            <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
-            <label for="floatingInput">Email address</label>
-        </div>
-        <div class="form-floating">
-            <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
-            <label for="floatingPassword">Password</label>
-        </div>
-
-        <div class="form-check text-start my-3">
-            <input class="form-check-input" type="checkbox" value="remember-me" id="flexCheckDefault">
-            <label class="form-check-label" for="flexCheckDefault">
-                Remember me
-            </label>
-        </div>
-        <button class="btn btn-primary w-100 py-2" type="submit">Sign in</button>
-        <p class="mt-5 mb-3 text-body-secondary">&copy; 2017–2023</p>
-    </form>
+    <div>
+        <h2>Login</h2>
+        <form @submit.prevent="handleSubmit">
+            <div class="form-group">
+                <label for="email">email</label>
+                <input type="email" v-model="email" name="email" class="form-control" :class="{ 'is-invalid': submitted && !email }" />
+                <div v-show="submitted && !email" class="invalid-feedback">email is required</div>
+            </div>
+            <div class="form-group">
+                <label htmlFor="password">Password</label>
+                <input type="password" v-model="password" name="password" class="form-control" :class="{ 'is-invalid': submitted && !password }" />
+                <div v-show="submitted && !password" class="invalid-feedback">Password is required</div>
+            </div>
+            <div class="form-group">
+                <button class="btn btn-primary" :disabled="loggingIn">Login</button>
+            </div>
+        </form>
+    </div>
 </template>
 
 <script>
     export default {
-        name: "Login"
-    }
+        name: "Login",
+        data() {
+            return {
+                email: '',
+                password: '',
+                submitted: false
+            }
+        },
+        computed: {
+            loggingIn() {
+                return this.$store.state.authentication.status.loggingIn;
+            }
+        },
+        created() {
+            // reset login status
+            this.$store.dispatch('authentication/logout');
+        },
+        methods: {
+            handleSubmit(e) {
+                this.submitted = true;
+                const { email, password } = this;
+                const { dispatch } = this.$store;
+                if (email && password) {
+                    dispatch('authentication/login', { email, password });
+                }
+            }
+        }
+    };
 </script>
 
 <style scoped>
