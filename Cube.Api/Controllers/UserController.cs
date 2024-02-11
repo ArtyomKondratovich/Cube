@@ -3,31 +3,31 @@ using Cube.Application.Services.User;
 using Cube.Application.Services.User.Dto;
 using Cube.Core.Models.User;
 using Microsoft.AspNetCore.Mvc;
-using SignInResult = Cube.Application.Services.SignInResult;
+using LoginResult = Cube.Application.Services.LoginResult;
 
 namespace Cube.Web.Api.Controllers
 {
     [ApiController]
     [Route("api/")]
-    public class AuthController : ControllerBase
+    public class UserController : ControllerBase
     {
-        private readonly IAuthService _service;
+        private readonly IUserService _service;
 
-        public AuthController(IAuthService service)
+        public UserController(IUserService service)
         {
             _service = service;
         }
 
         [Route("login")]
         [HttpPost]
-        public async Task<Response<string, SignInResult>> Login([FromBody] SignInDto dto)
+        public async Task<Response<UserAuthModel, LoginResult>> Login([FromBody] LoginDto dto)
         {
             return await _service.Login(dto);
         }
 
         [Route("register")]
         [HttpPost]
-        public async Task<Response<AccountEntity, SignUpResult>> Register([FromBody] SignUpDto dto)
+        public async Task<Response<bool, RegisterResult>> Register([FromBody] RegisterDto dto)
         {
             return await _service.Register(dto);
         }

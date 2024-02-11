@@ -2,8 +2,7 @@
 
 namespace Cube.Application.Services
 {
-    public class Response<TResult, TEnum> 
-        where TResult : class
+    public class Response<TResult, TEnum>
         where TEnum : Enum
     {
         public TResult Value { get; set; }

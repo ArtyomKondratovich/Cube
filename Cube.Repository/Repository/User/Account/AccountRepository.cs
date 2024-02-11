@@ -26,9 +26,14 @@ namespace Cube.EntityFramework.Repository.User.Account
             return null;
         }
 
-        public async Task<AccountEntity?> GetAccount(string email)
+        public async Task<AccountEntity?> GetAccountByEmail(string email)
         {
             return await _dbContext.Accounts.FirstOrDefaultAsync(x => x.Email == email);
+        }
+
+        public async Task<AccountEntity?> GetAccountById(int id)
+        {
+            return await _dbContext.Accounts.FirstAsync(x => x.Id == id);
         }
     }
 }

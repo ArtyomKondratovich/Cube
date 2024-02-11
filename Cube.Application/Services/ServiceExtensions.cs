@@ -1,4 +1,5 @@
-﻿using Cube.Application.Services.Chat;
+﻿using AutoMapper.Configuration.Conventions;
+using Cube.Application.Services.Chat;
 using Cube.Application.Services.Message;
 using Cube.Application.Services.User;
 using Cube.Core.Models;
@@ -16,23 +17,6 @@ namespace Cube.Application.Services
 {
     public static class ServiceExtensions
     {
-        public static void ConfigureServices(this WebApplicationBuilder builder)
-        {
-            builder.Services.AddScoped<IMessageService>(
-                options => new MessageService(
-                    options.GetRequiredService<IRepositoryWrapper>()
-                    ));
-            builder.Services.AddScoped<IChatService>(
-                options => new ChatService(
-                    options.GetRequiredService<IRepositoryWrapper>()
-                    ));
-            builder.Services.AddScoped<IAuthService>(
-                options => new AuthService(
-                    options.GetRequiredService<IRepositoryWrapper>(),
-                    options.GetRequiredService<IOptions<AuthOptions>>()
-                    ));
-        }
-
         public static bool IsEntitiesExist<TEntity>(this ICollection<int>? ids, IRepositoryWrapper wrapper)
             where TEntity : class
         {
@@ -76,42 +60,6 @@ namespace Cube.Application.Services
             }
 
             return false;
-        }
-
-        public static void ConfigureAuth(this WebApplicationBuilder builder)
-        {
-            var authConfig = builder.Configuration.GetSection("Auth");
-            builder.Services.Configure<AuthOptions>(authConfig);
-            var authOptions = authConfig.Get<AuthOptions>();
-            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(
-                options => 
-                {
-                    options.RequireHttpsMetadata = false;
-                    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidIssuer = authOptions.Issuer,
-
-                        ValidateAudience = true,
-                        ValidAudience = authOptions.Audience,
-
-                        ValidateLifetime = true,
-
-                        IssuerSigningKey = authOptions.SummetricKey,
-                        ValidateIssuerSigningKey = true
-                    };
-                });
-            builder.Services.AddCors(options => 
-            {
-                options.AddDefaultPolicy(
-                    builder =>
-                    {
-                        builder.AllowAnyOrigin()
-                            .AllowAnyMethod()
-                            .AllowAnyHeader();
-                    });
-            });
         }
 
         public static string GetHash(this string plainText)
@@ -166,6 +114,45 @@ namespace Cube.Application.Services
             }
 
             return a;
+        }
+
+        public static bool IsValidEmail(this string? email)
+        {
+            if (email == null)
+            {
+                return false;
+            }
+
+            var trimmedEmail = email.Trim();
+
+            if (trimmedEmail.EndsWith('.'))
+            {
+                return false; // suggested by @TK-421
+            }
+            try
+            {
+                var addr = new System.Net.Mail.MailAddress(email);
+                return addr.Address == trimmedEmail;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public static int PasswordCheck(this string? password) 
+        {
+            // 0 - for null passwrod
+            // 1 - easy password
+            // 2 - medium password
+            // 3 - strong password
+
+            if (password == null)
+            {
+                return 0;
+            }
+
+            return 1;
         }
     }
 }

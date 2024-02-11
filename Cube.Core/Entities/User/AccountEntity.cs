@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Cube.Core.Models.User
 {
@@ -7,9 +8,7 @@ namespace Cube.Core.Models.User
         public int Id { get; set; }
         public string Email { get; set; }
         public string PasswordHash { get; set; }
-
-        [NotMapped]
-        public Role[] Roles { get; set; }
+        public Role Role { get; set; }
     }
 
     public enum Role

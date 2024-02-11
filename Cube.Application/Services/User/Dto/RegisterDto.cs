@@ -2,10 +2,16 @@
 
 namespace Cube.Application.Services.User.Dto
 {
-    public class SignInDto
+    public class RegisterDto
     {
-        [Required]
+        public string Name { get; set; }
+
+        public string Surname { get; set; }
+
+        public DateOnly? DateOfBirth { get; set; }
+
         [EmailAddress]
+        [Required]
         public string Email { get; set; }
 
         [Required]

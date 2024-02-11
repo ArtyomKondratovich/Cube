@@ -17,7 +17,7 @@ namespace Cube.EntityFramework.Repository
         {
             get
             {
-                _userRepository ??= new UserRerository(_dbContext);
+                _userRepository ??= new UserRepository(_dbContext);
 
                 return _userRepository;
             }

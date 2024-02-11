@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Cube.Core.Models;
 using Cube.Core.Models.User;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Cube.EntityFramework
 {
@@ -14,16 +15,20 @@ namespace Cube.EntityFramework
 
         public DbSet<AccountEntity> Accounts { get; set; } 
 
-        public CubeDbContext(DbContextOptions<CubeDbContext> options) :
+        public CubeDbContext(DbContextOptions options) :
             base(options)
         {
-            Database.EnsureCreated();
+            //Database.EnsureCreated();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder
+                .Entity<AccountEntity>()
+                .Property(e => e.Role)
+                .HasConversion(new EnumToStringConverter<Role>());
         }
     }
 }

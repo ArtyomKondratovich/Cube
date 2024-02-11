@@ -28,6 +28,22 @@ export const authentication = {
         logout({ commit }) {
             userService.logout();
             commit('logout');
+        },
+        register({ commit }, { name, surname, dateOfBirth, email, password }) {
+
+            userService.register(name, surname, dateOfBirth, email, password)
+                .then(
+                    register =>
+                    {
+                        commit('registerSuccess', register);
+                        router.push('/login');
+                    },
+                    error =>
+                    {
+                        commit('registerFailrue', error);
+                        router.push('/register');
+                    }
+                );
         }
     },
     mutations: {
@@ -44,6 +60,16 @@ export const authentication = {
             state.user = null;
         },
         logout(state) {
+            state.status = {};
+            state.user = null;
+        },
+        registerSuccess(state)
+        {
+            state.status = {};
+            state.user = null;
+        },
+        registerFailrue(state)
+        {
             state.status = {};
             state.user = null;
         }

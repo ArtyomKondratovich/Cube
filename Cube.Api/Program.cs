@@ -1,5 +1,6 @@
-using Cube.Application.Services;
+using Cube.Application.Utilities;
 using Cube.EntityFramework;
+using Cube.Web.Api;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -36,7 +37,9 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+
 // Extensions
+builder.ConfigureJsonConverter();
 builder.ConfigureAuth();
 builder.ConfigureRepository();
 builder.ConfigureServices();

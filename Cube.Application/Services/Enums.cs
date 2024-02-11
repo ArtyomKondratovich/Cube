@@ -70,20 +70,50 @@
         NullOrEmptyNewMessage,
     }
 
-    public enum SignInResult
+    public enum LoginResult
     {
         Success,
         WrongLoginOrPassword
     }
 
-    public enum SignUpResult
+    public enum RegisterResult
     {
         Success,
         EmailAlreadyExists,
-        ValidationError
+        ValidationError,
+        DataBaseError
     }
 
-    public class Enums
+    public enum CreateUserResult 
     {
+        Success,
+        ValidationError,
+        AccountNotFound,
+        AccountLinkError,
+        DateError,
+        DataBaseError
+
+    }
+
+    public enum UpdateUserResult
+    {
+        Success,
+        ValidationError,
+        AccountNotFound,
+
+    }
+    public enum DeleteUserResult
+    {
+        Success,
+        ValidationError,
+        AccountNotFound,
+
+    }
+    public enum GetUserResult
+    {
+        Success,
+        ValidationError,
+        AccountNotFound,
+
     }
 }

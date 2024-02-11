@@ -54,7 +54,7 @@ namespace Cube.Application.Services.Chat
                     return responce;
                 }
 
-                var chat = MapperConfig.InitializeAutomapper(_repository).Map<ChatEntity>(dto);
+                var chat = MapperConfig.InitializeAutomapper().Map<ChatEntity>(dto);
                 chat.Participants = dto.PatricipantsIds
                     .Select(id => _repository.UserRepository.GetUserById(id))
                     .Where(user => user != null)

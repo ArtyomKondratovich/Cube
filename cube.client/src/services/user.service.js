@@ -1,8 +1,9 @@
 import config from "@/config"
-import { authHeader } from "@/helpers";
+import { authHeader, router } from "@/helpers";
 
 export const userService = {
     login,
+    register,
     logout,
     getAll
 };
@@ -14,19 +15,37 @@ function login(email, password) {
         body: JSON.stringify({ email, password })
     };
 
-    return fetch('https://localhost:7159/api/login', requestOptions)
+    return fetch(`${config.apiUrl}/login`, requestOptions)
         .then(handleResponse)
-        .then(user => {
+        .then(response => {
             // login successful if there's a jwt token in the response
-            if (user.value) {
+            if (response.value.token) {
                 // store user details and jwt token in local storage to keep user logged in between page refreshes
-                localStorage.setItem('user', JSON.stringify(user));
+                localStorage.setItem('user', JSON.stringify(response));
             }
 
-            return user;
+            return response;
         });
 }
 
+function register(name, surname, dateOfBirth, email, password) {
+    const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, surname, dateOfBirth, email, password })
+    };
+
+    return fetch(`${config.apiUrl}/register`, requestOptions)
+        .then(handleResponse)
+        .then(response => {
+            // register successful if there's a true value in the response
+            if (response.value) {
+                localStorage.setItem('register', JSON.stringify(response))
+            }
+
+            return response;
+        });
+}
 function logout() {
     // remove user from local storage to log user out
     localStorage.removeItem('user');
