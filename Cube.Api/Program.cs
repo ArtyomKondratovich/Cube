@@ -37,13 +37,11 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-
 // Extensions
 builder.ConfigureJsonConverter();
 builder.ConfigureAuth();
 builder.ConfigureRepository();
 builder.ConfigureServices();
-
 
 var app = builder.Build();
 
