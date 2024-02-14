@@ -362,6 +362,6 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 
-# Ignore appsettigs.json which consists a JWT secret and connection string to db
-Cube.Server/apsettings.json
+# Ignore appsettigs.personal.json which consists a JWT secret and connection string to db
+Cube.Api/appsettings.personal.json
  

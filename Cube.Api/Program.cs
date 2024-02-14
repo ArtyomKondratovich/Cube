@@ -1,12 +1,11 @@
-using Cube.Application.Utilities;
-using Cube.EntityFramework;
-using Cube.Web.Api;
+using Cube.Web.Api.Configuration;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Configuration.AddJsonFile("appsettings.personal.json", true);
 
+// Add services to the container.
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -74,7 +73,5 @@ app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();
 });
-
-//app.MapFallbackToFile("/index.html");
 
 app.Run();

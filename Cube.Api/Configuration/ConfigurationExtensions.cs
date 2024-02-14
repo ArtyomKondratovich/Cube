@@ -1,7 +1,6 @@
 ﻿using Cube.Application.Services.Chat;
 using Cube.Application.Services.Message;
 using Cube.Application.Services.User;
-using Cube.Application.Services;
 using Cube.EntityFramework.Repository;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -10,8 +9,11 @@ using System.Text.Json.Serialization;
 using Microsoft.IdentityModel.Tokens;
 using System.Net;
 using Microsoft.AspNetCore.Authorization;
+using Cube.EntityFramework;
+using Microsoft.EntityFrameworkCore;
+using Cube.Application.Services.User.Auth;
 
-namespace Cube.Web.Api
+namespace Cube.Web.Api.Configuration
 {
     public static class ConfigurationExtensions
     {
@@ -32,33 +34,44 @@ namespace Cube.Web.Api
                     ));
         }
 
+        public static void ConfigureRepository(this WebApplicationBuilder builder)
+        {
+            builder.Services.AddDbContext<CubeDbContext>(
+                options => options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            builder.Services.AddScoped<IRepositoryWrapper>(
+                options => new RepositoryWrapper(options.GetRequiredService<CubeDbContext>()));
+        }
+
         public static void ConfigureAuth(this WebApplicationBuilder builder)
         {
             var authConfig = builder.Configuration.GetSection("Auth");
             builder.Services.Configure<AuthOptions>(authConfig);
             var authOptions = authConfig.Get<AuthOptions>();
-            builder.Services.AddAuthentication(options => 
-                {
-                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                })
-                .AddJwtBearer(options => 
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters 
-                    {
-                        ValidateIssuer = true,
-                        ValidIssuer = authOptions.Issuer,
 
-                        ValidateAudience = true,
-                        ValidAudience = authOptions.Audience,
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = authOptions.Issuer,
 
-                        ValidateLifetime = true,
-                        IssuerSigningKey = authOptions.SummetricKey,
-                        ValidateIssuerSigningKey = true
-                    };
-                });
-            builder.Services.AddAuthorization(options => 
+                    ValidateAudience = true,
+                    ValidAudience = authOptions.Audience,
+
+                    ValidateLifetime = true,
+                    IssuerSigningKey = authOptions.SummetricKey,
+                    ValidateIssuerSigningKey = true
+                };
+            });
+
+            builder.Services.AddAuthorization(options =>
             {
                 options.AddPolicy("Bearer", new AuthorizationPolicyBuilder()
                     .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
@@ -77,7 +90,7 @@ namespace Cube.Web.Api
             });
         }
 
-        public static void ConfigureJsonConverter(this WebApplicationBuilder builder) 
+        public static void ConfigureJsonConverter(this WebApplicationBuilder builder)
         {
             builder.Services.AddControllers()
                 .AddJsonOptions(options =>
@@ -89,4 +102,4 @@ namespace Cube.Web.Api
     }
 }
 
-    
+

@@ -1,7 +1,7 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
-namespace Cube.Application.Services
+namespace Cube.Application.Services.User.Auth
 {
     public class AuthOptions
     {

@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Cube.Repository\Cube.EntityFramework.csproj" />
+    <ProjectReference Include="..\Cube.Repository\Cube.Repository.csproj" />
   </ItemGroup>
 
 </Project>
