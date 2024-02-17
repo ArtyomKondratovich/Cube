@@ -1,3 +1,9 @@
+<script setup>
+    import { userService } from "@/services"
+
+    const logout = userService.logout();
+</script>
+
 <template>
     <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
         <div class="container-fluid">
@@ -12,17 +18,14 @@
                     <li class="nav-item">
                         <router-link to="/register" class="nav-link disabled" aria-disabled="true">Register</router-link>
                     </li>
+                    <li>
+                        <button @click="logout">Logout</button>
+                    </li>
                 </ul>
             </div>
         </div>
     </nav>
 </template>
-
-<script>
-    export default {
-        name: "NavBar"
-    }
-</script>
 
 <style>
 

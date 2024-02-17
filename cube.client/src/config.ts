@@ -1,4 +1,4 @@
-const config = {
+export const config = {
     apiUrl: 'https://localhost:7159/api'
 };
 

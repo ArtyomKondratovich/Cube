@@ -123,7 +123,7 @@ namespace Cube.Application.Services.User
                 if (hash.Equals(account.PasswordHash))
                 {
                     var token = GenerateJWT(account);
-                    response.Value.token = token;
+                    response.Value.Token = token;
                     response.Value.User = _repository.UserRepository.UserAssociatedWithTheAccount(account.Id);
                     response.ResponseResult = LoginResult.Success;
                 }
