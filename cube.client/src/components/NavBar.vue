@@ -1,7 +1,6 @@
 <script setup>
-    import { userService } from "@/services"
+    import authService from '@/services/authService'
 
-    const logout = userService.logout();
 </script>
 
 <template>
@@ -19,7 +18,7 @@
                         <router-link to="/register" class="nav-link disabled" aria-disabled="true">Register</router-link>
                     </li>
                     <li>
-                        <button @click="logout">Logout</button>
+                        <button @click="authService.logout()">Logout</button>
                     </li>
                 </ul>
             </div>

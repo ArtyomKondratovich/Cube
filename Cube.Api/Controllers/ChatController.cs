@@ -3,7 +3,6 @@ using Cube.Application.Services.Chat;
 using Cube.Application.Services.Chat.Dto;
 using Cube.Application.Services.User.Dto;
 using Cube.Core.Models;
-using Cube.Core.Models.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

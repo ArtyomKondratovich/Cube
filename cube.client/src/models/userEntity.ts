@@ -1,6 +1,6 @@
-export class UserEntity {
-    Id: number = 0;
-    Name: string = '';
-    Surname: string = '';
-    DateOfBirth: Date | null = null;
+export interface UserEntity {
+    Id: number;
+    Name: string;
+    Surname: string;
+    DateOfBirth: Date | null;
 }

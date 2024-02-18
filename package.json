@@ -1,5 +1,11 @@
 {
   "dependencies": {
-    "vuex": "^4.1.0"
+    "axios": "^1.6.7",
+    "vue-class-component": "^7.2.6",
+    "vue-property-decorator": "^9.1.2",
+    "vue-router": "^4.2.5",
+    "vuex": "^4.1.0",
+    "vuex-class": "^0.3.2",
+    "vuex-module-decorators": "^2.0.0"
   }
 }
