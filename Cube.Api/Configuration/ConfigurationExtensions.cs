@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Cube.Application.Utilities;
 using System.Text.Json.Serialization;
 using Microsoft.IdentityModel.Tokens;
-using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Cube.EntityFramework;
 using Microsoft.EntityFrameworkCore;
@@ -36,6 +35,8 @@ namespace Cube.Web.Api.Configuration
 
         public static void ConfigureRepository(this WebApplicationBuilder builder)
         {
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
             builder.Services.AddDbContext<CubeDbContext>(
                 options => options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 

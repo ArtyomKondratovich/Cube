@@ -1,5 +1,5 @@
-export class LoginDto {
-    email: string = '';
+export interface LoginDto {
+    email: string;
     
-    password: string = '';
+    password: string;
 }

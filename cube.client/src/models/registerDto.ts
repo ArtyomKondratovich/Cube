@@ -1,11 +1,11 @@
-export class RegisterDto {
-    Name: string = '';
+export interface RegisterDto {
+    name: string;
 
-    Surname: string = '';
+    surname: string;
 
-    DateOfBirth: Date | null = null;
+    dateOfBirth: Date | null;
 
-    Email: string = '';
+    email: string;
 
-    Password: string = '';
+    password: string;
 }

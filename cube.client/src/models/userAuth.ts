@@ -1,6 +1,6 @@
 import { UserEntity } from "./userEntity";
 
-export class UserAuth {
-    token: string = '';
-    user: UserEntity = new UserEntity();
+export interface UserAuth {
+    token: string;
+    user: UserEntity;
 }
