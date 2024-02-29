@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h2>Login</h2>
+        <!-- <h2>Login</h2>
         <form @submit.prevent="handleRegister">
             <div class="form-group">
                 <label for="name">name</label>
@@ -29,54 +29,12 @@
             <div class="form-group">
                 <button class="btn btn-primary" :disabled="isLoggedIn">Login</button>
             </div>
-        </form>
+        </form> -->
     </div>
 </template>
 
-<script lang="ts">
-import router from "@/helpers/router";
-import { RegisterDto } from "@/models/registerDto";
-import { Component, Vue } from "vue-property-decorator";
-import { namespace } from "vuex-class";
+<script setup lang="ts">
 
-const Auth = namespace("Auth");
-
-@Component
-export default class Register extends Vue {
-  public user: RegisterDto = { name: "", surname: "", dateOfBirth: null, email: "", password: "" };
-
-  public submitted: boolean = false;
-  private successful: boolean = false;
-  private message: string = "";
-
-  @Auth.Getter
-  public isLoggedIn!: boolean;
-
-  @Auth.Action
-  private register!: (userDto: RegisterDto) => Promise<any>;
-
-  mounted() {
-    if (this.isLoggedIn) {
-        router.push("/");
-    }
-  }
-
-  handleRegister() {
-    this.message = "";
-    this.submitted = true;
-
-    this.register(this.user).then(
-          (data) => {
-            this.message = data.message;
-            this.successful = true;
-          },
-          (error) => {
-            this.message = error;
-            this.successful = false;
-          }
-        );
-  }
-}
 </script>
 
 <style scoped>
