@@ -21,47 +21,12 @@
 
 <script lang="ts">
 
-import { Component, Vue } from "vue-property-decorator";
-import { namespace } from "vuex-class";
-import router from "@/helpers/router";
-import { LoginDto } from "@/models/loginDto";
+import { defineComponent, type PropType } from "vue"
 
-const Auth = namespace("Auth");
+export default defineComponent({
+  
+})
 
-@Component
-export default class Login extends Vue {
-  public user: LoginDto = { email: "", password: "" };
-  public loading: boolean = false;
-  public message: string = "";
-
-  @Auth.Getter
-  public isLoggedIn!: boolean;
-
-  @Auth.Action
-  private login!: (loginDto: LoginDto) => Promise<any>;
-
-  created() {
-    if (this.isLoggedIn) {
-      router.push("/profile");
-    }
-  }
-
-  handleLogin() {
-    this.loading = true;
-
-      if (this.user.email && this.user.password) {
-        this.login(this.user).then(
-          (data) => {
-            router.push("/profile");
-          },
-          (error) => {
-            this.loading = false;
-            this.message = error;
-          }
-        );
-      }
-    };
-}
 
 </script>
 

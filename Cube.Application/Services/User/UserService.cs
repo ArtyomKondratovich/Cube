@@ -174,6 +174,7 @@ namespace Cube.Application.Services.User
             }
 
             var account = MapperConfig.InitializeAutomapper().Map<AccountEntity>(dto);
+            account.Role = Role.User;
 
             var result = await _repository.AccountRepository.CreateAccount(account);
 
