@@ -12,9 +12,10 @@ export interface ILoginInput {
 
 export interface IRegisterInput {
     name: string;
+    surname: string;
+    dateOfBirth: Date | null;
     email: string;
     password: string;
-    passwordConfirm: string;
 }
 
 export interface IResponse<TResult> {

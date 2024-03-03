@@ -1,12 +1,22 @@
 <template>
-  <div class="log-form">
-  <h2>Login to your account</h2>
-  <form>
-    <input type="email" title="email" v-model="email" placeholder="example@gmail.com" />
-    <input type="password" title="username" v-model="password" placeholder="password" />
-    <button type="submit" v-on:click.prevent = "Onsubmit" class="btn">Login</button>
-  </form>
-</div>
+  <div class="login-form">
+    <div class="log-block">
+      <h2>SignIn</h2>
+      <form>
+        <ul>
+          <li>
+            <input type="email" title="email" v-model="email" placeholder="example@gmail.com" />
+          </li>
+          <li>
+            <input type="password" title="username" v-model="password" placeholder="password" />
+          </li>
+          <li>
+            <button type="submit" v-on:click.prevent = "Onsubmit" class="btn">Login</button>
+          </li>
+        </ul>
+      </form>
+    </div>
+  </div>
 </template>
 
 <script lang="ts"> 
@@ -37,24 +47,21 @@ export default defineComponent({
 </script>
 
 <style>
-    .form-signin {
-        max-width: 330px;
-        padding: 1rem;
+    .login-form {
+      width: 20%;
+      margin-top: 10%;
+      margin-left: 40%;
+      margin-right: 40%;
     }
-
-    .form-signin .form-floating:focus-within {
-        z-index: 2;
+    form li{
+      display: block;
+      align-items: center;
     }
-
-    .form-signin input[type="email"] {
-        margin-bottom: -1px;
-        border-bottom-right-radius: 0;
-        border-bottom-left-radius: 0;
+    form ul{
+      text-align: center;
     }
-
-    .form-signin input[type="password"] {
-        margin-bottom: 10px;
-        border-top-left-radius: 0;
-        border-top-right-radius: 0;
+    h2 {
+      text-align: center;
     }
+    
 </style>

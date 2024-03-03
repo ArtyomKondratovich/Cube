@@ -60,9 +60,9 @@ app.UseRouting();
 app.UseCors(builder =>
 {
     builder
-        .WithOrigins("http://localhost:5173")
+        .AllowAnyHeader()
         .AllowAnyMethod()
-        .AllowAnyHeader();
+        .WithOrigins("http://localhost:5173");
 });
 
 app.UseAuthentication();

@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import Nav from "@/components/NavBar.vue";
+import MyHeader from "@/components/MyHeader.vue"
 </script>
 
 <template>
   <header>
-    <Nav />
+    <MyHeader />
   </header>
 
   <main>

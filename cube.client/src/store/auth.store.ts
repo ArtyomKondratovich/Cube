@@ -50,7 +50,7 @@ export const useAuthStore = defineStore(
                   'Content-Type': 'application/json'
               }
           }).then((response) => {
-              const data = response.data.json() as IResponse<boolean>;
+              const data = response.data as IResponse<IAuth>;
 
               if (data.responseResult == 'Success')
               {
