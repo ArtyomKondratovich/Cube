@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Cube.Web.Api.Controllers
 {
     [ApiController]
+    [Route("api/[controller]")]
     public class ChatController : ControllerBase
     {
         private readonly IChatService _service;

@@ -8,7 +8,7 @@ using LoginResult = Cube.Application.Services.LoginResult;
 namespace Cube.Web.Api.Controllers
 {
     [ApiController]
-    [Route("api/")]
+    [Route("api/[controller]")]
     public class UserController : ControllerBase
     {
         private readonly IUserService _service;

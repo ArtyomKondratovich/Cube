@@ -28,4 +28,21 @@ export interface IAuth {
     user: IUser;
     token: string;
 }
+
+export interface IMessage {
+    id: number;
+    message: string;
+    createdDate: Date;
+    updatedDate: Date | null;
+    sender: IUser;
+}
+
+export interface IChat{
+    id: number;
+    title: string;
+    admin: IUser | null;
+    chatType: string;
+    participants: IUser[];
+    messages: IMessage[];
+}
   

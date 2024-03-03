@@ -9,6 +9,8 @@ import {
 import config from '@/config';
 import axios from 'axios';
 import router from '@/helpers/router';
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css'
 
 interface AuthState {
   user: IUser | null;
@@ -18,8 +20,8 @@ interface AuthState {
 export const useAuthStore = defineStore(
   'auth', {
     state: (): AuthState => ({
-      user: null,
-      token: ''
+      user: JSON.parse(localStorage.getItem('user') ?? '{}') as IUser,
+      token: localStorage.getItem('token') ?? ''
     }),
     actions: {
       async login(loginInput: ILoginInput){
@@ -27,20 +29,25 @@ export const useAuthStore = defineStore(
             headers: {
                 'Content-Type': 'application/json'
             }
-        }).then((response) => {
+        }).then(async (response) => {
             const data = response.data;
 
             if (data.responseResult == 'Success' &&  data.value)
             {
-                localStorage.setItem('token', data.value.token);
-                localStorage.setItem('user', JSON.stringify(data.value.user));
-                this.user = data.value.user;
-                this.token = data.value.token;
-                router.push('/');
+              toast.success('Authentication was successful');
+              await new Promise(resolve => setTimeout(resolve, 2000));
+              localStorage.setItem('token', data.value.token);
+              localStorage.setItem('user', JSON.stringify(data.value.user));
+              router.push('/home');
+            }
+            else{
+              toast.error(data.responseResult);
+              router.push('/login');
             }
         })
         .catch(error => {
             //handling error
+            toast.error(error);
             router.push('/login');
         });
       },
@@ -49,21 +56,29 @@ export const useAuthStore = defineStore(
               headers: {
                   'Content-Type': 'application/json'
               }
-          }).then((response) => {
+          }).then(async (response) => {
               const data = response.data as IResponse<IAuth>;
 
               if (data.responseResult == 'Success')
               {
-                  router.push('/login');
+                toast.success('You register successfully!');
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                router.push('/login');
               }
-          }).catch(error => {
+              else
+              {
+                toast.error(data.responseResult);
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                router.push('/register');
+              }
+          }).catch(async error => {
               //handling error
-              router.push('/register')
+              toast.error(error);
+              await new Promise(resolve => setTimeout(resolve, 2000));
+              router.push('/register');
           });
       },
       logout(){
-        this.user = null;
-        this.token = '';
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         router.push('/login');

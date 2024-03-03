@@ -16,7 +16,7 @@
             <div class="links">
                 <ul>
                     <li id="home">
-                        <router-link to="/" class="nav-link active" aria-current="page">Profile</router-link>
+                        <router-link to="/home" class="nav-link active" aria-current="page">Profile</router-link>
                     </li>
                     <li id="signin">
                         <router-link to="/login" class="nav-link">SignIn</router-link>
