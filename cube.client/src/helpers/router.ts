@@ -2,7 +2,7 @@ import {createRouter, createWebHistory } from 'vue-router'
 import Home from "@/views/HomePage.vue"
 import Login from "@/views/LoginPage.vue"
 import Register from "@/views/RegisterPage.vue"
-import { useAuthStore } from '@/stores/authStore'
+import { useAuthStore } from "@/store/auth.store"
 
 const router = createRouter({
     history: createWebHistory('/'),
@@ -13,17 +13,19 @@ const router = createRouter({
     ]
 })
 
-router.beforeEach((from, to, next) => {
+router.beforeEach((to,from, next) => {
     const publicPages = ['/login', '/register'];
     const authRequired = !publicPages.includes(to.path);
-    const store = useAuthStore()
-    
-    if (authRequired && store.isLoggedIn)
+    const store = useAuthStore();
+    const loggedIn = store.isLoggedIn;
+
+    if (authRequired && !loggedIn)
     {
         next('/login');
     }
-
-    next();
+    else {
+        next();
+    }
 });
 
 export default router;

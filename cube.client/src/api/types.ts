@@ -22,5 +22,9 @@ export interface IResponse<TResult> {
     messages: string[] | null;
     responseResult: string;
 }
-  
+
+export interface IAuth {
+    user: IUser;
+    token: string;
+}
   
