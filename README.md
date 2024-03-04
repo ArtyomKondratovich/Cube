@@ -13,21 +13,22 @@
     "DefaultConnection": "*"
   }
 }
-* Примечание в зависимости от того с какой базой данных вы работаете нужно скачать необходимые инструменты и поменять подключение в файле:
-..\Cube\Cube.Api\Configuration\ConfigurationExtensions.cs
+* Примечание в зависимости от того с какой базой данных вы работаете нужно скачать необходимые инструменты и поменять подключение в файле: ..\Cube\Cube.Api\Configuration\ConfigurationExtensions.cs
 
-замените расширение
+замените расширение:
+
 	public static void ConfigureRepository(this WebApplicationBuilder builder)
-    {
-        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    	{
+        	var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+	
+        	builder.Services.AddDbContext<CubeDbContext>(
+            		options => options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-        builder.Services.AddDbContext<CubeDbContext>(
-            options => options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-        builder.Services.AddScoped<IRepositoryWrapper>(
-            options => new RepositoryWrapper(options.GetRequiredService<CubeDbContext>()));
-    }
-	В данном примере указан способ подключения к базе данных SQLite
+        	builder.Services.AddScoped<IRepositoryWrapper>(
+            		options => new RepositoryWrapper(options.GetRequiredService<CubeDbContext>()));
+    	}
+	
+ В данном примере указан способ подключения к базе данных SQLite
 		
 * Далее нужно настроить миграции для этого есть 2 способа 
 **1
