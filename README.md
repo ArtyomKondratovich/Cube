@@ -45,7 +45,7 @@
 * Переслать файл
 * ...
 ## Документация
-eg. [click here](https://docs.google.com/document/d/1uuU6nUzgCSoHaY29WP4AvgfKLC9vyQFm7X9-kLy-8Ko/edit?usp=sharing)
+[click here](https://docs.google.com/document/d/1uuU6nUzgCSoHaY29WP4AvgfKLC9vyQFm7X9-kLy-8Ko/edit?usp=sharing)
 https://docs.google.com/document/d/1uuU6nUzgCSoHaY29WP4AvgfKLC9vyQFm7X9-kLy-8Ko/edit?usp=sharing
 ### Взаимодействие с БД
 
