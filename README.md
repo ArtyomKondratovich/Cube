@@ -30,13 +30,13 @@
 	
  В данном примере указан способ подключения к базе данных SQLite
 		
-* Далее нужно настроить миграции для этого есть 2 способа 
-**1
+* Далее нужно настроить миграции для этого есть 2 способа
+* 1:
 В Visual Studio View->Other Windows->Package Manager Console
 В области Package Manager Console поставте Default Project = Cube.Repository 
 Далее установите в качестве запускаемого проекта Cube.Api (right-cklick on Cube.Api in Solution Explorer -> Set as Startup Project)
 и в данной консоле выполните команду: update-database
-**2
+* 2:
 Зайдите в папку ../Cube/Cube.Repository вызовите консоль в данной папке и выполните команду: dotnet ef database update
 
 ## Какие функции будут доступны?
