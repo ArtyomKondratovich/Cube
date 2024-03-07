@@ -1,15 +1,6 @@
-﻿using AutoMapper.Configuration.Conventions;
-using Cube.Application.Services.Chat;
-using Cube.Application.Services.Message;
-using Cube.Application.Services.User;
-using Cube.Core.Models;
+﻿using Cube.Core.Models;
 using Cube.Core.Models.User;
 using Cube.EntityFramework.Repository;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -17,49 +8,35 @@ namespace Cube.Application.Services
 {
     public static class ServiceExtensions
     {
-        public static bool IsEntitiesExist<TEntity>(this ICollection<int>? ids, IRepositoryWrapper wrapper)
+        public static async Task<bool> IsEntitiesExist<TEntity>(this ICollection<int>? ids, IRepositoryWrapper wrapper)
             where TEntity : class
         {
             if (ids == null)
             {
-                return true;
+                return false;
             }
 
-            switch (typeof(TEntity))
+            var repositoryMethodMap = new Dictionary<Type, Func<int, Task<object?>>>
             {
-                case var t when t == typeof(MessageEntity):
-                    
-                    foreach (var id in ids)
-                    {
-                        if (wrapper.MessageRepository.GetMessageById(id) == null)
-                        {
-                            return false;
-                        }
-                    }
-                    return true;
-                case var t when t == typeof(ChatEntity):
+                { typeof(MessageEntity), async id => await wrapper.MessageRepository.GetMessageById(id) },
+                { typeof(ChatEntity), async id => await wrapper.ChatRepository.GetChatByIdAsync(id) },
+                { typeof(UserEntity), async id => await wrapper.UserRepository.GetUserByIdAsync(id) }
+            };
 
-                    foreach (var id in ids)
-                    {
-                        if (wrapper.ChatRepository.GetChatByIdAsync(id) == null)
-                        {
-                            return false;
-                        }
-                    }
-                    return true;
-                case var t when t == typeof(UserEntity):
-
-                    foreach (var id in ids)
-                    {
-                        if (wrapper.UserRepository.GetUserByIdAsync(id) == null)
-                        {
-                            return false;
-                        }
-                    }
-                    return true;
+            if (!repositoryMethodMap.TryGetValue(typeof(TEntity), out var repositoryMethod))
+            {
+                return false; // Unsupported entity type
             }
 
-            return false;
+            foreach (var id in ids)
+            {
+                if (await repositoryMethod(id) == null)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         public static string GetHash(this string plainText)

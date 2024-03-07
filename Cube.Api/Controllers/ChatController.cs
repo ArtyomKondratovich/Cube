@@ -3,6 +3,7 @@ using Cube.Application.Services.Chat;
 using Cube.Application.Services.Chat.Dto;
 using Cube.Application.Services.User.Dto;
 using Cube.Core.Models;
+using Cube.Core.Models.Chat;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,28 +23,28 @@ namespace Cube.Web.Api.Controllers
         [HttpPost]
         [Authorize]
         [Route("GetAll")]
-        public async Task<Response<List<ChatEntity>, GetAllChatsResult>> GetAllUsersChats([FromBody] FindUserDto dto)
+        public async Task<Response<List<ChatModel>, GetAllChatsResult>> GetAllUsersChats([FromBody] FindUserDto dto)
         {
-            return await _service.GetAll(dto);
+            return await _service.GetAllUsersChats(dto);
         }
 
         [HttpPost]
         [Route("Create")]
-        public async Task<Response<ChatEntity, CreateChatResult>> CreateChat([FromBody] NewChatDto dto)
+        public async Task<Response<ChatModel, CreateChatResult>> CreateChat([FromBody] NewChatDto dto)
         {
             return await _service.CreateChat(dto);
         }
 
         [HttpPost]
         [Route("Delete")]
-        public async Task<Response<ChatEntity, DeleteChatResult>> DeleteChat([FromBody] DeleteChatDto dto)
+        public async Task<Response<bool, DeleteChatResult>> DeleteChat([FromBody] DeleteChatDto dto)
         {
             return await _service.DeleteChat(dto);
         }
 
         [HttpPost]
         [Route("Update")]
-        public async Task<Response<ChatEntity, UpdateChatResult>> UpdateChat([FromBody] UpdateChatDto dto)
+        public async Task<Response<ChatModel, UpdateChatResult>> UpdateChat([FromBody] UpdateChatDto dto)
         {
             return await _service.UpdateChat(dto);
         }

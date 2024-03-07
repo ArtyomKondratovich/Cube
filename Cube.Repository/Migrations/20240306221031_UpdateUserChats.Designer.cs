@@ -3,6 +3,7 @@ using System;
 using Cube.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cube.EntityFramework.Migrations
 {
     [DbContext(typeof(CubeDbContext))]
-    partial class CubeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240306221031_UpdateUserChats")]
+    partial class UpdateUserChats
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.25");
@@ -42,9 +44,8 @@ namespace Cube.EntityFramework.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.Property<int>("Type")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
@@ -127,7 +128,8 @@ namespace Cube.EntityFramework.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AccountId");
+                    b.HasIndex("AccountId")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });
@@ -169,8 +171,8 @@ namespace Cube.EntityFramework.Migrations
             modelBuilder.Entity("Cube.Core.Models.User.UserEntity", b =>
                 {
                     b.HasOne("Cube.Core.Models.User.AccountEntity", "Account")
-                        .WithMany()
-                        .HasForeignKey("AccountId")
+                        .WithOne("User")
+                        .HasForeignKey("Cube.Core.Models.User.UserEntity", "AccountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -180,6 +182,12 @@ namespace Cube.EntityFramework.Migrations
             modelBuilder.Entity("Cube.Core.Models.ChatEntity", b =>
                 {
                     b.Navigation("Messages");
+                });
+
+            modelBuilder.Entity("Cube.Core.Models.User.AccountEntity", b =>
+                {
+                    b.Navigation("User")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

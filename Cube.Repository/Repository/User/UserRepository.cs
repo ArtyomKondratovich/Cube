@@ -20,14 +20,12 @@ namespace Cube.EntityFramework.Repository.User
         public UserEntity? GetUserById(int id) 
         {
             return _dbContext.Users
-                .AsNoTracking()
                 .FirstOrDefault(x => x.Id == id);
         }
 
         public UserEntity? UserAssociatedWithTheAccount(int accountId)
         {
             return _dbContext.Users
-                .AsNoTracking()
                 .Where(x => x.Account.Id == accountId)
                 .FirstOrDefault();
         }

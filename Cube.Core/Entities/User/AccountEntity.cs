@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
-
-namespace Cube.Core.Models.User
+﻿namespace Cube.Core.Models.User
 {
     public class AccountEntity
     {

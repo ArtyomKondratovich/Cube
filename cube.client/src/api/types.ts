@@ -36,12 +36,17 @@ export interface IMessage {
     updatedDate: Date | null;
     sender: IUser;
 }
+export interface IChatLoad {
+    id: number;
+    title: string;
+    type: string;
+}
 
 export interface IChat{
     id: number;
     title: string;
     admin: IUser | null;
-    chatType: string;
+    type: string;
     participants: IUser[];
     messages: IMessage[];
 }

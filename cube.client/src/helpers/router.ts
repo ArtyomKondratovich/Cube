@@ -5,7 +5,7 @@ import Register from "@/views/RegisterPage.vue"
 import { useAuthStore } from "@/store/auth.store"
 
 const router = createRouter({
-    history: createWebHistory('/'),
+    history: createWebHistory(),
     routes: [
         { path: '/home', component: Home },
         { path: '/login', component: Login },

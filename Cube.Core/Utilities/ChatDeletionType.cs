@@ -3,7 +3,7 @@
     public enum ChatDeletionType
     {
         // deletionOptions for participants
-        RemoveFromMessageList,
+        RemoveFromChatList,
         RemoveAndDeleteMessages,
 
         // deltionOptions for admin

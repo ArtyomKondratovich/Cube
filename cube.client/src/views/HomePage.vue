@@ -43,14 +43,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, type Component } from 'vue';
+import { defineComponent } from 'vue';
 import Posts from '@/components/Posts.vue';
-import Chats from "@/components/Chats.vue";
+import Chats from "@/components/ChatsComponent.vue";
 import Settings from "@/components/Settings.vue";
-import Friends from "@/components/Friends.vue";
+import Friends from "@/components/FriendsComponent.vue";
 
 export default defineComponent({
-    name: 'Home',
+    name: 'HomePage',
     data(){
         return {
             block: 'posts'

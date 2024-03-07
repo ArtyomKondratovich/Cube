@@ -1,15 +1,15 @@
-import type { IChat, IResponse, IUser } from '@/api/types'
+import type { IChat, IChatLoad, IResponse, IUser } from '@/api/types'
 import { defineStore } from 'pinia'
 import axios from 'axios'
 import config from '@/config'
 import { toast } from 'vue3-toastify'
 
-interface IChatState {
-    chats: IChat[]
+interface IChatsState {
+    chats: IChatLoad[]
 }
 export const useChatStore = defineStore(
     'chat', {
-        state: (): IChatState => ({
+        state: (): IChatsState => ({
             chats: []
         }),
         actions: {
@@ -23,7 +23,7 @@ export const useChatStore = defineStore(
                         'Content-Type': 'application/json'
                     }
                 }).then(async (response) => {
-                    const data = response.data as IResponse<IChat[]>;
+                    const data = response.data as IResponse<IChatLoad[]>;
 
                     if (data.responseResult == 'Success' && data.value){
                         this.chats = data.value;
@@ -39,7 +39,7 @@ export const useChatStore = defineStore(
             }
         },
         getters: {
-            getChats(): IChat[] {
+            getChats(): IChatLoad[] {
                 return this.chats;
             }
         }

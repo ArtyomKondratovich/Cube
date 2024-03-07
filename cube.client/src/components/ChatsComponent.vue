@@ -1,10 +1,10 @@
 <template>
     <div class="chats" style="overflow-y: scroll; height: 400px">
         <ul>
-            <li v-for="chat in chats">
-                <div @click="">
+            <li v-for="chat in chats" :key="chat.id">
+                <div @click="stepIntoChat(chat.id)">
                     <h3>{{chat.title}}</h3>
-                    <p>{{chat.chatType}}</p>
+                    <p>{{chat.type}}</p>
                 </div>
             </li>
         </ul>
@@ -13,14 +13,14 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { useChatStore } from '@/store/chat.store';
-import type { IChat } from '@/api/types';
+import { useChatStore } from '@/store/chats.store';
+import type { IChatLoad } from '@/api/types';
 
 export default defineComponent({
-    name: "Chats",
+    name: "ChatsComponent",
     data() {
         return {
-            chats: [] as IChat[]
+            chats: [] as IChatLoad[]
         }
     },
     async created() {
@@ -31,6 +31,9 @@ export default defineComponent({
             const store = useChatStore();
             await store.loadChats();
             this.chats = store.getChats;
+        },
+        stepIntoChat(id: number): void{
+            console.log(id);
         }
     }
 });
@@ -38,4 +41,5 @@ export default defineComponent({
 </script>
 
 <style>
+    
 </style>

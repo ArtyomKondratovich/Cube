@@ -35,8 +35,6 @@ namespace Cube.Web.Api.Configuration
 
         public static void ConfigureRepository(this WebApplicationBuilder builder)
         {
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
             builder.Services.AddDbContext<CubeDbContext>(
                 options => options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -98,6 +96,7 @@ namespace Cube.Web.Api.Configuration
                 {
                     options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
                     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                    //options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
                 });
         }
     }

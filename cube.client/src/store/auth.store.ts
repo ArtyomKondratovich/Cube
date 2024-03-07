@@ -25,7 +25,7 @@ export const useAuthStore = defineStore(
     }),
     actions: {
       async login(loginInput: ILoginInput){
-        axios.post(`${config.apiUrl}/login`, loginInput, {
+        axios.post(`${config.apiUrl}/User/login`, loginInput, {
             headers: {
                 'Content-Type': 'application/json'
             }
@@ -52,7 +52,7 @@ export const useAuthStore = defineStore(
         });
       },
       async register(registerInput: IRegisterInput){
-          axios.post(`${config.apiUrl}/register`, registerInput, {
+          axios.post(`${config.apiUrl}/User/register`, registerInput, {
               headers: {
                   'Content-Type': 'application/json'
               }

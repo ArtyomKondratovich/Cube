@@ -3,6 +3,7 @@ using System;
 using Cube.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,27 +11,13 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cube.EntityFramework.Migrations
 {
     [DbContext(typeof(CubeDbContext))]
-    partial class CubeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240306215058_Update")]
+    partial class Update
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.25");
-
-            modelBuilder.Entity("ChatParticipant", b =>
-                {
-                    b.Property<int>("ChatId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("ChatId", "UserId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("ChatParticipants", (string)null);
-                });
 
             modelBuilder.Entity("Cube.Core.Models.ChatEntity", b =>
                 {
@@ -38,15 +25,19 @@ namespace Cube.EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("AdminId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.Property<int>("Type")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AdminId");
 
                     b.ToTable("Chats");
                 });
@@ -114,6 +105,9 @@ namespace Cube.EntityFramework.Migrations
                     b.Property<int>("AccountId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("ChatEntityId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<DateOnly?>("DateOfBirth")
                         .HasColumnType("TEXT");
 
@@ -127,24 +121,21 @@ namespace Cube.EntityFramework.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AccountId");
+                    b.HasIndex("AccountId")
+                        .IsUnique();
+
+                    b.HasIndex("ChatEntityId");
 
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("ChatParticipant", b =>
+            modelBuilder.Entity("Cube.Core.Models.ChatEntity", b =>
                 {
-                    b.HasOne("Cube.Core.Models.ChatEntity", null)
+                    b.HasOne("Cube.Core.Models.User.UserEntity", "Admin")
                         .WithMany()
-                        .HasForeignKey("ChatId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .HasForeignKey("AdminId");
 
-                    b.HasOne("Cube.Core.Models.User.UserEntity", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                    b.Navigation("Admin");
                 });
 
             modelBuilder.Entity("Cube.Core.Models.MessageEntity", b =>
@@ -169,10 +160,14 @@ namespace Cube.EntityFramework.Migrations
             modelBuilder.Entity("Cube.Core.Models.User.UserEntity", b =>
                 {
                     b.HasOne("Cube.Core.Models.User.AccountEntity", "Account")
-                        .WithMany()
-                        .HasForeignKey("AccountId")
+                        .WithOne("User")
+                        .HasForeignKey("Cube.Core.Models.User.UserEntity", "AccountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Cube.Core.Models.ChatEntity", null)
+                        .WithMany("Participants")
+                        .HasForeignKey("ChatEntityId");
 
                     b.Navigation("Account");
                 });
@@ -180,6 +175,14 @@ namespace Cube.EntityFramework.Migrations
             modelBuilder.Entity("Cube.Core.Models.ChatEntity", b =>
                 {
                     b.Navigation("Messages");
+
+                    b.Navigation("Participants");
+                });
+
+            modelBuilder.Entity("Cube.Core.Models.User.AccountEntity", b =>
+                {
+                    b.Navigation("User")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

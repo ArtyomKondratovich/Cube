@@ -1,4 +1,6 @@
 ﻿using Cube.Core.Models;
+using Cube.Core.Models.Chat;
+using Microsoft.EntityFrameworkCore;
 
 namespace Cube.EntityFramework.Repository.Chat
 {
@@ -11,36 +13,49 @@ namespace Cube.EntityFramework.Repository.Chat
             _dbContext = dbContext;
         }
 
-        public async Task<ChatEntity?> CreateChat(ChatEntity model)
+        public async Task<ChatModel?> CreateChat(ChatEntity entity)
         {
-            var chat = await _dbContext.Chats.AddAsync(model);
+            var chat = await _dbContext.Chats.AddAsync(entity);
 
             if (chat != null)
             {
                 await _dbContext.SaveChangesAsync();
-             
-                return chat.Entity;
-            }
 
+                return new ChatModel 
+                { 
+                    Id = chat.Entity.Id,
+                    Title = chat.Entity.Title,
+                    Type = chat.Entity.Type
+                };
+            }
+            
             return null;
+
         }
 
-        public async Task<ChatEntity?> DeleteChat(ChatEntity model)
+        public async Task<bool> DeleteChat(ChatEntity entity)
         {
-            var chat = _dbContext.Chats.Remove(model);
+            var chat = _dbContext.Chats.Remove(entity);
 
             if (chat != null) 
             {
                 await _dbContext.SaveChangesAsync();
-                return chat.Entity;
+                return true;
             }
 
-            return null;
+            return false;
         }
 
-        public List<ChatEntity> GetAllUsersChats(int id)
+        public List<ChatModel> GetAllUsersChats(int id)
         {
-            var usersChats = _dbContext.Chats.Where(c => c.Participants.Select(user => user.Id).Contains(id)).ToList();
+            var usersChats = _dbContext.Chats.Where(c => c.Participants.Select(user => user.Id).Contains(id))
+                .Select(x => new ChatModel 
+                {
+                    Id = x.Id,
+                    Title = x.Title,
+                    Type = x.Type
+                })
+                .ToList();
 
             return usersChats;
         }
@@ -52,7 +67,10 @@ namespace Cube.EntityFramework.Repository.Chat
 
         public async Task<ChatEntity?> GetChatByIdAsync(int id)
         {
-            return await _dbContext.Chats.FindAsync(id);
+            return await _dbContext.Chats
+                .Include(x => x.Participants)
+                .Include(x => x.Messages)
+                .FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public ICollection<ChatEntity> GetEntitiesByIds(ICollection<int> ids)
@@ -72,14 +90,19 @@ namespace Cube.EntityFramework.Repository.Chat
             return entities;
         }
 
-        public async Task<ChatEntity?> UpdateChat(ChatEntity entity)
+        public async Task<ChatModel?> UpdateChat(ChatEntity entity)
         {
             var result = _dbContext.Chats.Update(entity);
 
             if (result != null)
             {
                 await _dbContext.SaveChangesAsync();
-                return result.Entity;
+                return new ChatModel 
+                {
+                    Id = result.Entity.Id,
+                    Title = result.Entity.Title,
+                    Type = result.Entity.Type
+                };
             }
 
             return null;

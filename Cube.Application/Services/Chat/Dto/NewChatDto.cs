@@ -7,7 +7,6 @@ namespace Cube.Application.Services.Chat.Dto
     public class NewChatDto
     {
         public string Title { get; set; }
-        public int? AdminId { get; set; }
 
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public ChatType Type { get; set; }

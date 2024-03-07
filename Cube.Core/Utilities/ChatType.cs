@@ -4,6 +4,6 @@
     {
         Private,
         Group,
-        Bot
+        SavedMessages
     }
 }
