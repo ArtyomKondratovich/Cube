@@ -1,5 +1,6 @@
 ﻿using Cube.Core.Models;
 using Cube.Core.Models.Chat;
+using Cube.Core.Models.User;
 using Microsoft.EntityFrameworkCore;
 
 namespace Cube.EntityFramework.Repository.Chat
@@ -33,11 +34,14 @@ namespace Cube.EntityFramework.Repository.Chat
 
         }
 
-        public async Task<bool> DeleteChat(ChatEntity entity)
+        public async Task<bool> DeleteChat(int id)
         {
-            var chat = _dbContext.Chats.Remove(entity);
+            var chat = await _dbContext.Chats
+                .Include(x => x.Participants)
+                .Include(x => x.Messages)
+                .FirstAsync(c => c.Id == id);
 
-            if (chat != null) 
+            if (_dbContext.Chats.Remove(chat) != null) 
             {
                 await _dbContext.SaveChangesAsync();
                 return true;
@@ -62,14 +66,28 @@ namespace Cube.EntityFramework.Repository.Chat
 
         public ChatEntity? GetChatById(int id)
         {
-            return _dbContext.Chats.Find(id);
+            return _dbContext.Chats
+                .First(x => x.Id == id);
         }
 
         public async Task<ChatEntity?> GetChatByIdAsync(int id)
         {
             return await _dbContext.Chats
-                .Include(x => x.Participants)
                 .Include(x => x.Messages)
+                .Select(chat => new ChatEntity
+                {
+                    Id = chat.Id,
+                    Title = chat.Title,
+                    Type = chat.Type,
+                    Participants = chat.Participants.Select(participant => new UserEntity
+                    {
+                        Id = participant.Id,
+                        Name = participant.Name,
+                        Surname = participant.Surname,
+                        DateOfBirth = participant.DateOfBirth,
+                    }).ToList(),
+                    Messages = chat.Messages
+                })
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 

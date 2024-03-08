@@ -3,7 +3,8 @@
     public enum GetChatResult
     {
         Success,
-        ChatNotFound
+        ChatNotFound,
+        UserNotAMember
     }
 
     public enum GetAllChatsResult

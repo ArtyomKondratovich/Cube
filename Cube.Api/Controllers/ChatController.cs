@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Cube.Web.Api.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class ChatController : ControllerBase
@@ -21,7 +22,6 @@ namespace Cube.Web.Api.Controllers
         }
 
         [HttpPost]
-        [Authorize]
         [Route("GetAll")]
         public async Task<Response<List<ChatModel>, GetAllChatsResult>> GetAllUsersChats([FromBody] FindUserDto dto)
         {
@@ -50,7 +50,7 @@ namespace Cube.Web.Api.Controllers
         }
 
         [HttpPost]
-        [Route("GetChat")]
+        [Route("Get")]
         public async Task<Response<ChatEntity, GetChatResult>> GetChat([FromBody] FindChatDto dto)
         {
             return await _service.GetChatById(dto);

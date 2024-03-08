@@ -25,30 +25,10 @@ export const useAuthStore = defineStore(
     }),
     actions: {
       async login(loginInput: ILoginInput){
-        axios.post(`${config.apiUrl}/User/login`, loginInput, {
+        return axios.post(`${config.apiUrl}/User/login`, loginInput, {
             headers: {
                 'Content-Type': 'application/json'
             }
-        }).then(async (response) => {
-            const data = response.data;
-
-            if (data.responseResult == 'Success' &&  data.value)
-            {
-              toast.success('Authentication was successful');
-              await new Promise(resolve => setTimeout(resolve, 2000));
-              localStorage.setItem('token', data.value.token);
-              localStorage.setItem('user', JSON.stringify(data.value.user));
-              router.push('/home');
-            }
-            else{
-              toast.error(data.responseResult);
-              router.push('/login');
-            }
-        })
-        .catch(error => {
-            //handling error
-            toast.error(error);
-            router.push('/login');
         });
       },
       async register(registerInput: IRegisterInput){

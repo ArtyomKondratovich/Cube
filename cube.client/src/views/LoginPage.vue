@@ -11,7 +11,7 @@
             <input type="password" title="username" v-model="password" placeholder="password" />
           </li>
           <li>
-            <button type="submit" v-on:click.prevent = "Onsubmit" class="btn">Login</button>
+            <button type="submit" v-on:click.prevent = "Onsubmit" v-bind:disabled="submitted" class="btn">Login</button>
           </li>
         </ul>
       </form>
@@ -20,24 +20,49 @@
 </template>
 
 <script lang="ts"> 
+import router from '@/helpers/router';
 import { useAuthStore } from '../store/auth.store';
 import { defineComponent } from 'vue';
+import { toast } from 'vue3-toastify';
 
 export default defineComponent({
   name: 'Login',
   components: {},
   data() {
     return {
+      submitted: false,
       email: '',
       password: '',
     }
   },
   methods: {
     async Onsubmit(){
+      this.submitted = true;
       const store = useAuthStore();
       let email = this.email;
       let password = this.password;
-      await store.login({email, password});
+      store.login({email, password})
+        .then(async (response) => {
+          const data = response.data;
+      
+          if (data.responseResult == 'Success' &&  data.value)
+          {
+            toast.success('Authentication was successful');
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            localStorage.setItem('token', data.value.token);
+            localStorage.setItem('user', JSON.stringify(data.value.user));
+            router.push('/home');
+          }
+          else{
+            toast.error(data.responseResult);
+            router.push('/login');
+          }
+        })
+        .catch(error => {
+            //handling error
+            toast.error(error);
+            router.push('/login');
+        });
     }
   },
   computed: {

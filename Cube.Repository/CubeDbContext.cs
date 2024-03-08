@@ -45,12 +45,12 @@ namespace Cube.EntityFramework
                         .HasOne<UserEntity>()
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict),
+                        .OnDelete(DeleteBehavior.Cascade),
                     j => j
                         .HasOne<ChatEntity>()
                         .WithMany()
                         .HasForeignKey("ChatId")
-                        .OnDelete(DeleteBehavior.Restrict),
+                        .OnDelete(DeleteBehavior.Cascade),
                     j =>
                     {
                         j.HasKey("ChatId", "UserId");

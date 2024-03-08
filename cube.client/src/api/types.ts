@@ -45,7 +45,6 @@ export interface IChatLoad {
 export interface IChat{
     id: number;
     title: string;
-    admin: IUser | null;
     type: string;
     participants: IUser[];
     messages: IMessage[];

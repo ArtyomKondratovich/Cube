@@ -101,7 +101,7 @@ namespace Cube.Application.Services.Chat
                         .Select(x => _repository.UserRepository.GetUserById(x)!)
                         .ToList();
 
-            if (!chat.Participants.Any() && await _repository.ChatRepository.DeleteChat(chat))
+            if (!chat.Participants.Any() && await _repository.ChatRepository.DeleteChat(chat.Id))
             {
                 response.ResponseResult = DeleteChatResult.Success;
                 response.Value = true;

@@ -1,71 +1,40 @@
 <template>
-   <div class="main">
-    <div class="menu">
-        <li>
-            <div class="profile">
-                
-            </div>
-        </li>
-        <li>
-            <button @click="nextBlock('posts')">Home</button>
-        </li>
-        <li>
-            <button @click="nextBlock('messages')">Messages</button>
-        </li>
-        <li>
-            <button @click="nextBlock('notifications')">Notifications</button>
-        </li>
-        <li>
-            <button @click="nextBlock('friends')">Friends</button>
-        </li>
-        <li>
-            <button @click="nextBlock('settings')">Settings</button>
-        </li>
+    <div class="main">
+        <div>
+        <Menu></Menu>
     </div>
-    <div class="block">
-        <div v-if="block === 'messages'">
-            <Chats />
+    <div class="posts">
+        <div v-if="loading">
+            <p>Loading posts...</p>
         </div>
-
-        <div v-if="block === 'settings'">
-          <Settings />
-        </div>
-
-        <div v-if="block === 'posts'">
-          <Posts />
-        </div>
-
-        <div v-if="block === 'friends'">
-          <Friends />
+        <div v-if="!loading">
+            <ul>
+                <li>
+                </li>
+            </ul>
         </div>
     </div>
-   </div>
+    </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import Posts from '@/components/Posts.vue';
-import Chats from "@/components/ChatsComponent.vue";
-import Settings from "@/components/Settings.vue";
-import Friends from "@/components/FriendsComponent.vue";
+import Menu from '@/components/Menu.vue';
 
 export default defineComponent({
-    name: 'HomePage',
+    name: 'Home',
     data(){
         return {
-            block: 'posts'
+            id: 0,
+            loading: true,
+            posts: []
         }
     },
     components: {
-        Chats,
-        Posts,
-        Settings,
-        Friends
+        Menu
     },
     methods: {
-        nextBlock(next: string): void {
-            this.block = next;
-        }
+
     }
 });
 
@@ -74,21 +43,15 @@ export default defineComponent({
 <style>
 .main {
     display: flex;
-}
-  
-.block {
-    display: inline-block;
+    width: 80%;
 }
 
-.menu{
-   width: 150px;
-   height: 200px;
-   border: solid 1px grey;
-   border-radius: 10px;
+.posts {
+    border: 0.5px solid grey;
+    border-radius: 15px;
+    margin-left: 10px;
+    width: 80%;
 }
-.menu li{
-   align-items: center;
-   list-style-type: none;
-   margin-top: 5px;
-}
+
+
 </style>

@@ -1,10 +1,18 @@
 <script setup lang="ts">
+    import type { IUser } from '@/api/types';
     import { useAuthStore } from '../store/auth.store';
     
     const logout = () : void => {
         const store = useAuthStore();
         store.logout();
     }
+
+    let userId = 0;
+    if (localStorage.getItem('user'))
+    {
+        userId = (JSON.parse(localStorage.getItem('user')??'') as IUser).id;
+    }
+
 </script>
 
 <template>
@@ -16,13 +24,13 @@
             <div class="links">
                 <ul>
                     <li id="home">
-                        <router-link to="/home" class="nav-link active" aria-current="page">Profile</router-link>
+                        <router-link to="/home">Profile</router-link>
                     </li>
                     <li id="signin">
-                        <router-link to="/login" class="nav-link">SignIn</router-link>
+                        <router-link to="/login">SignIn</router-link>
                     </li>
                     <li id="signup">
-                        <router-link to="/register" class="nav-link disabled" aria-disabled="true">SignUp</router-link>
+                        <router-link to="/register">SignUp</router-link>
                     </li>
                     <li id="logout">
                         <button @click="logout">Logout</button>
