@@ -1,6 +1,5 @@
 ﻿using Cube.Core.Models;
 using Cube.Core.Models.Chat;
-using Cube.Core.Models.User;
 using Microsoft.EntityFrameworkCore;
 
 namespace Cube.EntityFramework.Repository.Chat
@@ -37,8 +36,6 @@ namespace Cube.EntityFramework.Repository.Chat
         public async Task<bool> DeleteChat(int id)
         {
             var chat = await _dbContext.Chats
-                .Include(x => x.Participants)
-                .Include(x => x.Messages)
                 .FirstAsync(c => c.Id == id);
 
             if (_dbContext.Chats.Remove(chat) != null) 
@@ -50,44 +47,29 @@ namespace Cube.EntityFramework.Repository.Chat
             return false;
         }
 
-        public List<ChatModel> GetAllUsersChats(int id)
+        public async Task<List<ChatModel>> GetAllUsersChatsAsync(int id)
         {
-            var usersChats = _dbContext.Chats.Where(c => c.Participants.Select(user => user.Id).Contains(id))
+            return await _dbContext.Chats
+                .Where(c => c.Users.Where(x => x.Id == id).Any())
                 .Select(x => new ChatModel 
                 {
                     Id = x.Id,
                     Title = x.Title,
                     Type = x.Type
                 })
-                .ToList();
-
-            return usersChats;
+                .ToListAsync();
         }
 
         public ChatEntity? GetChatById(int id)
         {
             return _dbContext.Chats
-                .First(x => x.Id == id);
+                .FirstOrDefault(x => x.Id == id);
         }
 
         public async Task<ChatEntity?> GetChatByIdAsync(int id)
         {
             return await _dbContext.Chats
-                .Include(x => x.Messages)
-                .Select(chat => new ChatEntity
-                {
-                    Id = chat.Id,
-                    Title = chat.Title,
-                    Type = chat.Type,
-                    Participants = chat.Participants.Select(participant => new UserEntity
-                    {
-                        Id = participant.Id,
-                        Name = participant.Name,
-                        Surname = participant.Surname,
-                        DateOfBirth = participant.DateOfBirth,
-                    }).ToList(),
-                    Messages = chat.Messages
-                })
+                .Include(x => x.Users)
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 

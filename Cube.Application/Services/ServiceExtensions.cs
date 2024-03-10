@@ -1,5 +1,5 @@
-﻿using Cube.Core.Models;
-using Cube.Core.Models.User;
+﻿using Cube.Core.Entities;
+using Cube.Core.Models;
 using Cube.EntityFramework.Repository;
 using System.Security.Cryptography;
 using System.Text;

@@ -1,5 +1,7 @@
 ﻿using Cube.Application.Services.Message.Dto;
+using Cube.Application.Utilities;
 using Cube.Core.Models;
+using Cube.Core.Models.Messages;
 using Cube.EntityFramework.Repository;
 
 namespace Cube.Application.Services.Message
@@ -53,9 +55,9 @@ namespace Cube.Application.Services.Message
             return response;
         }
 
-        public async Task<Response<MessageEntity, SendMessageResult>> SendMessage(NewMessageDto dto)
+        public async Task<Response<MessageModel, SendMessageResult>> SendMessage(NewMessageDto dto)
         {
-            var response = new Response<MessageEntity, SendMessageResult>(); 
+            var response = new Response<MessageModel, SendMessageResult>(); 
             
 
             var user = await _repository.UserRepository.GetUserByIdAsync(dto.SenderId);
@@ -86,8 +88,8 @@ namespace Cube.Application.Services.Message
             {
                 Message = dto.Message,
                 CreatedDate = DateTime.UtcNow,
-                Sender = user,
-                Chat = chat
+                UserId = user.Id,
+                ChatId = chat.Id
             };
 
             var value = await _repository.MessageRepository.SendMessage(message);
@@ -99,15 +101,15 @@ namespace Cube.Application.Services.Message
             else
             {
                 response.ResponseResult = SendMessageResult.Success;
-                response.Value = value;
+                response.Value = MapperConfig.InitializeAutomapper().Map<MessageModel>(value);
             }
 
             return response;
         }
 
-        public async Task<Response<MessageEntity, UpdateMessageResult>> UpdateMessage(UpdateMessageDto dto)
+        public async Task<Response<MessageModel, UpdateMessageResult>> UpdateMessage(UpdateMessageDto dto)
         {
-            var response = new Response<MessageEntity, UpdateMessageResult>();
+            var response = new Response<MessageModel, UpdateMessageResult>();
 
             var message = await _repository.MessageRepository.GetMessageById(dto.Id);
             var updater = await _repository.UserRepository.GetUserByIdAsync(dto.UpdaterId);
@@ -140,7 +142,7 @@ namespace Cube.Application.Services.Message
 
                 if (result != null)
                 {
-                    response.Value = result;
+                    response.Value = MapperConfig.InitializeAutomapper().Map<MessageModel>(result);
                 }
             }
 

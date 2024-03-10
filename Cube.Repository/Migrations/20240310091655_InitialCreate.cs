@@ -2,9 +2,9 @@
 
 #nullable disable
 
-namespace Cube.EntityFramework.Migrations
+namespace Cube.Repository.Migrations
 {
-    public partial class addRole1 : Migration
+    public partial class InitialCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

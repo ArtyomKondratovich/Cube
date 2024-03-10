@@ -1,6 +1,4 @@
-﻿using Cube.EntityFramework;
-using Cube.Core.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Cube.Core.Models;
 
 namespace Cube.EntityFramework.Repository.Message
 {

@@ -1,12 +1,12 @@
-﻿using Cube.Core.Models.User;
+﻿using Cube.Core.Entities;
 
 namespace Cube.EntityFramework.Repository.User
 {
     public interface IUserRepository
     {
-        Task<UserEntity?> CreteUser(UserEntity user);
-        Task<UserEntity?> GetUserByIdAsync(int id);
-        UserEntity? GetUserById(int id);
-        UserEntity? UserAssociatedWithTheAccount(int accountId);
+        Task<UserEntity> CreteUserAsync(UserEntity entity);
+        Task<UserEntity> GetUserByIdAsync(int id);
+        UserEntity GetUserById(int id);
+        Task<UserEntity> UserAssociatedWithTheEmail(string email);
     }
 }

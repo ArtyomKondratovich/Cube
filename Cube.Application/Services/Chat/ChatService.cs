@@ -1,11 +1,12 @@
 ﻿using Cube.Application.Services.Chat.Dto;
 using Cube.Application.Services.User.Dto;
 using Cube.Application.Utilities;
+using Cube.Core.Entities;
 using Cube.Core.Models;
 using Cube.Core.Models.Chat;
-using Cube.Core.Models.User;
 using Cube.Core.Utilities;
 using Cube.EntityFramework.Repository;
+using Microsoft.Extensions.Logging;
 
 namespace Cube.Application.Services.Chat
 {
@@ -41,9 +42,10 @@ namespace Cube.Application.Services.Chat
 
                 var chat = MapperConfig.InitializeAutomapper().Map<ChatEntity>(dto);
 
-                chat.Participants = dto.PatricipantsIds
-                    .Select(id => _repository.UserRepository.GetUserById(id)!)
-                    .ToList();
+                chat.Users = dto.PatricipantsIds.Select(async x => await _repository.UserRepository.GetUserByIdAsync(x))
+                   .Select(t => t.Result)
+                   .Where(i => i != null)
+                   .ToList();
 
                 var result = await _repository.ChatRepository.CreateChat(chat);
 
@@ -77,31 +79,11 @@ namespace Cube.Application.Services.Chat
                 return response;
             }
 
-            var currentParticipants = chat.Participants.Select(x => x.Id).ToList();
-           
-            switch (dto.DeletionType)
-            {
-                case ChatDeletionType.RemoveFromChatList:
-                    // Update Chat remove from particpants
-                    currentParticipants.Remove(user.Id);
-                    break;
-                case ChatDeletionType.RemoveAndDeleteMessages:
-                    // Update Chat remove users messages in messages
-                    currentParticipants.Remove(user.Id);
+            chat.Users = chat.Users
+                .Where(x => x.Id != dto.UserId)
+                .ToList();
 
-                    var usersMessages = chat.Messages.Where(x => x.Sender.Id == user.Id).ToList();
-                    foreach (var message in  usersMessages)
-                    {
-                        await _repository.MessageRepository.DeleteMessage(message);
-                    }
-                    break;
-            }
-
-            chat.Participants = currentParticipants
-                        .Select(x => _repository.UserRepository.GetUserById(x)!)
-                        .ToList();
-
-            if (!chat.Participants.Any() && await _repository.ChatRepository.DeleteChat(chat.Id))
+            if (!chat.Users.Any() && await _repository.ChatRepository.DeleteChat(chat.Id))
             {
                 response.ResponseResult = DeleteChatResult.Success;
                 response.Value = true;
@@ -127,7 +109,7 @@ namespace Cube.Application.Services.Chat
                 return response;
             }
 
-            var chats = _repository.ChatRepository.GetAllUsersChats(dto.Id);
+            var chats = await _repository.ChatRepository.GetAllUsersChatsAsync(dto.Id);
 
             if (!chats.Any())
             {
@@ -155,14 +137,15 @@ namespace Cube.Application.Services.Chat
                 }
             }
 
+            response.ResponseResult = GetAllChatsResult.Success;
             response.Value = chats;
 
             return response;
         }
 
-        public async Task<Response<ChatEntity, GetChatResult>> GetChatById(FindChatDto dto)
+        public async Task<Response<ChatModel, GetChatResult>> GetChatById(FindChatDto dto)
         {
-            var response = new Response<ChatEntity, GetChatResult>();
+            var response = new Response<ChatModel, GetChatResult>();
 
             var chat = await _repository.ChatRepository.GetChatByIdAsync(dto.Id);
 
@@ -173,9 +156,17 @@ namespace Cube.Application.Services.Chat
             else
             {
                 response.ResponseResult = GetChatResult.Success;
-                response.Value = chat;
+                response.Value = new ChatModel
+                {
+                    Id = chat.Id,
+                    Title = chat.Title,
+                    Type = chat.Type,
+                    Users = chat.Users
+                    .Select(x => x.Id)
+                    .ToList()
+                };
             }
-            
+
             return response;
         }
 
@@ -211,13 +202,14 @@ namespace Cube.Application.Services.Chat
                 if (await dto.RemovedParticipants.IsEntitiesExist<UserEntity>(_repository)
                     && await dto.NewParticipants.IsEntitiesExist<UserEntity>(_repository))
                 {
-                    var currentParticipants = chat.Participants.Select(x => x.Id).ToList();
-
                     // remove if possible
-                    if (currentParticipants.TrySubParticipants(dto.RemovedParticipants, out var result))
+                    if (chat.Users
+                        .Select(x => x.Id)
+                        .ToList()
+                        .TrySubParticipants(dto.RemovedParticipants, out var result))
                     {
-                        chat.Participants = result!
-                            .Select(x => _repository.UserRepository.GetUserById(x)!)
+                        chat.Users = chat.Users
+                            .Where(x => result!.Contains(x.Id))
                             .ToList();
                     }
                     else
@@ -227,14 +219,17 @@ namespace Cube.Application.Services.Chat
                         {
                             $"Can't sub participants from current"
                         };
-
                     }
 
-                    var sum = chat.Participants.Select(x => x.Id).ToList().AddParticipants(dto.NewParticipants);
-
-                    chat.Participants = sum
-                        .Select(x => _repository.UserRepository.GetUserById(x)!)
+                    var newChatUsers = dto.NewParticipants!
+                        .Select(async x => await _repository.UserRepository.GetUserByIdAsync(x))
+                        .Select(t => t.Result)
                         .ToList();
+
+                    foreach (var item in newChatUsers)
+                    {
+                        chat.Users.Add(item);
+                    }
 
                     var updateResult = await _repository.ChatRepository.UpdateChat(chat);
 

@@ -49,4 +49,10 @@ export interface IChat{
     participants: IUser[];
     messages: IMessage[];
 }
+
+export interface IMesssageInput{
+    senderId: number;
+    chatId: number;
+    message: string; 
+}
   

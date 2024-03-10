@@ -1,6 +1,7 @@
 ﻿using Cube.Application.Services.User.Auth;
 using Cube.Application.Services.User.Dto;
 using Cube.Application.Utilities;
+using Cube.Core.Entities;
 using Cube.Core.Models.User;
 using Cube.EntityFramework.Repository;
 using Microsoft.Extensions.Options;
@@ -21,82 +22,6 @@ namespace Cube.Application.Services.User
             _authOptions = options;
         }
 
-        public async Task<Response<UserEntity, CreateUserResult>> CreateUser(NewUserDto dto)
-        {
-            // account validation
-
-            var response = new Response<UserEntity, CreateUserResult>();
-
-            var account = await _repository.AccountRepository.GetAccountById(dto.AccountId);
-
-            if (account == null)
-            {
-                response.ResponseResult = CreateUserResult.AccountNotFound;
-                response.Messages = new List<string>()
-                {
-                    $"Account doesn't exist"
-                };
-                return response;
-            }
-
-            var isAnyRelationToAccount = _repository
-                .UserRepository
-                .UserAssociatedWithTheAccount(dto.AccountId);
-
-            if (isAnyRelationToAccount != null)
-            {
-                response.ResponseResult = CreateUserResult.AccountLinkError;
-                response.Messages = new List<string>()
-                {
-                    $"Some user already links to this account"
-                };
-                return response;
-            }
-
-            // name & surname validation
-            if (string.IsNullOrEmpty(dto.Name)
-                || string.IsNullOrEmpty(dto.Surname))
-            {
-                response.ResponseResult = CreateUserResult.ValidationError;
-                response.Messages = new List<string>()
-                {
-                    $"Name or surname is null ro empty"
-                };
-                return response;
-            }
-
-            // birthday validation
-            if (dto.DateOfBirth != null
-                && dto.DateOfBirth > DateOnly.FromDateTime(DateTime.UtcNow))
-            {
-                response.ResponseResult = CreateUserResult.DateError;
-                response.Messages = new List<string>()
-                {
-                    "Birthday date cannot be later than the current date"
-                };
-                return response;
-            }
-
-            var user = MapperConfig.InitializeAutomapper().Map<UserEntity>(dto);
-            user.Account = account;
-
-            var result = await _repository.UserRepository.CreteUser(user);
-
-            if (result == null)
-            {
-                response.ResponseResult = CreateUserResult.DataBaseError;
-                response.Messages = new List<string>()
-                {
-                    "Writing to the database isn't successful"
-                };
-                return response;
-            }
-
-            response.ResponseResult = CreateUserResult.Success;
-            response.Value = result;
-            return response;
-        }
-
         public Task<Response<UserEntity, DeleteUserResult>> DeleteUser(DeleteUserDto dto)
         {
             throw new NotImplementedException();
@@ -114,25 +39,30 @@ namespace Cube.Application.Services.User
                 Value = new UserAuthModel()
             };
 
-            var account = await _repository.AccountRepository.GetAccountByEmail(dto.Email);
+            var user = await _repository.UserRepository.UserAssociatedWithTheEmail(dto.Email);
 
-            if (account != null)
+            if (user != null)
             {
-                var hash = dto.Password.GetHash();
+                var role = await _repository.RoleRepository.GetRoleByIdAsync(user.RoleId);
 
-                if (hash.Equals(account.PasswordHash))
+                if (role != null)
                 {
-                    var token = GenerateJWT(account);
-                    response.Value.Token = token;
-                    response.Value.User = _repository.UserRepository.UserAssociatedWithTheAccount(account.Id);
-                    response.ResponseResult = LoginResult.Success;
-                }
-                else
-                {
-                    response.ResponseResult = LoginResult.WrongLoginOrPassword;
-                }
+                    var hash = dto.Password.GetHash();
 
-                return response;
+                    if (hash.Equals(user.Password))
+                    {
+                        var token = GenerateJWT(user, role.Name);
+                        response.Value.Token = token;
+                        response.Value.User = user;
+                        response.ResponseResult = LoginResult.Success;
+                    }
+                    else
+                    {
+                        response.ResponseResult = LoginResult.WrongLoginOrPassword;
+                    }
+
+                    return response;
+                }
             }
 
             response.ResponseResult = LoginResult.WrongLoginOrPassword;
@@ -143,9 +73,9 @@ namespace Cube.Application.Services.User
         public async Task<Response<bool, RegisterResult>> Register(RegisterDto dto)
         {
             var response = new Response<bool, RegisterResult>();
-            var existAccount = await _repository.AccountRepository.GetAccountByEmail(dto.Email);
+            var existUser = await _repository.UserRepository.UserAssociatedWithTheEmail(dto.Email);
 
-            if (existAccount != null)
+            if (existUser != null)
             {
                 response.ResponseResult = RegisterResult.EmailAlreadyExists;
                 return response;
@@ -173,10 +103,18 @@ namespace Cube.Application.Services.User
                 return response;
             }
 
-            var account = MapperConfig.InitializeAutomapper().Map<AccountEntity>(dto);
-            account.Role = Role.User;
+            var user = MapperConfig.InitializeAutomapper().Map<UserEntity>(dto);
+            var role = await _repository.RoleRepository.GetRoleByNameAsync("User");
 
-            var result = await _repository.AccountRepository.CreateAccount(account);
+            if (role == null)
+            {
+                response.ResponseResult = RegisterResult.ValidationError;
+                return response;
+            }
+
+            user.RoleId = role.Id;
+
+            var result = await _repository.UserRepository.CreteUserAsync(user);
 
             if (result == null)
             {
@@ -185,18 +123,6 @@ namespace Cube.Application.Services.User
                 {
                     "Writing to the database isn't successful"
                 };
-                return response;
-            }
-
-            var newUser = MapperConfig.InitializeAutomapper().Map<NewUserDto>(dto);
-            newUser.AccountId = result.Id;
-
-            var user = await CreateUser(newUser);
-
-            if (user.ResponseResult != CreateUserResult.Success)
-            {
-                response.ResponseResult = (RegisterResult)user.ResponseResult;
-                response.Messages = user.Messages;
                 return response;
             }
 
@@ -211,7 +137,7 @@ namespace Cube.Application.Services.User
             throw new NotImplementedException();
         }
 
-        private string GenerateJWT(AccountEntity account)
+        private string GenerateJWT(UserEntity user, string role)
         {
             var authParams = _authOptions.Value;
 
@@ -220,8 +146,8 @@ namespace Cube.Application.Services.User
 
             var claims = new List<Claim>()
             {
-                new(ClaimTypes.Email, account.Email),
-                new(ClaimTypes.Role, account.Role.ToString()),
+                new(ClaimTypes.Email, user.Email),
+                new(ClaimTypes.Role, role),
             };
 
             var token = new JwtSecurityToken(

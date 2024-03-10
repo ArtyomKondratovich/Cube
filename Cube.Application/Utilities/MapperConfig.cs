@@ -2,8 +2,9 @@
 using Cube.Application.Services;
 using Cube.Application.Services.Chat.Dto;
 using Cube.Application.Services.User.Dto;
+using Cube.Core.Entities;
 using Cube.Core.Models;
-using Cube.Core.Models.User;
+using Cube.Core.Models.Messages;
 using Cube.EntityFramework.Repository;
 
 namespace Cube.Application.Utilities
@@ -18,19 +19,21 @@ namespace Cube.Application.Utilities
                     .ForMember(dest => dest.Title, act => act.MapFrom(src => src.Title))
                     .ForMember(dest => dest.Type, act => act.MapFrom(src => src.Type));
 
-                cfg.CreateMap<NewUserDto, UserEntity>()
+                cfg.CreateMap<RegisterDto, UserEntity>()
                     .ForMember(dest => dest.Name, act => act.MapFrom(src => src.Name))
                     .ForMember(dest => dest.Surname, act => act.MapFrom(src => src.Surname))
-                    .ForMember(dest => dest.DateOfBirth, act => act.MapFrom(src => src.DateOfBirth));
-
-                cfg.CreateMap<RegisterDto, AccountEntity>()
                     .ForMember(dest => dest.Email, act => act.MapFrom(src => src.Email))
-                    .ForMember(dest => dest.PasswordHash, act => act.MapFrom(src => src.Password.GetHash()));
-
-                cfg.CreateMap<RegisterDto, NewUserDto>()
-                    .ForMember(dest => dest.Name, act => act.MapFrom(src => src.Name))
-                    .ForMember(dest => dest.Surname, act => act.MapFrom(src => src.Surname))
+                    .ForMember(dest => dest.Password, act => act.MapFrom(src => src.Password.GetHash()))
                     .ForMember(dest => dest.DateOfBirth, act => act.MapFrom(src => src.DateOfBirth));
+
+                cfg.CreateMap<MessageEntity, MessageModel>()
+                    .ForMember(dest => dest.Id, act => act.MapFrom(src => src.Id))
+                    .ForMember(dest => dest.Message, act => act.MapFrom(src => src.Message))
+                    .ForMember(dest => dest.ChatId, act => act.MapFrom(src => src.ChatId))
+                    .ForMember(dest => dest.UserId, act => act.MapFrom(src => src.UserId))
+                    .ForMember(dest => dest.CreatedDate, act => act.MapFrom(src => src.CreatedDate))
+                    .ForMember(dest => dest.UpdatedDate, act => act.MapFrom(src => src.UpdateDate));
+
             });
 
             var mapper = new Mapper(config);

@@ -1,4 +1,4 @@
-﻿using Cube.Core.Models.User;
+﻿using Cube.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Cube.EntityFramework.Repository.User
@@ -12,25 +12,25 @@ namespace Cube.EntityFramework.Repository.User
             _dbContext = context;
         }
 
-        public async Task<UserEntity?> GetUserByIdAsync(int id)
+        public async Task<UserEntity> GetUserByIdAsync(int id)
         {
-            return await _dbContext.Users.FindAsync(id);
+            return await _dbContext.Users
+                .FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public UserEntity? GetUserById(int id) 
+        public UserEntity GetUserById(int id) 
         {
             return _dbContext.Users
                 .FirstOrDefault(x => x.Id == id);
         }
 
-        public UserEntity? UserAssociatedWithTheAccount(int accountId)
+        public async Task<UserEntity> UserAssociatedWithTheEmail(string email)
         {
-            return _dbContext.Users
-                .Where(x => x.Account.Id == accountId)
-                .FirstOrDefault();
+            return await _dbContext.Users
+                .FirstOrDefaultAsync(x => x.Email == email);
         }
 
-        public async Task<UserEntity?> CreteUser(UserEntity user)
+        public async Task<UserEntity> CreteUserAsync(UserEntity user)
         {
             var result = await _dbContext.Users.AddAsync(user);
 

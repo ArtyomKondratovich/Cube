@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Cube.Web.Api.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class ChatController : ControllerBase
@@ -51,7 +51,7 @@ namespace Cube.Web.Api.Controllers
 
         [HttpPost]
         [Route("Get")]
-        public async Task<Response<ChatEntity, GetChatResult>> GetChat([FromBody] FindChatDto dto)
+        public async Task<Response<ChatModel, GetChatResult>> GetChat([FromBody] FindChatDto dto)
         {
             return await _service.GetChatById(dto);
         }

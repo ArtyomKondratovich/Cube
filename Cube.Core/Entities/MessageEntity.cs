@@ -1,4 +1,5 @@
-﻿using Cube.Core.Models.User;
+﻿using Cube.Core.Entities;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Cube.Core.Models
 {
@@ -8,7 +9,11 @@ namespace Cube.Core.Models
         public string Message { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? UpdateDate { get; set; }
-        public UserEntity Sender { get; set; }
+
+        public int UserId { get; set; }
+        public UserEntity User { get; set; }
+
+        public int ChatId { get; set; }
         public ChatEntity Chat { get; set; }
     }
 }

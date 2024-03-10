@@ -1,7 +1,7 @@
 ﻿using Cube.EntityFramework.Repository.Chat;
 using Cube.EntityFramework.Repository.Message;
 using Cube.EntityFramework.Repository.User;
-using Cube.EntityFramework.Repository.User.Account;
+using Cube.Repository.Repository.Role;
 
 namespace Cube.EntityFramework.Repository
 {
@@ -10,6 +10,6 @@ namespace Cube.EntityFramework.Repository
         public IUserRepository UserRepository { get; }
         public IMessageRepository MessageRepository { get; }
         public IChatRepository ChatRepository { get; }
-        public IAccountRepository AccountRepository { get; }
+        public IRoleRepository RoleRepository { get; }
     }
 }

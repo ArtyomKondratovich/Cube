@@ -10,6 +10,6 @@ namespace Cube.Application.Services
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public TEnum ResponseResult { get; set; }
 
-        public List<string> Messages { get; set; }
+        public List<string> Messages { get; set; } = new();
     }
 }

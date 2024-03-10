@@ -7,5 +7,6 @@ namespace Cube.Core.Models.Chat
         public int Id { get; set; }
         public string Title { get; set; }
         public ChatType Type { get; set; }
+        public List<int> Users { get; set; }
     }
 }

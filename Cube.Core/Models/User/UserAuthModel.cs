@@ -1,4 +1,6 @@
-﻿namespace Cube.Core.Models.User
+﻿using Cube.Core.Entities;
+
+namespace Cube.Core.Models.User
 {
     public class UserAuthModel
     {

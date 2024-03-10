@@ -51,17 +51,17 @@ export default defineComponent({
             await new Promise(resolve => setTimeout(resolve, 2000));
             localStorage.setItem('token', data.value.token);
             localStorage.setItem('user', JSON.stringify(data.value.user));
-            router.push('/home');
+            this.$router.push('/home');
           }
           else{
             toast.error(data.responseResult);
-            router.push('/login');
+              this.$router.push('/login');
           }
         })
         .catch(error => {
             //handling error
             toast.error(error);
-            router.push('/login');
+            this.$router.push('/login');
         });
     }
   },

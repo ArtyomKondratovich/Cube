@@ -1,5 +1,6 @@
-﻿using Cube.Core.Models.User;
+﻿using Cube.Core.Entities;
 using Cube.Core.Utilities;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Cube.Core.Models
 {
@@ -8,7 +9,6 @@ namespace Cube.Core.Models
         public int Id { get; set; }
         public string Title { get; set; }
         public ChatType Type { get; set; }
-        public ICollection<UserEntity> Participants { get; set; }
-        public ICollection<MessageEntity> Messages { get; set; }
+        public ICollection<UserEntity> Users { get; set; }
     }
 }

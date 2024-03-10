@@ -1,7 +1,7 @@
 ﻿using Cube.EntityFramework.Repository.Chat;
 using Cube.EntityFramework.Repository.Message;
 using Cube.EntityFramework.Repository.User;
-using Cube.EntityFramework.Repository.User.Account;
+using Cube.Repository.Repository.Role;
 
 namespace Cube.EntityFramework.Repository
 {
@@ -11,7 +11,7 @@ namespace Cube.EntityFramework.Repository
         private IUserRepository _userRepository;
         private IChatRepository _chatRepository;
         private IMessageRepository _messageRepository;
-        private IAccountRepository _accountRepository;
+        private IRoleRepository _roleRepository;
 
         public IUserRepository UserRepository 
         {
@@ -43,13 +43,13 @@ namespace Cube.EntityFramework.Repository
             }
         }
 
-        public IAccountRepository AccountRepository
+        public IRoleRepository RoleRepository
         {
             get
             {
-                _accountRepository ??= new AccountRepository(_dbContext);
+                _roleRepository ??= new RoleRepository(_dbContext);
 
-                return _accountRepository;
+                return _roleRepository;
             }
         }
 
