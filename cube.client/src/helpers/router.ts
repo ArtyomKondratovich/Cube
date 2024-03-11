@@ -1,19 +1,36 @@
 import {createRouter, createWebHistory } from 'vue-router'
 import Home from "@/views/HomePage.vue"
-import Login from "@/views/LoginPage.vue"
+import Login from "@/views/LoginView.vue"
 import Register from "@/views/RegisterPage.vue"
-import Messages from '@/views/MessagesPage.vue'
-import Chat from "@/views/ChatPage.vue"
 import { useAuthStore } from "@/store/auth.store"
+import Messages from '@/components/Messages.vue'
+import Posts from '@/components/Posts.vue'
+import Chat from '@/components/Chat.vue'
 
 const router = createRouter({
     history: createWebHistory(),
     routes: [
-        { path: '/home', component: Home },
-        { path: '/login', component: Login },
-        { path: '/register', component: Register },
-        { path: '/messages', component: Messages },
-        { path: '/chat/:chatId', name: 'Chat', component: Chat, props: true }
+        { path: '/home', component: Home,
+        children: [
+            {
+                path: 'messages',
+                component: Messages
+            },
+            {
+                path: 'posts',
+                component: Posts
+            },
+            {
+                path: 'chat/:id',
+                component: Chat
+            }
+        ]},
+        { path: '/login', components: {
+            default: Login
+        }},
+        { path: '/register', components: {
+            default: Register
+        }}
     ]
 })
 
@@ -27,7 +44,7 @@ router.beforeEach((to, from, next) => {
     {
         next('/login');
     }
-    else {
+    else{
         next();
     }
 });

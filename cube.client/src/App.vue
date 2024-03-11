@@ -1,6 +1,15 @@
-<script setup lang="ts">
+<script lang="ts">
+import { defineComponent } from "vue";
 import MyHeader from "@/components/MyHeader.vue"
 import Toast from "vue3-toastify";
+
+export default defineComponent({
+  Name: 'App',
+  components: {
+    MyHeader,
+    Toast
+  }
+})
 </script>
 
 <template>
@@ -20,6 +29,8 @@ import Toast from "vue3-toastify";
     justify-content: center;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 50px;
+    color: white;
+    width: 70%;
+    height: 100%;
   }
 </style>

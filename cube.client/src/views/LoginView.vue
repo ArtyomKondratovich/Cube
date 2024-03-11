@@ -26,7 +26,7 @@ import { defineComponent } from 'vue';
 import { toast } from 'vue3-toastify';
 
 export default defineComponent({
-  name: 'Login',
+  name: 'LoginView',
   components: {},
   data() {
     return {

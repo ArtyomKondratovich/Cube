@@ -1,9 +1,5 @@
 <template>
-    <div class="main">
-        <div>
-            <Menu></Menu>
-        </div>
-        <div class="chats">
+    <div class="chats">
             <div v-if="loading">
                 <p>Loading chats...</p>
             </div>
@@ -18,7 +14,6 @@
                 </ul>
             </div>
         </div>
-    </div>
 </template>
 
 <script lang="ts">

@@ -14,7 +14,15 @@
 import { defineComponent } from 'vue';
 
 export default defineComponent({
-    name: 'Posts'
+    name: 'Posts',
+    data() {
+        return {
+            
+        }
+    },
+    created() {
+
+    }
 });
 </script>
 

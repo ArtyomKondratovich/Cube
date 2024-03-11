@@ -1,56 +1,89 @@
 <template>
     <div class="main">
-        <div>
-        <Menu></Menu>
-    </div>
-    <div class="posts">
-        <div v-if="loading">
-            <p>Loading posts...</p>
-        </div>
-        <div v-if="!loading">
+        <div class="menu">
             <ul>
                 <li>
+                <div class="profile">
+                    Profile
+                </div>
+                </li>
+                <li>
+                    <router-link :to="{ path: '/home/posts' }">Home</router-link>
+                </li>
+                <li>
+                    <router-link :to="{ path: '/home/messages' }">Messages</router-link>
+                </li>
+                <li>
+                    <div>Notifications</div>
+                </li>
+                <li>
+                    <div>Friends</div>
+                </li>
+                <li>
+                    <div>Settings</div>
                 </li>
             </ul>
         </div>
-    </div>
+        <div class="block">
+            <router-view></router-view>
+        </div>
     </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import Menu from '@/components/Menu.vue';
+import type { IUser } from '@/api/types';
 
 export default defineComponent({
     name: 'Home',
     data(){
         return {
-            id: 0,
-            loading: true,
-            posts: []
+            userId: 0,
         }
     },
-    components: {
-        Menu
+    created() {
+        this.userId = (JSON.parse(localStorage.getItem('user') ?? '{}') as IUser).id;
+
     },
     methods: {
-
     }
 });
 
 </script>
 
 <style>
+
+.menu{
+   width: 150px;
+   height: 200px;
+   user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    cursor: default;
+}
+.menu li{
+   list-style-type: none;
+   margin-top: 5px;
+   display: block;
+   padding-left: 10px;
+}
+
+.menu ul {
+    padding-left: 0px;
+}
+
 .main {
     display: flex;
     width: 80%;
 }
 
-.posts {
-    border: 0.5px solid grey;
+.block {
+    margin-top: 10px;
     border-radius: 15px;
-    margin-left: 10px;
-    width: 80%;
+    background-color: #222222;
+    width: 100%;
+    height: 80%;
 }
 
 

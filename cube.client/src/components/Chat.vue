@@ -1,16 +1,12 @@
 <template>
-    <div class="main">
-        <div>
-            <Menu></Menu>
-        </div>
-        <div class="chat">
+    <div class="chatView">
+            <div class="header">
+
+            </div>
             <div v-if="loading">
                 <p>Loading messages...</p>
             </div>
             <div v-if="!loading">
-                <div class="header">
-
-                </div>
                 <div class="messages">
                     <ul>
                         <li v-for="message in messages" :key="message.id">
@@ -21,17 +17,16 @@
                         </li>
                     </ul>
                 </div>
-                <div class="sender">
-                    <form @submit.prevent="sendMessage">
-                        <div class="editableDiv" contenteditable="true" data-placeholder="Type your message..." inputmode="text" translate="no"></div>
-                    </form>
-                    <button type="submit">
-                            <img src="../assets/icons/sendIcon.png"/>
-                    </button>
-                </div>
+            </div>
+            <div class="sender">
+                <form @submit.prevent="sendMessage">
+                    <div class="editableDiv" contenteditable="true" data-placeholder="Type your message..." inputmode="text" translate="no"></div>
+                </form>
+                <button type="submit">
+                        <img src="../assets/icons/sendIcon.png"/>
+                </button>
             </div>
         </div>
-    </div>
 </template>
 
 <script lang="ts">
@@ -43,16 +38,12 @@ import type {
     IResponse, 
     IUser
 } from '@/api/types';
-import Menu from '@/components/Menu.vue';
 import { toast } from 'vue3-toastify';
 import axios from 'axios';
 import config from '@/config';
 
 export default defineComponent({
     name: "Chat",
-    components: {
-        Menu
-    },
     data() {
         return {
             userId: 0,
@@ -85,7 +76,7 @@ export default defineComponent({
 
                 if (data.responseResult == 'Success' && data.value) {
                     this.chat.users = data.value.users;
-                }
+                }   
                 else{
                     toast.error(data.responseResult);
                     await new Promise(resolve => setTimeout(resolve, 2000));
@@ -120,7 +111,6 @@ export default defineComponent({
             })
         },
         sendMessage(){
-            const message = document.
             const messageInput = {
                 senderId: this.userId,
                 chatId: this.chat.id,
@@ -154,18 +144,20 @@ export default defineComponent({
 </script>
 
 <style>
-    .main {
-        display: flex;
-        width: 80%;
+    .header {
+        height: 10%;
     }
 
-    .chat {
-        display: flex;
-        
+    .chatView {
+        display: grid;
+        grid-template-rows: 10% 80% 10%;
+        grid-gap: 0;
+        height: 100%;
     }
 
     .sender{
-        display: inline;
+        display: flex;
+        margin: 5px;
         background-color: #292929;
         border-radius: 10px;
     }
@@ -182,13 +174,15 @@ export default defineComponent({
         overflow-y: auto;
         resize: none;
         overflow: hidden;
+        outline: none;
         border: none;
         box-sizing: border-box;
         height: auto;
+        background-color: #292929;
         padding: 5px;
     }
 
-    #editableDiv {
+    .editableDiv {
         position: relative;
     }
 
@@ -207,7 +201,10 @@ export default defineComponent({
       display: none;
     }
 
-    form button {
+    .messages {
+        overflow-y: auto;
+    }
+    .sender button {
         display: flex;
         align-items: center;
         padding: 0px;

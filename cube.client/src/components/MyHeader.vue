@@ -45,6 +45,7 @@
     nav{
         width: 100%;
         height: 15%;
+        background-color: #222222;
     }
     .logo{
         width:10%;
@@ -68,6 +69,6 @@
 
     }
     a, a:visited, a:hover, a:active {
-        color: grey;
+        color: white;
     }
 </style>
