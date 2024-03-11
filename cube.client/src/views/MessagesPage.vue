@@ -23,13 +23,15 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { useChatStore } from '@/store/chats.store';
 import type { 
     IChatLoad,
-    IResponse 
+    IResponse, 
+    IUser
 } from '@/api/types';
 import Menu from '@/components/Menu.vue';
 import { toast } from 'vue3-toastify';
+import axios from 'axios';
+import config from '@/config';
 
 export default defineComponent({
     name: "Messages",
@@ -43,9 +45,15 @@ export default defineComponent({
         }
     },
     mounted() {
-        const store = useChatStore();
-        store.loadChats()
-            .then(async (response) => {
+        let userId = (JSON.parse(localStorage.getItem('user') ?? '{}') as IUser).id;
+
+        axios.post(`${config.apiUrl}/Chat/getUserChats`, { Id: userId }, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(async (response) => {
                 const data = response.data as IResponse<IChatLoad[]>;
                 if (data.responseResult == 'Success' && data.value){
                     this.chats = data.value;
@@ -58,7 +66,7 @@ export default defineComponent({
                 .catch(async error => {
                     toast.error(error);
                     await new Promise(resolve => setTimeout(resolve, 2000));
-            });
+        });
     },
     methods: {
         stepIntoChat(id: number): void{
@@ -126,8 +134,8 @@ export default defineComponent({
         cursor: default;
     }
 
-    .chat:hover{
+    /* .chat:hover{
         background-color: whitesmoke;
-    }
+    } */
 
 </style>

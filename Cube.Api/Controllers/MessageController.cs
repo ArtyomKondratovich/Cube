@@ -5,6 +5,7 @@ using Cube.Core.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Cube.Core.Models.Messages;
+using Cube.Application.Services.Chat.Dto;
 
 namespace Cube.Web.Api.Controllers
 {
@@ -22,9 +23,9 @@ namespace Cube.Web.Api.Controllers
 
         [HttpPost]
         [Route("send")]
-        public async Task<Response<MessageModel, SendMessageResult>> SendMessage([FromBody] NewMessageDto newMessage)
+        public async Task<Response<MessageModel, SendMessageResult>> SendMessage([FromBody] NewMessageDto dto)
         {
-            return await _service.SendMessage(newMessage);
+            return await _service.SendMessage(dto);
         }
 
         [HttpPost]
@@ -36,9 +37,16 @@ namespace Cube.Web.Api.Controllers
 
         [HttpPost]
         [Route("delete")]
-        public async Task<Response<MessageEntity, DeleteMessageResult>> DeleteMessage([FromBody] DeleteMessageDto dto)
+        public async Task<Response<bool, DeleteMessageResult>> DeleteMessage([FromBody] DeleteMessageDto dto)
         {
             return await _service.DeleteMessage(dto);
+        }
+
+        [HttpPost]
+        [Route("getChatMessages")]
+        public async Task<Response<List<MessageModel>, GetChatMessagesResult>> GetChatMessages([FromBody] FindChatDto dto)
+        {
+            return await _service.GetChatMessages(dto);
         }
     }
 }

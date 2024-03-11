@@ -1,8 +1,10 @@
-﻿using Cube.Application.Services.Message.Dto;
+﻿using Cube.Application.Services.Chat.Dto;
+using Cube.Application.Services.Message.Dto;
 using Cube.Application.Utilities;
 using Cube.Core.Models;
 using Cube.Core.Models.Messages;
 using Cube.EntityFramework.Repository;
+using System.Runtime.InteropServices;
 
 namespace Cube.Application.Services.Message
 {
@@ -15,9 +17,9 @@ namespace Cube.Application.Services.Message
             _repository = repository;
         }
 
-        public async Task<Response<MessageEntity, DeleteMessageResult>> DeleteMessage(DeleteMessageDto dto)
+        public async Task<Response<bool, DeleteMessageResult>> DeleteMessage(DeleteMessageDto dto)
         {
-            var response = new Response<MessageEntity, DeleteMessageResult>();
+            var response = new Response<bool, DeleteMessageResult>();
 
             var message = await _repository.MessageRepository.GetMessageById(dto.Id);
 
@@ -29,15 +31,43 @@ namespace Cube.Application.Services.Message
             else if (await _repository.MessageRepository.DeleteMessage(message) != null)
             {
                 response.ResponseResult = DeleteMessageResult.Success;
-                response.Value = message;
+                response.Value = true;
             }
 
             return response;
         }
 
-        public async Task<Response<MessageEntity, GetMessageResult>> GetMessageById(FindMessageDto dto)
+        public async Task<Response<List<MessageModel>, GetChatMessagesResult>> GetChatMessages(FindChatDto dto)
         {
-            var response = new Response<MessageEntity, GetMessageResult>();
+            var response = new Response<List<MessageModel>, GetChatMessagesResult>();
+
+            var chat = await _repository.ChatRepository.GetChatByIdAsync(dto.Id);
+
+            if (chat == null) 
+            {
+                response.ResponseResult = GetChatMessagesResult.ChatNotFound;
+                return response;
+            }
+
+            var messages = await _repository.MessageRepository.GetChatMessagesAsync(dto.Id);
+            
+            if (messages != null)
+            {
+                response.ResponseResult = GetChatMessagesResult.Success;
+                response.Value = messages
+                    .Select(x => MapperConfig.InitializeAutomapper().Map<MessageModel>(x))
+                    .ToList();
+                return response;
+            }
+
+            response.ResponseResult = GetChatMessagesResult.ServerError;
+            return response;
+
+        }
+
+        public async Task<Response<MessageModel, GetMessageResult>> GetMessageById(FindMessageDto dto)
+        {
+            var response = new Response<MessageModel, GetMessageResult>();
 
             var message = await _repository.MessageRepository.GetMessageById(dto.Id);
 
@@ -49,7 +79,7 @@ namespace Cube.Application.Services.Message
             else 
             {
                 response.ResponseResult = GetMessageResult.Success;
-                response.Value = message;
+                response.Value = MapperConfig.InitializeAutomapper().Map<MessageModel>(message);
             }
 
             return response;

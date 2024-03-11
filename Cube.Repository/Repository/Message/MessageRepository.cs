@@ -1,4 +1,5 @@
 ﻿using Cube.Core.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Cube.EntityFramework.Repository.Message
 {
@@ -23,6 +24,13 @@ namespace Cube.EntityFramework.Repository.Message
             }
 
             return null;
+        }
+
+        public async Task<List<MessageEntity>> GetChatMessagesAsync(int chatId)
+        {
+            return await _dbContext.Messages
+                .Where(x => x.ChatId == chatId)
+                .ToListAsync();
         }
 
         public async Task<MessageEntity?> GetMessageById(int id)

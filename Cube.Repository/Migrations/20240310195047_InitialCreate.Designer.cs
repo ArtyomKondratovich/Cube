@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cube.Repository.Migrations
 {
     [DbContext(typeof(CubeDbContext))]
-    [Migration("20240310091655_InitialCreate")]
+    [Migration("20240310195047_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

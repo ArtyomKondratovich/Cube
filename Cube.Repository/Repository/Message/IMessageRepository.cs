@@ -8,5 +8,6 @@ namespace Cube.EntityFramework.Repository.Message
         Task<MessageEntity?> SendMessage(MessageEntity model);
         Task<MessageEntity?> UpdateMessage(MessageEntity model);
         Task<MessageEntity?> DeleteMessage(MessageEntity model);
+        Task<List<MessageEntity>> GetChatMessagesAsync(int chatId);
     }
 }

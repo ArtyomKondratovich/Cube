@@ -1,5 +1,11 @@
 ﻿namespace Cube.Application.Services
 {
+    public enum GetChatMessagesResult {
+        Success,
+        ChatNotFound,
+        ServerError
+    }
+
     public enum GetChatResult
     {
         Success,

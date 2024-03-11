@@ -6,7 +6,6 @@ using Cube.Core.Models;
 using Cube.Core.Models.Chat;
 using Cube.Core.Utilities;
 using Cube.EntityFramework.Repository;
-using Microsoft.Extensions.Logging;
 
 namespace Cube.Application.Services.Chat
 {

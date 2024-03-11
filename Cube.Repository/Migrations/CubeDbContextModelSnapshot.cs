@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Cube.EntityFramework.Migrations
+namespace Cube.Repository.Migrations
 {
     [DbContext(typeof(CubeDbContext))]
     partial class CubeDbContextModelSnapshot : ModelSnapshot

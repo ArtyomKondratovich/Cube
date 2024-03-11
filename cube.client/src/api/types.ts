@@ -34,7 +34,8 @@ export interface IMessage {
     message: string;
     createdDate: Date;
     updatedDate: Date | null;
-    sender: IUser;
+    userId: number;
+    chatId: number;
 }
 export interface IChatLoad {
     id: number;
@@ -46,8 +47,7 @@ export interface IChat{
     id: number;
     title: string;
     type: string;
-    participants: IUser[];
-    messages: IMessage[];
+    users: number[];
 }
 
 export interface IMesssageInput{

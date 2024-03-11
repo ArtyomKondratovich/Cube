@@ -15,7 +15,7 @@ import Toast from "vue3-toastify";
 </template>
 
 <style>
-  main{
+  main {
     display: flex;
     justify-content: center;
     margin-left: auto;
