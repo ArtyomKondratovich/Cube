@@ -61,7 +61,7 @@ export default defineComponent({
     },
     methods: {
         stepIntoChat(id: number): void{
-            this.$router.push(`/home/chat/${id}`)
+            this.$router.push({ path: `/home/chat/${id}`});
         }
     }
 });

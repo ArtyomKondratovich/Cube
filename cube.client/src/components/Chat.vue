@@ -6,25 +6,25 @@
             <div v-if="loading">
                 <p>Loading messages...</p>
             </div>
-            <div v-if="!loading">
-                <div class="messages">
-                    <ul>
-                        <li v-for="message in messages" :key="message.id">
-                            <div :class="getMessageClass(message.userId)">
-                                <h3>{{ message.message }}</h3>
-                                <h3>{{ message.createdDate }}</h3>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
+            <div v-if="!loading" class="messages">
+                <ul>
+                    <li v-for="message in messages" :key="message.id" :class="getMessageClass(message.userId)">
+                        <div id="text">
+                            {{ message.message }}
+                        </div>
+                        <div id="date">
+                            {{ message.createdDate }}
+                        </div>
+                    </li>
+                </ul>
             </div>
             <div class="sender">
                 <form @submit.prevent="sendMessage">
-                    <div class="editableDiv" contenteditable="true" data-placeholder="Type your message..." inputmode="text" translate="no"></div>
+                    <textarea v-model="message" ref="messageInput" placeholder="Type your message..." rows="1"></textarea>
+                    <button type="submit">
+                        <img src="../assets/icons/sendIcon.png" />
+                    </button>
                 </form>
-                <button type="submit">
-                        <img src="../assets/icons/sendIcon.png"/>
-                </button>
             </div>
         </div>
 </template>
@@ -50,12 +50,17 @@ export default defineComponent({
             chat: {} as IChat,
             message: '',
             messages: [] as IMessage[],
-            loading: true
+            loading: true,
+            textArea: null as HTMLTextAreaElement | null
         }
     },
     created() {
-        this.chat.id = Number(this.$route.params.chatId);
+        this.chat.id = Number(this.$route.params.id);
         this.userId = (JSON.parse(localStorage.getItem('user') ?? '{}') as IUser).id;
+        this.textArea = this.$refs.messageInput as HTMLTextAreaElement;
+        if (this.textArea) {
+          this.textArea.addEventListener('input', this.handleInput);
+        }
         this.loadChatData(this.chat.id);
         this.loadMessages();
     },
@@ -63,6 +68,12 @@ export default defineComponent({
         getMessageClass(senderId: number): string {
             let isUsersMessage = this.userId == senderId;
             return isUsersMessage ? 'message-right' : 'message-left';
+        },
+        handleInput() {
+            if (this.textArea) {
+              this.textArea.style.height = 'auto';
+              this.textArea.style.height = `${Math.min(this.textArea.scrollHeight, 100)}px`;
+            }
         },
         loadChatData(id: number) {
             axios.post(`${config.apiUrl}/Chat/getChat`, { id }, {
@@ -88,6 +99,7 @@ export default defineComponent({
         },
         loadMessages() {
             let id = this.chat.id;
+            
             axios.post(`${config.apiUrl}/Message/getChatMessages`, { id } , {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -111,11 +123,14 @@ export default defineComponent({
             })
         },
         sendMessage(){
+
             const messageInput = {
                 senderId: this.userId,
                 chatId: this.chat.id,
                 message: this.message
             } as IMesssageInput;
+
+            this.message = '';
 
             axios.post(`${config.apiUrl}/Message/send`, messageInput, {
                 headers: {
@@ -123,20 +138,21 @@ export default defineComponent({
                     'Content-Type': 'application/json'
                 }
             })
-            .then((response) => {
-                const data = response.data as IResponse<IMessage>;
+                .then((response) => {
+                    const data = response.data as IResponse<IMessage>;
 
-                if (data.responseResult == 'Success' && data.value){
-                    this.messages.push(data.value);
-                }
-                else
-                {
-                    toast.error(data.responseResult);
-                }
-            })
-            .catch(error => {
-                toast.error('server error');
-            })
+                    if (data.responseResult == 'Success' && data.value) {
+                        this.messages.push(data.value);
+                    }
+                    else {
+                        toast.error(data.responseResult);
+                    }
+                })
+                .catch(error => {
+                    toast.error('server error');
+                });
+
+
         }
     }
 });
@@ -144,87 +160,116 @@ export default defineComponent({
 </script>
 
 <style>
+
     .header {
         height: 10%;
     }
 
     .chatView {
         display: grid;
-        grid-template-rows: 10% 80% 10%;
+        font-size: small;
+        grid-template-rows: 60px auto 40px;
         grid-gap: 0;
         height: 100%;
     }
 
-    .sender{
-        display: flex;
+    .messages {
+        overflow-y: scroll;
+    }
+
+    .messages li {
+        max-width: 50%;
+        word-wrap: break-word;
+        align-items: normal;
+        padding: 5px;
+        border-radius: 15px;
         margin: 5px;
+        background-color: #2A2F33;
+        flex-direction: column;
+    }
+
+    #text {
+        text-align: left;
+    }
+
+    #date {
+        text-align: right;
+        font-size: 10px;
+    }
+
+    .messages ul {
+        margin: 10px;
+        display: flex;
+        padding: 0px;
+        flex-direction: column;
+    }
+
+    .messages::-webkit-scrollbar { 
+        width: 10px;
+    } 
+
+    .messages::-webkit-scrollbar-track { 
+        background: #222222;
+        border-radius: 5px;
+
+    } 
+
+    .messages::-webkit-scrollbar-thumb { 
+        background: #292929;
+        border-radius: 5px;
+    } 
+
+    .messages::-webkit-scrollbar-thumb:hover { 
+        background: #555; 
+    } 
+
+    .messages::-webkit-scrollbar-button { 
+        display: none; 
+    }
+
+    .message-right{
+        align-self: flex-end;
+    }
+
+    .message-left
+    {
+        align-self: flex-start;
+    }
+
+    .sender {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-end;
+        margin: 5px;
+        padding-left: 15px;
         background-color: #292929;
         border-radius: 10px;
     }
 
     .sender form {
-        display: flex;
         width: 100%;
+        display: grid;
+        grid-template-columns: auto 30px;
     }
 
-    .editableDiv {
-        margin-left: 10px;
-        flex: 1;
-        flex-direction: column-reverse;
-        overflow-y: auto;
-        resize: none;
-        overflow: hidden;
-        outline: none;
-        border: none;
-        box-sizing: border-box;
+    textarea {
+        columns: auto;
         height: auto;
+        max-height: 100px;
+        outline: none;
+        resize: none;
+        border: none;
+        overflow-y: hidden;
+        color: white;
         background-color: #292929;
+        font-family: 'Robotic';
         padding: 5px;
     }
 
-    .editableDiv {
-        position: relative;
-    }
-
-    .editableDiv::before {
-        content: attr(data-placeholder);
-        position: absolute;
-        color: #aaa;
-        pointer-events: none;
-    }
-
-    .editableDiv.empty::before {
-      display: block;
-    }
-
-    .editableDiv:focus::before {
-      display: none;
-    }
-
-    .messages {
-        overflow-y: auto;
-    }
     .sender button {
-        display: flex;
-        align-items: center;
         padding: 0px;
         background: none;
         border: none;
-        flex: 0;
     }
-
-    .message-right{
-        text-align: right;
-    }
-
-    .message-left
-    {
-        text-align: left;
-    }
-
-    img:hover {
-        color: #aaa;
-    }
-
 
 </style>

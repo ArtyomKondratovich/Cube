@@ -19,8 +19,7 @@
   </div>
 </template>
 
-<script lang="ts"> 
-import router from '@/helpers/router';
+<script lang="ts">
 import { useAuthStore } from '../store/auth.store';
 import { defineComponent } from 'vue';
 import { toast } from 'vue3-toastify';
@@ -41,7 +40,8 @@ export default defineComponent({
       const store = useAuthStore();
       let email = this.email;
       let password = this.password;
-      store.login({email, password})
+      
+      await store.login({email, password})
         .then(async (response) => {
           const data = response.data;
       
@@ -51,11 +51,11 @@ export default defineComponent({
             await new Promise(resolve => setTimeout(resolve, 2000));
             localStorage.setItem('token', data.value.token);
             localStorage.setItem('user', JSON.stringify(data.value.user));
-            this.$router.push('/home');
+            this.$router.push({ path: '/home' });
           }
           else{
             toast.error(data.responseResult);
-              this.$router.push('/login');
+            this.$router.push('/login');
           }
         })
         .catch(error => {
@@ -63,6 +63,10 @@ export default defineComponent({
             toast.error(error);
             this.$router.push('/login');
         });
+
+      this.email = '';
+      this.password = '';
+      this.submitted = false;
     }
   },
   computed: {

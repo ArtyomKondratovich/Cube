@@ -7,19 +7,19 @@
                     Profile
                 </div>
                 </li>
-                <li>
+                <li @click="selectTab(0)" :class="{ 'active': activeTab == 0 }">
                     <router-link :to="{ path: '/home/posts' }">Home</router-link>
                 </li>
-                <li>
+                <li @click="selectTab(1)" :class="{ 'active': activeTab == 1 }">
                     <router-link :to="{ path: '/home/messages' }">Messages</router-link>
                 </li>
-                <li>
+                <li @click="selectTab(2)" :class="{ 'active': activeTab == 2 }">
                     <div>Notifications</div>
                 </li>
-                <li>
+                <li @click="selectTab(3)" :class="{ 'active': activeTab == 3 }">
                     <div>Friends</div>
                 </li>
-                <li>
+                <li @click="selectTab(4)" :class="{ 'active': activeTab == 4 }">
                     <div>Settings</div>
                 </li>
             </ul>
@@ -39,6 +39,7 @@ export default defineComponent({
     data(){
         return {
             userId: 0,
+            activeTab: 0
         }
     },
     created() {
@@ -46,6 +47,9 @@ export default defineComponent({
 
     },
     methods: {
+        selectTab(id: number){
+            this.activeTab = id;
+        }
     }
 });
 
@@ -54,8 +58,6 @@ export default defineComponent({
 <style>
 
 .menu{
-   width: 150px;
-   height: 200px;
    user-select: none;
     -moz-user-select: none;
     -webkit-user-select: none;
@@ -66,11 +68,10 @@ export default defineComponent({
    list-style-type: none;
    margin-top: 5px;
    display: block;
-   padding-left: 10px;
 }
 
 .menu ul {
-    padding-left: 0px;
+    margin-top: 10px;
 }
 
 .main {
@@ -80,10 +81,18 @@ export default defineComponent({
 
 .block {
     margin-top: 10px;
-    border-radius: 15px;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    border-top-right-radius: 15px;
     background-color: #222222;
     width: 100%;
     height: 80%;
+}
+
+.active {
+    background-color: #222222;
+    border-bottom-left-radius: 10px;
+    border-top-left-radius: 10px;
 }
 
 
