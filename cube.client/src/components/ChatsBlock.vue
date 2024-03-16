@@ -67,6 +67,10 @@ axios.post(`${config.apiUrl}/Chat/getUserChats`, { Id: props.userId }, {
 </script>
 
 <style>
+    .active {
+        border-radius: 0px;
+        background-color: #141414;
+    }
     .chats {
         flex-basis: 30%;
         width: 100%;
@@ -107,10 +111,6 @@ axios.post(`${config.apiUrl}/Chat/getUserChats`, { Id: props.userId }, {
         -moz-user-select: none;
         -webkit-user-select: none;
         -ms-user-select: none;
-    }
-
-    .chat:hover {
-        background-color: #2B2B2B;
     }
 
     .image {

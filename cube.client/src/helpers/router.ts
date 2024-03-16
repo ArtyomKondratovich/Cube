@@ -5,6 +5,7 @@ import RegisterView from "@/views/RegisterPage.vue"
 import { useAuthStore } from "@/store/auth.store"
 import MessangerBlock from '@/components/MessangerBlock.vue'
 import PostsBlock from '@/components/PostsBlock.vue'
+import ProfileBlock from '@/components/ProfileBlock.vue'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -15,6 +16,11 @@ const router = createRouter({
                 {
                     path: 'messanger/:userId',
                     component: MessangerBlock,
+                    props: (route) => ({ userId: Number(route.params.userId )})
+                },
+                {
+                    path: 'profile/:userId',
+                    component: ProfileBlock,
                     props: (route) => ({ userId: Number(route.params.userId )})
                 },
                 {

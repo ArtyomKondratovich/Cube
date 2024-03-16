@@ -20,8 +20,8 @@ interface AuthState {
 export const useAuthStore = defineStore(
   'auth', {
     state: (): AuthState => ({
-      user: {} as IUser,
-      token: ''
+      user: (JSON.parse(localStorage.getItem('user') ?? '{}')) as IUser,
+      token: localStorage.getItem('token') ?? ''
     }),
     actions: {
       async login(loginInput: ILoginInput){
@@ -69,7 +69,7 @@ export const useAuthStore = defineStore(
     getters: {
       isLoggedIn(): boolean {
         return this.token != '';
-      } 
+      }
     }
   }
 );

@@ -1,10 +1,12 @@
 <template>
     <div class="homeView">
         <div class="menu">
-            <div class="profile">
-                <img src="../assets/images/profiles/default.png">
-                <div class="userName"> {{ user?.name }} {{ user?.surname }} </div>
-            </div>
+            <router-link :to="{ path: `/home/profile/${user.id}` }">
+                <div class="profile">
+                    <img src="../assets/images/profiles/default.png">
+                    <div class="userName"> {{ user?.name }} {{ user?.surname }} </div>
+                </div>
+            </router-link>
             <ul>
                 <li @click="selectTab(0)" :class="{ 'active': activeTab == 0 }">
                     <img src="../assets/icons/homeIcon.png">
@@ -56,6 +58,7 @@ function selectTab(id: number) {
 }
 
 .profile {
+    border: 1px solid #363738;
     display: flex;
     padding: 10px;
     border-radius: 10px;
@@ -104,6 +107,7 @@ function selectTab(id: number) {
 .menu ul {
     padding: 0px;
     margin-top: 0px;
+    border: 1px solid #363738;
     background-color: #222222;
     border-radius: 10px;
     display: flex;

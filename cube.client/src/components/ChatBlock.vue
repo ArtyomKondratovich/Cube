@@ -31,7 +31,7 @@
 
 <script setup lang="ts">
 import { VueSpinner } from 'vue3-spinners';
-import { ref, watch, nextTick, watchEffect } from 'vue';
+import { ref } from 'vue';
 import type { 
     IChat,
     IMessage,

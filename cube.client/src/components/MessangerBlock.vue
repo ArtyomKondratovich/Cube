@@ -9,7 +9,7 @@
 </template>
 
 <script setup lang="ts">
-    import { ref, defineProps } from 'vue'
+    import { ref } from 'vue'
     import ChatBlock from './ChatBlock.vue';
     import ChatsBlock from './ChatsBlock.vue';
 
