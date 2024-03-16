@@ -121,6 +121,23 @@
         Success,
         ValidationError,
         AccountNotFound,
+    }
 
+    public enum CreateFriendshipResult
+    {
+        Success,
+        Unsuccess,
+        UserNotFound,
+        FriendNotFound,
+
+    }
+
+    public enum OperationResult 
+    {
+        Success,
+        ValidationError,
+        DuplicateEntity,
+        EntityNotFound,
+        EmailAlreadyExists,
     }
 }

@@ -20,8 +20,8 @@ interface AuthState {
 export const useAuthStore = defineStore(
   'auth', {
     state: (): AuthState => ({
-      user: JSON.parse(localStorage.getItem('user') ?? '{}') as IUser,
-      token: localStorage.getItem('token') ?? ''
+      user: {} as IUser,
+      token: ''
     }),
     actions: {
       async login(loginInput: ILoginInput){
@@ -61,6 +61,8 @@ export const useAuthStore = defineStore(
       logout(){
         localStorage.removeItem('token');
         localStorage.removeItem('user');
+        this.$state.token = '';
+        this.$state.user = {} as IUser;
         router.push('/login');
       }
     },

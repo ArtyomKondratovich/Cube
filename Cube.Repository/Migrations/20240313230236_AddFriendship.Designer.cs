@@ -3,6 +3,7 @@ using System;
 using Cube.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cube.Repository.Migrations
 {
     [DbContext(typeof(CubeDbContext))]
-    partial class CubeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240313230236_AddFriendship")]
+    partial class AddFriendship
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.25");
@@ -51,20 +53,6 @@ namespace Cube.Repository.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Friendships");
-                });
-
-            modelBuilder.Entity("Cube.Core.Entities.ImageEntity", b =>
-                {
-                    b.Property<string>("Name")
-                        .HasColumnType("TEXT");
-
-                    b.Property<byte[]>("ImageBytes")
-                        .IsRequired()
-                        .HasColumnType("BLOB");
-
-                    b.HasKey("Name");
-
-                    b.ToTable("Images");
                 });
 
             modelBuilder.Entity("Cube.Core.Entities.RoleEntity", b =>

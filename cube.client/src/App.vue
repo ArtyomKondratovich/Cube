@@ -25,12 +25,14 @@ export default defineComponent({
 
 <style>
   main {
+    color: white;
+    width: 100%;
+    height: 100%;
+  }
+  header {
     display: flex;
     justify-content: center;
-    margin-left: auto;
-    margin-right: auto;
-    color: white;
-    width: 70%;
-    height: 100%;
+    width: 100%;
+    background-color: #222222;
   }
 </style>

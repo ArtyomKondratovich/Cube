@@ -1,6 +1,7 @@
 ﻿using Cube.Application.Services;
 using Cube.Application.Services.User;
 using Cube.Application.Services.User.Dto;
+using Cube.Core.Models.Friendship;
 using Cube.Core.Models.User;
 using Microsoft.AspNetCore.Mvc;
 using LoginResult = Cube.Application.Services.LoginResult;
@@ -30,6 +31,13 @@ namespace Cube.Web.Api.Controllers
         public async Task<Response<bool, RegisterResult>> Register([FromBody] RegisterDto dto)
         {
             return await _service.Register(dto);
+        }
+
+        [Route("createFriendship")]
+        [HttpPost]
+        public async Task<Response<FriendshipModel, CreateFriendshipResult>> CreateFriendship([FromBody] FriendshipDto dto)
+        {
+            return await _service.CreateFriendshipAsync(dto);
         }
     }
 }

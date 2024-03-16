@@ -4,6 +4,7 @@ using Cube.Application.Services.Chat.Dto;
 using Cube.Application.Services.User.Dto;
 using Cube.Core.Entities;
 using Cube.Core.Models;
+using Cube.Core.Models.Friendship;
 using Cube.Core.Models.Messages;
 using Cube.EntityFramework.Repository;
 
@@ -34,6 +35,14 @@ namespace Cube.Application.Utilities
                     .ForMember(dest => dest.CreatedDate, act => act.MapFrom(src => src.CreatedDate))
                     .ForMember(dest => dest.UpdatedDate, act => act.MapFrom(src => src.UpdateDate));
 
+                cfg.CreateMap<FriendshipEntity, FriendshipModel>()
+                    .ForMember(dest => dest.Id, act => act.MapFrom(src => src.Id))
+                    .ForMember(dest => dest.UserId, act => act.MapFrom(src => src.UserId))
+                    .ForMember(dest => dest.FriendId, act => act.MapFrom(src => src.FriendId));
+
+                cfg.CreateMap<FriendshipDto, FriendshipEntity>()
+                    .ForMember(dest => dest.UserId, act => act.MapFrom(src => src.UserId))
+                    .ForMember(dest => dest.FriendId, act => act.MapFrom(src => src.FriendId));
             });
 
             var mapper = new Mapper(config);

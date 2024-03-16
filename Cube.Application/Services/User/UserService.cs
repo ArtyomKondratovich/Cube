@@ -2,6 +2,7 @@
 using Cube.Application.Services.User.Dto;
 using Cube.Application.Utilities;
 using Cube.Core.Entities;
+using Cube.Core.Models.Friendship;
 using Cube.Core.Models.User;
 using Cube.EntityFramework.Repository;
 using Microsoft.Extensions.Options;
@@ -20,6 +21,42 @@ namespace Cube.Application.Services.User
         {
             _repository = repository;
             _authOptions = options;
+        }
+
+        public async Task<Response<FriendshipModel, CreateFriendshipResult>> CreateFriendshipAsync(FriendshipDto dto)
+        {
+            var response = new Response<FriendshipModel, CreateFriendshipResult>();
+
+            var user = await _repository.UserRepository.GetUserByIdAsync(dto.UserId);
+            var friend = await _repository.UserRepository.GetUserByIdAsync(dto.FriendId);
+
+            if (user == null) 
+            {
+                response.ResponseResult = CreateFriendshipResult.UserNotFound; 
+                return response;
+            }
+
+            if (friend == null) 
+            {
+                response.ResponseResult = CreateFriendshipResult.FriendNotFound;
+                return response;
+            }
+
+            var friendshipEntity = MapperConfig.InitializeAutomapper().Map<FriendshipEntity>(dto);
+            friendshipEntity.Friend = friend;
+            friendshipEntity.User = user;
+
+            var result = await _repository.FriendshipRepository.CreateFriendshipAsync(friendshipEntity);
+
+            if (result == null) 
+            {
+                response.ResponseResult = CreateFriendshipResult.Unsuccess;
+                return response;
+            }
+
+            response.ResponseResult = CreateFriendshipResult.Success;
+            response.Value = MapperConfig.InitializeAutomapper().Map<FriendshipModel>(result);
+            return response;
         }
 
         public Task<Response<UserEntity, DeleteUserResult>> DeleteUser(DeleteUserDto dto)

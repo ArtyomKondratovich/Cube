@@ -5,13 +5,16 @@ html {
 }
 
 body{
-  display: grid;
+  display: flex;
   font-family: 'Robotic';
-  grid-template-rows: 100%;
   height: 100%;
   margin: 0px;
   background-color: #141414;
   padding: 0;
+}
+
+#app {
+  width: 100%;
 }
 
 @font-face {

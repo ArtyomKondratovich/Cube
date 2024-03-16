@@ -20,6 +20,7 @@
 </template>
 
 <script lang="ts">
+import type { IAuth, IResponse } from '@/api/types';
 import { useAuthStore } from '../store/auth.store';
 import { defineComponent } from 'vue';
 import { toast } from 'vue3-toastify';
@@ -43,7 +44,7 @@ export default defineComponent({
       
       await store.login({email, password})
         .then(async (response) => {
-          const data = response.data;
+          const data = response.data as IResponse<IAuth>;
       
           if (data.responseResult == 'Success' &&  data.value)
           {
@@ -51,7 +52,9 @@ export default defineComponent({
             await new Promise(resolve => setTimeout(resolve, 2000));
             localStorage.setItem('token', data.value.token);
             localStorage.setItem('user', JSON.stringify(data.value.user));
-            this.$router.push({ path: '/home' });
+            store.$state.user = data.value.user;
+            store.$state.token = data.value.token;
+            this.$router.push({ path: '/home/posts' });
           }
           else{
             toast.error(data.responseResult);
