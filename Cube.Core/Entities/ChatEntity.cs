@@ -1,5 +1,5 @@
 ﻿using Cube.Core.Entities;
-using Cube.Core.Utilities;
+using Cube.Core.Enums;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Cube.Core.Models

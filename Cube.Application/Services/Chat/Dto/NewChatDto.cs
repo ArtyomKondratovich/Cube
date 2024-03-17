@@ -1,5 +1,5 @@
-﻿using Cube.Core.Models.User;
-using Cube.Core.Utilities;
+﻿using Cube.Core.Enums;
+using Cube.Core.Models.User;
 using System.Text.Json.Serialization;
 
 namespace Cube.Application.Services.Chat.Dto

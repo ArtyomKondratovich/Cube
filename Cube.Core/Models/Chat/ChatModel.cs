@@ -1,4 +1,4 @@
-﻿using Cube.Core.Utilities;
+﻿using Cube.Core.Enums;
 
 namespace Cube.Core.Models.Chat
 {

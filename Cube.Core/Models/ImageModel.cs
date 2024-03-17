@@ -1,13 +1,12 @@
 ﻿using Cube.Core.Enums;
-using System.ComponentModel.DataAnnotations;
 
-namespace Cube.Core.Entities
+namespace Cube.Core.Models
 {
-    public class ImageEntity
+    public class ImageModel
     {
         public int Id { get; set; }
         public string Path { get; set; }
-        public ImageType Type { get; set; }
         public int OwnerId { get; set; }
+        public ImageType Type { get; set; }
     }
 }

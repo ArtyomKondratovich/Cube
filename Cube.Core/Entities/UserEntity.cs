@@ -9,6 +9,7 @@ namespace Cube.Core.Entities
         public string Name { get; set; }
         public string Surname { get; set; }
         public string Email { get; set; }
+        [JsonIgnore]
         public string Password { get; set; }
         public DateOnly? DateOfBirth { get; set; }
         public int RoleId { get; set; }

@@ -132,12 +132,20 @@
 
     }
 
-    public enum OperationResult 
+    public enum CreateImageResult 
     {
         Success,
-        ValidationError,
-        DuplicateEntity,
-        EntityNotFound,
-        EmailAlreadyExists,
+        OwnerNotFound,
+        ImageAlreadyExist,
+        CurruptedFile,
+        ServerError
+    }
+
+    public enum GetImageResult
+    {
+        Success,
+        OwnerNotFound,
+        ImageFileNotFound,
+        ServerError
     }
 }

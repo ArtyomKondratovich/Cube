@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Cube.Application.Services;
 using Cube.Application.Services.Chat.Dto;
+using Cube.Application.Services.Image.Dto;
 using Cube.Application.Services.User.Dto;
 using Cube.Core.Entities;
 using Cube.Core.Models;
@@ -43,6 +44,17 @@ namespace Cube.Application.Utilities
                 cfg.CreateMap<FriendshipDto, FriendshipEntity>()
                     .ForMember(dest => dest.UserId, act => act.MapFrom(src => src.UserId))
                     .ForMember(dest => dest.FriendId, act => act.MapFrom(src => src.FriendId));
+
+                cfg.CreateMap<NewImageDto, ImageEntity>()
+                    .ForMember(dest => dest.Type, act => act.MapFrom(src => src.Type))
+                    .ForMember(dest => dest.OwnerId, act => act.MapFrom(src => src.OwnerId));
+
+                cfg.CreateMap<ImageEntity, ImageModel>()
+                    .ForMember(dest => dest.Id, act => act.MapFrom(src => src.Id))
+                    .ForMember(dest => dest.Type, act => act.MapFrom(src => src.Type))
+                    .ForMember(dest => dest.OwnerId, act => act.MapFrom(src => src.OwnerId))
+                    .ForMember(dest => dest.Path, act => act.MapFrom(src => src.Path));
+
             });
 
             var mapper = new Mapper(config);

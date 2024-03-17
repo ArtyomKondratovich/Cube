@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using Cube.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Cube.Application.Services.User.Auth;
+using Cube.Application.Services.Image;
 
 namespace Cube.Web.Api.Configuration
 {
@@ -30,6 +31,11 @@ namespace Cube.Web.Api.Configuration
                 options => new UserService(
                     options.GetRequiredService<IRepositoryWrapper>(),
                     options.GetRequiredService<IOptions<AuthOptions>>()
+                    ));
+            builder.Services.AddScoped<IImageService>(
+                options => new ImageService(
+                    options.GetRequiredService<IRepositoryWrapper>(),
+                    builder.Configuration.GetSection("ImagesDirectoryPath").Key
                     ));
         }
 

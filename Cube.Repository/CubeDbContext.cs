@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Cube.Core.Models;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Cube.Core.Utilities;
 using Cube.Core.Entities;
 using System.Reflection.Emit;
+using Cube.Core.Enums;
 
 namespace Cube.EntityFramework
 {
@@ -40,6 +40,18 @@ namespace Cube.EntityFramework
                 .WithMany()
                 .HasForeignKey(f => f.FriendId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ImageEntity>()
+                .Property(i => i.Type)
+                .HasConversion(
+                    t => t.ToString(),
+                    t => (ImageType)Enum.Parse(typeof(ImageType), t));
+
+            modelBuilder.Entity<ChatEntity>()
+                .Property(i => i.Type)
+                .HasConversion(
+                    t => t.ToString(),
+                    t => (ChatType)Enum.Parse(typeof(ChatType), t));
 
             base.OnModelCreating(modelBuilder);
         }

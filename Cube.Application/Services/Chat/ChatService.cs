@@ -2,9 +2,9 @@
 using Cube.Application.Services.User.Dto;
 using Cube.Application.Utilities;
 using Cube.Core.Entities;
+using Cube.Core.Enums;
 using Cube.Core.Models;
 using Cube.Core.Models.Chat;
-using Cube.Core.Utilities;
 using Cube.EntityFramework.Repository;
 
 namespace Cube.Application.Services.Chat

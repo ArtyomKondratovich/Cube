@@ -1,7 +1,7 @@
 ﻿using Cube.Core.Entities;
+using Cube.Core.Enums;
 using Cube.EntityFramework;
 using Microsoft.EntityFrameworkCore;
-using System.Runtime.InteropServices;
 
 namespace Cube.Repository.Repository.Image
 {
@@ -18,7 +18,7 @@ namespace Cube.Repository.Repository.Image
         {
             var result = await _context.Images.AddAsync(entity);
 
-            if (result != null) 
+            if (result != null)
             {
                 await _context.SaveChangesAsync();
                 return result.Entity;
@@ -27,10 +27,10 @@ namespace Cube.Repository.Repository.Image
             return null;
         }
 
-        public async Task<bool> DeleteImageAsync(string name)
+        public async Task<bool> DeleteImageAsync(int id)
         {
             var image = _context.Images
-                .FirstOrDefault(x => x.Name == name);
+                .FirstOrDefault(x => x.Id == id);
 
             if (image != null) 
             {
@@ -41,22 +41,23 @@ namespace Cube.Repository.Repository.Image
             return image != null;
         }
 
-        public async Task<ImageEntity> GetImageByNameAsync(string name)
+        public async Task<ImageEntity> GetImageByTypeAndOwnerAsync(ImageType type, int ownerId)
         {
             return await _context.Images
-                .FirstOrDefaultAsync(x => x.Name == name);
+                .FirstOrDefaultAsync(x => x.Type == type && x.OwnerId == ownerId);
         }
 
-        public async Task<bool> UpdateImageAsync(ImageEntity entity)
+        public async Task<ImageEntity> UpdateImageAsync(ImageEntity entity)
         {
-            var updateResult = _context.Images.Update(entity);
+            var result = _context.Images.Update(entity);
 
-            if (updateResult != null) 
+            if (result != null) 
             {
                 await _context.SaveChangesAsync();
+                return result.Entity;
             }
 
-            return updateResult != null;
+            return null;
         }
     }
 }

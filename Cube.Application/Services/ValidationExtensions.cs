@@ -2,13 +2,6 @@
 {
     public static class ValidationExtensions
     {
-        private static List<string> _availableEntityNamesForImageName = new()
-        {
-            "post",
-            "profile",
-            "chat"
-        };
-
         public static bool IsValidEmail(this string? email)
         {
             if (email == null)
@@ -47,17 +40,5 @@
 
             return 1;
         }
-
-        public static bool IsEntityNameExist(this string? entityName) 
-        {
-            if (string.IsNullOrEmpty(entityName))
-            {
-                return false;
-            }
-
-            return _availableEntityNamesForImageName.Contains(entityName);
-        }
     }
-
-
 }

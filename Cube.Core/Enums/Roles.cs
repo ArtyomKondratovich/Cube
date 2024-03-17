@@ -1,6 +1,6 @@
 ﻿namespace Cube.Core.Enums
 {
-    public enum RolesEnum
+    public enum Roles
     {
         User,
         Admin
