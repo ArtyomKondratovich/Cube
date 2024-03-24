@@ -6,6 +6,7 @@ import { useAuthStore } from "@/store/auth.store"
 import MessangerBlock from '@/components/MessangerBlock.vue'
 import PostsBlock from '@/components/PostsBlock.vue'
 import ProfileBlock from '@/components/ProfileBlock.vue'
+import FriendsBlock from '@/components/FriendsBlock.vue'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -26,6 +27,11 @@ const router = createRouter({
                 {
                     path: 'posts',
                     component: PostsBlock
+                },
+                {
+                    path: 'friends/:userId',
+                    component: FriendsBlock,
+                    props: (route) => ({ userId: Number(route.params.userId )})
                 }
             ],
             props: true

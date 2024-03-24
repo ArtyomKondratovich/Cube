@@ -20,6 +20,7 @@
     "vee-validate": "^4.12.5",
     "vue": "^3.4.15",
     "vue-router": "^4.2.5",
+    "vue3-chat-scroll": "^0.2.0",
     "vue3-loading-overlay": "^0.0.0",
     "vue3-spinners": "^1.2.2",
     "vue3-toastify": "^0.2.1",

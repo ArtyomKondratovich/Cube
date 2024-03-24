@@ -44,7 +44,7 @@ namespace Cube.Web.Api.Controllers
 
         [HttpPost]
         [Route("getChatMessages")]
-        public async Task<Response<List<MessageModel>, GetChatMessagesResult>> GetChatMessages([FromBody] FindChatDto dto)
+        public async Task<Response<List<MessageModel>, GetChatMessagesResult>> GetChatMessages([FromBody] FindChatMessagesDto dto)
         {
             return await _service.GetChatMessages(dto);
         }

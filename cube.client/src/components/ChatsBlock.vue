@@ -1,15 +1,21 @@
 <template>
     <div class="chats">
             <div>
-                Search bar
+                <div class="searchHeader">
+                    <div id="searchBar1">
+                        <input type="text" placeholder="Search" v-model="searchText">
+                        <img src="../assets/icons/searchIcon.png">
+                    </div>
+                </div>
             </div>
             <div v-if="loading" class="spinner">
                 <VueSpinner size="20"/>
             </div>
-            <div v-if="!loading">
+            <div v-if="!loading" class="chatsList">
                 <ul>
-                    <li v-for="chat in chats" :key="chat.id">
+                    <li v-for="chat in filteredChats" :key="chat.id">
                         <div class="chat" @click="emit('select-chat', chat.id)">
+                            <img src="../assets/icons/pinIcon.png">
                             <p>{{chat.title}}</p>
                         </div>
                     </li>
@@ -20,7 +26,7 @@
 
 <script setup lang="ts">
 import { VueSpinner } from 'vue3-spinners';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import type {
     IChatLoad,
     IResponse
@@ -43,6 +49,15 @@ const emit = defineEmits<{
 
 const loading = ref(true);
 const chats = ref<IChatLoad[]>([]);
+const searchText = ref('');
+
+const filteredChats = computed(() => {
+  if (!searchText.value) {
+    return chats.value;
+  }
+  const searchQuery = searchText.value.toLowerCase();
+  return chats.value.filter(chat => chat.title.toLowerCase().includes(searchQuery));
+});
 
 axios.post(`${config.apiUrl}/Chat/getUserChats`, { Id: props.userId }, {
             headers: {
@@ -64,6 +79,7 @@ axios.post(`${config.apiUrl}/Chat/getUserChats`, { Id: props.userId }, {
                 toast.error(error);
                 await new Promise(resolve => setTimeout(resolve, 2000));
         });
+
 </script>
 
 <style>
@@ -78,6 +94,12 @@ axios.post(`${config.apiUrl}/Chat/getUserChats`, { Id: props.userId }, {
         border-right: solid 1px #363738;
         font-size: small;
         font-family: 'Robotic';
+    }
+
+    .chatsList img {
+        width: 36px;
+        height: 36px;
+        border-radius: 18px;
     }
 
     .spinner {
@@ -111,6 +133,11 @@ axios.post(`${config.apiUrl}/Chat/getUserChats`, { Id: props.userId }, {
         -moz-user-select: none;
         -webkit-user-select: none;
         -ms-user-select: none;
+    }
+
+    .chatsList li:hover {
+        background-color: #363738;
+        border-radius: 10px;
     }
 
     .image {

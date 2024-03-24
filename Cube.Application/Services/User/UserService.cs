@@ -64,9 +64,58 @@ namespace Cube.Application.Services.User
             throw new NotImplementedException();
         }
 
+        public async Task<Response<List<UserEntity>, GetAllUsers>> GetAll()
+        {
+            var response = new Response<List<UserEntity>, GetAllUsers>
+            {
+                Value = await _repository.UserRepository.GetAll(),
+                ResponseResult = GetAllUsers.Success
+            };
+
+            return response;
+        }
+
         public Task<Response<UserEntity, GetUserResult>> GetUserById(FindUserDto dto)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<Response<List<UserEntity>, GetUserFriends>> GetUserFriendsAsync(FindUserDto dto)
+        {
+            var response = new Response<List<UserEntity>, GetUserFriends>();
+
+            var user = await _repository.UserRepository.GetUserByIdAsync(dto.Id);
+
+            if (user == null) 
+            {
+                response.ResponseResult = GetUserFriends.UserNotFound;
+                return response;
+            }
+
+            var friendships = await _repository.FriendshipRepository.GetUsersFriendshipsAsync(dto.Id);
+
+            if (friendships == null || !friendships.Any())
+            {
+                response.ResponseResult = GetUserFriends.Success;
+                response.Value = new();
+                return response;
+            }
+
+            var friends = friendships
+                .Select(async x => await _repository.UserRepository.GetUserByIdAsync(x.FriendId))
+                .Select(x => x.Result)
+                .ToList();
+
+            if (friends == null) 
+            {
+                response.ResponseResult = GetUserFriends.Success;
+                response.Value = new();
+                return response;
+            }
+
+            response.ResponseResult = GetUserFriends.Success;
+            response.Value = friends;
+            return response;
         }
 
         public async Task<Response<UserAuthModel, LoginResult>> Login(LoginDto dto)
@@ -81,7 +130,7 @@ namespace Cube.Application.Services.User
             if (user != null)
             {
                 var role = await _repository.RoleRepository.GetRoleByIdAsync(user.RoleId);
-
+                
                 if (role != null)
                 {
                     var hash = dto.Password.GetHash();
@@ -100,6 +149,7 @@ namespace Cube.Application.Services.User
 
                     return response;
                 }
+                
             }
 
             response.ResponseResult = LoginResult.WrongLoginOrPassword;
@@ -145,7 +195,7 @@ namespace Cube.Application.Services.User
 
             if (role == null)
             {
-                response.ResponseResult = RegisterResult.ValidationError;
+                response.ResponseResult = RegisterResult.RoleDoesntExist;
                 return response;
             }
 

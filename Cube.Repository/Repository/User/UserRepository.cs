@@ -42,5 +42,10 @@ namespace Cube.EntityFramework.Repository.User
 
             return null;
         }
+
+        public async Task<List<UserEntity>> GetAll()
+        {
+            return await _dbContext.Users.ToListAsync();
+        }
     }
 }

@@ -10,6 +10,6 @@ namespace Cube.Application.Services.Message
         public Task<Response<MessageModel, SendMessageResult>> SendMessage(NewMessageDto dto);
         public Task<Response<bool, DeleteMessageResult>> DeleteMessage(DeleteMessageDto dto);
         public Task<Response<MessageModel, UpdateMessageResult>> UpdateMessage(UpdateMessageDto dto);
-        public Task<Response<List<MessageModel>, GetChatMessagesResult>> GetChatMessages(FindChatDto dto);
+        public Task<Response<List<MessageModel>, GetChatMessagesResult>> GetChatMessages(FindChatMessagesDto dto);
     }
 }

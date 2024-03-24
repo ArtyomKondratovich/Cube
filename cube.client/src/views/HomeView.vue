@@ -3,7 +3,7 @@
         <div class="menu">
             <router-link :to="{ path: `/home/profile/${user.id}` }">
                 <div class="profile">
-                    <img src="../assets/images/profiles/default.png">
+                    <img src="../assets/Images/Profile/Profile_default.png">
                     <div class="userName"> {{ user?.name }} {{ user?.surname }} </div>
                 </div>
             </router-link>
@@ -21,7 +21,7 @@
                 </li>
                 <li @click="selectTab(3)" :class="{ 'active': activeTab == 3 }">
                     <img src="../assets/icons/friendsIcon.png">
-                    <router-link :to="{ path: '/home' }">Friends</router-link>
+                    <router-link :to="{ path: `/home/friends/${user.id}` }">Friends</router-link>
                 </li>
                 <li @click="selectTab(4)" :class="{ 'active': activeTab == 4 }">
                     <img src="../assets/icons/settingsIcon.png">
@@ -115,7 +115,9 @@ function selectTab(id: number) {
 }
 
 .menu ul li a {
-    padding: 10px;
+    display: flex;
+    padding: 5px;
+    width: 100%;
 }
 
 .block {

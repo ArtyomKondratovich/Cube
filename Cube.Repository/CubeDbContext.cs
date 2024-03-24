@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Cube.Core.Models;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Cube.Core.Entities;
-using System.Reflection.Emit;
 using Cube.Core.Enums;
 
 namespace Cube.EntityFramework
@@ -29,6 +27,10 @@ namespace Cube.EntityFramework
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<RoleEntity>().HasData(
+                new RoleEntity { Id = 1, Name = "User" },
+                new RoleEntity { Id = 2, Name = "Admin" });
+
             modelBuilder.Entity<FriendshipEntity>()
             .HasOne(f => f.User)
             .WithMany(u => u.Friends)
@@ -60,5 +62,6 @@ namespace Cube.EntityFramework
         {
             
         }
+
     }
 }

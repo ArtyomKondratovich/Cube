@@ -37,7 +37,7 @@ namespace Cube.Application.Services.Message
             return response;
         }
 
-        public async Task<Response<List<MessageModel>, GetChatMessagesResult>> GetChatMessages(FindChatDto dto)
+        public async Task<Response<List<MessageModel>, GetChatMessagesResult>> GetChatMessages(FindChatMessagesDto dto)
         {
             var response = new Response<List<MessageModel>, GetChatMessagesResult>();
 
@@ -54,6 +54,12 @@ namespace Cube.Application.Services.Message
             if (messages != null)
             {
                 response.ResponseResult = GetChatMessagesResult.Success;
+
+                foreach (var message in messages) 
+                {
+                    message.CreatedDate = message.CreatedDate.AddHours(dto.UsersTimezoneOffset);
+                }
+
                 response.Value = messages
                     .Select(x => MapperConfig.InitializeAutomapper().Map<MessageModel>(x))
                     .ToList();

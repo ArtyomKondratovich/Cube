@@ -7,7 +7,7 @@
             <div class="colored-backgroud"></div>
             <div class="profileHeader-content">
                 <div id="img-block">
-                    <img id="profileImage" src="../assets/images/profiles/default.png">
+                    <img id="profileImage" src="../assets/Images/Profile/Profile_default.png">
                 </div>
                 <div id="info-block">
                     {{ "Artyom" + " " + "Kondratovich" }}
@@ -42,7 +42,7 @@ import { ref } from 'vue';
     });
 
     const store = useAuthStore();
-    const isUserProfile = ref(!store.$state.user?.id == props.userId);
+    const isUserProfile = ref(store.$state.user?.id != props.userId);
     const loading = ref(false);
     const user = ref<IUser | null>(null);
 

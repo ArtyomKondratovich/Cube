@@ -63,7 +63,10 @@ import { useAuthStore } from '@/store/auth.store';
                 const store = useAuthStore();
                 await store.register(this.user);
             }
-
+        },
+        created() {
+            const store = useAuthStore()
+            store.logout();
         }
     })
 </script>

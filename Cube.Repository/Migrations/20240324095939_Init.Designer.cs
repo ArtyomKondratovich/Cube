@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cube.Repository.Migrations
 {
     [DbContext(typeof(CubeDbContext))]
-    [Migration("20240310195047_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20240324095939_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -32,6 +32,49 @@ namespace Cube.Repository.Migrations
                     b.HasIndex("UsersId");
 
                     b.ToTable("ChatEntityUserEntity");
+                });
+
+            modelBuilder.Entity("Cube.Core.Entities.FriendshipEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("FriendId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FriendId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Friendships");
+                });
+
+            modelBuilder.Entity("Cube.Core.Entities.ImageEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("OwnerId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Path")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Images");
                 });
 
             modelBuilder.Entity("Cube.Core.Entities.RoleEntity", b =>
@@ -94,8 +137,9 @@ namespace Cube.Repository.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("Type")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -148,6 +192,25 @@ namespace Cube.Repository.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Cube.Core.Entities.FriendshipEntity", b =>
+                {
+                    b.HasOne("Cube.Core.Entities.UserEntity", "Friend")
+                        .WithMany()
+                        .HasForeignKey("FriendId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Cube.Core.Entities.UserEntity", "User")
+                        .WithMany("Friends")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Friend");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Cube.Core.Entities.UserEntity", b =>
                 {
                     b.HasOne("Cube.Core.Entities.RoleEntity", "Role")
@@ -176,6 +239,11 @@ namespace Cube.Repository.Migrations
                     b.Navigation("Chat");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Cube.Core.Entities.UserEntity", b =>
+                {
+                    b.Navigation("Friends");
                 });
 #pragma warning restore 612, 618
         }

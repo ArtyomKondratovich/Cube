@@ -46,7 +46,7 @@ namespace Cube.Repository.Repository.Friendship
             return await _context.Friendships.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<List<FriendshipEntity>> GetUsersFriendships(int userId)
+        public async Task<List<FriendshipEntity>> GetUsersFriendshipsAsync(int userId)
         {
             return await _context.Friendships
                 .Where(x => x.UserId == userId)

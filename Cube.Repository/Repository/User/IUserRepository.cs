@@ -8,5 +8,6 @@ namespace Cube.EntityFramework.Repository.User
         Task<UserEntity> GetUserByIdAsync(int id);
         UserEntity GetUserById(int id);
         Task<UserEntity> UserAssociatedWithTheEmail(string email);
+        Task<List<UserEntity>> GetAll();
     }
 }

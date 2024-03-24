@@ -1,6 +1,19 @@
 ﻿namespace Cube.Application.Services
 {
-    public enum GetChatMessagesResult {
+    public enum GetAllUsers
+    {
+        Success
+    }
+
+    public enum GetUserFriends 
+    { 
+        Success,
+        UserNotFound,
+        ServerError
+    }
+
+    public enum GetChatMessagesResult 
+    {
         Success,
         ChatNotFound,
         ServerError
@@ -86,6 +99,7 @@
     public enum RegisterResult
     {
         Success,
+        RoleDoesntExist,
         EmailAlreadyExists,
         ValidationError,
         DataBaseError

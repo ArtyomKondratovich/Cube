@@ -98,7 +98,7 @@ namespace Cube.Application.Services.Chat
             return response;
         }
 
-        public async Task<Response<List<ChatModel>, GetAllChatsResult>> GetAllUsersChats(FindUserDto dto)
+        public async Task<Response<List<ChatModel>, GetAllChatsResult>> GetAllUserChats(FindUserChatsDto dto)
         {
             var response = new Response<List<ChatModel>, GetAllChatsResult>();
 

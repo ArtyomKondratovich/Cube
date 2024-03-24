@@ -6,7 +6,7 @@
             <div v-if="loading" class="loadingSpinner">
                 <VueSpinner :size="20"/>
             </div>
-            <div v-if="!loading" class="messages">
+            <div id="messageContainer" v-if="!loading" class="messages">
                 <ul>
                     <li v-for="message in chatMessages" :key="message.id" :class="getMessageClass(message.userId)">
                         <div id="text">
@@ -30,15 +30,15 @@
 </template>
 
 <script setup lang="ts">
-import { VueSpinner } from 'vue3-spinners';
-import { ref } from 'vue';
+    import { VueSpinner } from 'vue3-spinners';
+    import { ref, onMounted, nextTick } from 'vue';
 import type { 
     IChat,
     IMessage,
     IMesssageInput,
     IResponse
 } from '@/api/types';
-import { toast } from 'vue3-toastify';
+import { toast, type Data } from 'vue3-toastify';
 import axios from 'axios';
 import config from '@/config';
 
@@ -57,6 +57,7 @@ const chat = ref({} as IChat);
 const message = ref('');
 const chatMessages = ref<IMessage[]>([]);
 const loading = ref(true);
+const timeZoneOffset = ref(new Date().getTimezoneOffset())
 
 axios.post(`${config.apiUrl}/Chat/getChat`, 
         { Id: props.userId }, 
@@ -81,7 +82,10 @@ axios.post(`${config.apiUrl}/Chat/getChat`,
         });
  
 axios.post(`${config.apiUrl}/Message/getChatMessages`, 
-    { Id: props.chatId }, 
+    { 
+        Id: props.chatId,
+        UsersTimezoneOffset: timeZoneOffset.value
+    }, 
     {
         headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -93,6 +97,10 @@ axios.post(`${config.apiUrl}/Message/getChatMessages`,
         if (data.responseResult == 'Success' && data.value){
             chatMessages.value = data.value;
             loading.value = false;
+            nextTick(() => {
+                
+                scrollToBottom();
+            });
         }
         else
         {
@@ -106,6 +114,19 @@ axios.post(`${config.apiUrl}/Message/getChatMessages`,
 function getMessageClass(senderId: number): string {
     let isUsersMessage = props.userId == senderId;
     return isUsersMessage ? 'message-right' : 'message-left';
+}
+
+function scrollToBottom(): void {
+    let container = document.querySelector('#messageContainer');
+
+    if (container != null && chatMessages.value.length > 0) {
+        container.scrollTop = container.scrollHeight;
+    }
+}
+
+function getLocalTime(utcDate: Date): Date {
+    const localDate = new Date(utcDate.getTime() - (timeZoneOffset.value * 60000));
+    return localDate;
 }
 
 function sendMessage(): void {
@@ -128,6 +149,9 @@ function sendMessage(): void {
             const data = response.data as IResponse<IMessage>
             if (data.responseResult == 'Success' && data.value) {
                 chatMessages.value.push(data.value);
+                nextTick(() => {
+                    scrollToBottom();
+                });
             }
             else {
                 toast.error(data.responseResult);
@@ -136,7 +160,7 @@ function sendMessage(): void {
         .catch(error => {
             toast.error('server error');
         });
-}
+    }
 </script>
 
 <style>
@@ -148,9 +172,9 @@ function sendMessage(): void {
     }
 
     .messages {
+        display: flex;
         flex-basis: 80%;
         overflow-y: scroll;
-        display: flex;
     }
 
     .loadingSpinner {
@@ -188,6 +212,7 @@ function sendMessage(): void {
         margin: 10px;
         display: flex;
         padding: 0px;
+        width: 100%;
         flex-direction: column;
     }
 
