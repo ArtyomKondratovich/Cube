@@ -34,6 +34,8 @@ export interface IMessage {
     message: string;
     createdDate: Date;
     updatedDate: Date | null;
+    formatedCreatedDate: string;
+    formatedUpdatedDate: string;
     userId: number;
     chatId: number;
 }

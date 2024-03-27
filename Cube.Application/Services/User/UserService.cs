@@ -195,9 +195,9 @@ namespace Cube.Application.Services.User
 
             if (role == null)
             {
-                response.ResponseResult = RegisterResult.RoleDoesntExist;
-                return response;
+                role = await _repository.RoleRepository.CreateRoleAsync(new RoleEntity { Name = "User" });
             }
+
 
             user.RoleId = role.Id;
 

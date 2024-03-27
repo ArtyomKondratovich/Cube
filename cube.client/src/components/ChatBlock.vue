@@ -1,7 +1,12 @@
 <template>
     <div class="chatView">
             <div class="header">
-
+                <div>
+                    {{ chat.title }}
+                </div>
+                <div v-if="chat.type != 'SavedMessages'">
+                     members
+                </div>
             </div>
             <div v-if="loading" class="loadingSpinner">
                 <VueSpinner :size="20"/>
@@ -13,7 +18,7 @@
                             {{ message.message }}
                         </div>
                         <div id="date">
-                            {{ message.createdDate }}
+                            {{ message.formatedCreatedDate }}
                         </div>
                     </li>
                 </ul>
@@ -38,29 +43,33 @@ import type {
     IMesssageInput,
     IResponse
 } from '@/api/types';
-import { toast, type Data } from 'vue3-toastify';
+import { toast } from 'vue3-toastify';
 import axios from 'axios';
 import config from '@/config';
+import getUserFromLocalStorage from '@/helpers/getFromLocalStorage';
 
 const props = defineProps({
     chatId: {
         type: Number,
         required: true
-    },
-    userId: {
-        type: Number,
-        required: true
     }
 });
 
+const userId = ref(getUserFromLocalStorage())
 const chat = ref({} as IChat);
 const message = ref('');
 const chatMessages = ref<IMessage[]>([]);
 const loading = ref(true);
-const timeZoneOffset = ref(new Date().getTimezoneOffset())
+const timeZoneOffset = ref((new Date().getTimezoneOffset()) / 60 * (-1))
 
-axios.post(`${config.apiUrl}/Chat/getChat`, 
-        { Id: props.userId }, 
+onMounted(async () => {
+    await fetchChat();
+    await fetchChatMessages();
+});
+
+async function fetchChat() {
+    axios.post(`${config.apiUrl}/Chat/getChat`, 
+        { Id: props.chatId }, 
         {
             headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -70,8 +79,8 @@ axios.post(`${config.apiUrl}/Chat/getChat`,
         .then(async (response) => {
             const data = response.data as IResponse<IChat>  
             if (data.responseResult == 'Success' && data.value) {
-                chat.value.users = data.value.users;
-            }   
+                chat.value = data.value;
+            }
             else{
                 toast.error(data.responseResult);
                 await new Promise(resolve => setTimeout(resolve, 2000));
@@ -80,8 +89,10 @@ axios.post(`${config.apiUrl}/Chat/getChat`,
             toast.error(error);
             await new Promise(resolve => setTimeout(resolve, 2000));
         });
+}
  
-axios.post(`${config.apiUrl}/Message/getChatMessages`, 
+async function fetchChatMessages() {
+    axios.post(`${config.apiUrl}/Message/getChatMessages`, 
     { 
         Id: props.chatId,
         UsersTimezoneOffset: timeZoneOffset.value
@@ -97,8 +108,7 @@ axios.post(`${config.apiUrl}/Message/getChatMessages`,
         if (data.responseResult == 'Success' && data.value){
             chatMessages.value = data.value;
             loading.value = false;
-            nextTick(() => {
-                
+            nextTick(() => {    
                 scrollToBottom();
             });
         }
@@ -110,9 +120,10 @@ axios.post(`${config.apiUrl}/Message/getChatMessages`,
     .catch(error => {
         toast.error('server error');
     });
+}
 
 function getMessageClass(senderId: number): string {
-    let isUsersMessage = props.userId == senderId;
+    let isUsersMessage = userId.value == senderId;
     return isUsersMessage ? 'message-right' : 'message-left';
 }
 
@@ -124,19 +135,16 @@ function scrollToBottom(): void {
     }
 }
 
-function getLocalTime(utcDate: Date): Date {
-    const localDate = new Date(utcDate.getTime() - (timeZoneOffset.value * 60000));
-    return localDate;
-}
-
 function sendMessage(): void {
     const messageInput = {
-        senderId: props.userId,
+        senderId: userId.value,
         chatId: props.chatId,
-        message: message.value
+        message: message.value,
+        timeZoneOffset: timeZoneOffset.value
     } as IMesssageInput;
 
     message.value = '';
+
     axios.post(`${config.apiUrl}/Message/send`, 
         messageInput, 
         {
@@ -165,15 +173,15 @@ function sendMessage(): void {
 
 <style>
     .chatView {
-        flex-basis: 70%;
         display: flex;
+        width: 100%;
         flex-direction: column;
         font-size: small;
     }
 
     .messages {
         display: flex;
-        flex-basis: 80%;
+        flex-basis: 90%;
         overflow-y: scroll;
     }
 
@@ -181,12 +189,16 @@ function sendMessage(): void {
         display: flex;
         justify-content: center;
         align-items: center;
-        flex-basis: 80%;
+        flex-basis: 90%;
     }
 
     .chatView .header {
-        flex-basis: 15%;
+        display: 5%;
+        flex-direction: column;
+        border-bottom: 1px solid #363738;
     }
+
+
 
     .chatView .messages li {
         max-width: 50%;
@@ -251,7 +263,7 @@ function sendMessage(): void {
     .sender {
         display: flex;
         flex-direction: row;
-        align-items: flex-end;
+        justify-self: flex-end;
         margin: 5px;
         padding-left: 15px;
         background-color: #292929;

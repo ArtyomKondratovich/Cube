@@ -27,9 +27,6 @@ namespace Cube.EntityFramework
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<RoleEntity>().HasData(
-                new RoleEntity { Id = 1, Name = "User" },
-                new RoleEntity { Id = 2, Name = "Admin" });
 
             modelBuilder.Entity<FriendshipEntity>()
             .HasOne(f => f.User)

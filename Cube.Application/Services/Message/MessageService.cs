@@ -1,10 +1,8 @@
-﻿using Cube.Application.Services.Chat.Dto;
-using Cube.Application.Services.Message.Dto;
+﻿using Cube.Application.Services.Message.Dto;
 using Cube.Application.Utilities;
 using Cube.Core.Models;
 using Cube.Core.Models.Messages;
 using Cube.EntityFramework.Repository;
-using System.Runtime.InteropServices;
 
 namespace Cube.Application.Services.Message
 {
@@ -63,6 +61,12 @@ namespace Cube.Application.Services.Message
                 response.Value = messages
                     .Select(x => MapperConfig.InitializeAutomapper().Map<MessageModel>(x))
                     .ToList();
+
+                foreach (var message in response.Value)
+                {
+                    message.FormatedCreatedDate = message.CreatedDate.ToString("hh:mm tt");
+                }
+
                 return response;
             }
 
@@ -128,16 +132,18 @@ namespace Cube.Application.Services.Message
                 ChatId = chat.Id
             };
 
-            var value = await _repository.MessageRepository.SendMessage(message);
+            var result = await _repository.MessageRepository.SendMessage(message);
 
-            if (value == null)
+            if (result == null)
             {
                 response.ResponseResult = SendMessageResult.DataBaseError;
             }
             else
             {
                 response.ResponseResult = SendMessageResult.Success;
-                response.Value = MapperConfig.InitializeAutomapper().Map<MessageModel>(value);
+                result.CreatedDate = result.CreatedDate.AddHours(dto.TimeZoneOffset);
+                response.Value = MapperConfig.InitializeAutomapper().Map<MessageModel>(result);
+                response.Value.FormatedCreatedDate = response.Value.CreatedDate.ToString("hh:mm tt");
             }
 
             return response;

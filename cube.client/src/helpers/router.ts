@@ -1,23 +1,35 @@
 import {createRouter, createWebHistory } from 'vue-router'
 import HomeView from "@/views/HomeView.vue"
 import LoginView from "@/views/LoginView.vue"
-import RegisterView from "@/views/RegisterPage.vue"
+import RegisterView from "@/views/RegisterView.vue"
 import { useAuthStore } from "@/store/auth.store"
 import MessangerBlock from '@/components/MessangerBlock.vue'
 import PostsBlock from '@/components/PostsBlock.vue'
 import ProfileBlock from '@/components/ProfileBlock.vue'
 import FriendsBlock from '@/components/FriendsBlock.vue'
+import ChatBlock from '@/components/ChatBlock.vue'
+import SettingsBlock from '@/components/SettingsBlock.vue'
 
 const router = createRouter({
     history: createWebHistory(),
     routes: [
         { 
-            path: '/home', component: HomeView,
+            path: '/', component: HomeView,
             children: [
                 {
-                    path: 'messanger/:userId',
+                    path: 'feed',
+                    component: PostsBlock
+                },
+                {
+                    path: 'messanger',
                     component: MessangerBlock,
-                    props: (route) => ({ userId: Number(route.params.userId )})
+                    children: [
+                        {
+                            path: 'chat/:chatId',
+                            component: ChatBlock,
+                            props: (route) => ({ chatId: Number(route.params.chatId) })
+                        }
+                    ]
                 },
                 {
                     path: 'profile/:userId',
@@ -25,13 +37,12 @@ const router = createRouter({
                     props: (route) => ({ userId: Number(route.params.userId )})
                 },
                 {
-                    path: 'posts',
-                    component: PostsBlock
+                    path: 'friends',
+                    component: FriendsBlock
                 },
                 {
-                    path: 'friends/:userId',
-                    component: FriendsBlock,
-                    props: (route) => ({ userId: Number(route.params.userId )})
+                    path: 'settings',
+                    component: SettingsBlock
                 }
             ],
             props: true

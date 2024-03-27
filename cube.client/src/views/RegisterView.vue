@@ -1,6 +1,7 @@
 <template>
     <div class="register-form">
         <h2>SignUp</h2>
+        <p>Current timeoffset={{ currentTZoffset }}</p>
         <form @submit.prevent="handleSubmit">
             <ul>
                 <li>
@@ -34,41 +35,25 @@
     </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import { ref } from 'vue';
 import { useAuthStore } from '@/store/auth.store';
+import type { IRegisterInput } from '@/api/types';
 
-    export default defineComponent({
-        name: 'RegisterView',
-        components: {},
-        data() {
-            return {
-                submitted: false,
-                user: {
-                    name: '',
-                    surname: '',
-                    dateOfBirth: null,
-                    email: '',
-                    password: ''
-                },
-                confirmPassword: ''
-            }
-        },
-        methods: {
-            isLoggedIn(): boolean {
-                const store = useAuthStore();
-                return store.isLoggedIn;
-            },
-            async handleSubmit(){
-                const store = useAuthStore();
-                await store.register(this.user);
-            }
-        },
-        created() {
-            const store = useAuthStore()
-            store.logout();
-        }
-    })
+const submitted = ref(false);
+const user = ref<IRegisterInput>({} as IRegisterInput);
+const confirmPassword = ref('');
+const currentTZoffset = ref(new Date().toLocaleString('en', {timeZoneName: 'shortOffset'}))
+
+function isLoggedIn(): boolean {
+    const store = useAuthStore();
+    return store.isLoggedIn;
+}
+
+async function handleSubmit(){
+    const store = useAuthStore();
+    await store.register(user.value);
+}
 </script>
 
 <style>

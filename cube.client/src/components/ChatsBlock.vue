@@ -34,19 +34,14 @@ import type {
 import { toast } from 'vue3-toastify';
 import axios from 'axios';
 import config from '@/config';
-import { defineEmits } from 'vue';
-
-const props = defineProps({
-    userId: {
-        type: Number,
-        required: true
-    }
-});
+import { defineEmits, onMounted } from 'vue';
+import getUserIdFromLocalStorage from '@/helpers/getFromLocalStorage';
 
 const emit = defineEmits<{
     (e: 'select-chat', id: number): void
 }>();
 
+const userId = ref(getUserIdFromLocalStorage());
 const loading = ref(true);
 const chats = ref<IChatLoad[]>([]);
 const searchText = ref('');
@@ -59,7 +54,12 @@ const filteredChats = computed(() => {
   return chats.value.filter(chat => chat.title.toLowerCase().includes(searchQuery));
 });
 
-axios.post(`${config.apiUrl}/Chat/getUserChats`, { Id: props.userId }, {
+onMounted(async () => {
+    await fetchUserChats();
+});
+
+async function fetchUserChats() {
+    axios.post(`${config.apiUrl}/Chat/getUserChats`, { Id: userId.value }, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 'Content-Type': 'application/json'
@@ -79,6 +79,7 @@ axios.post(`${config.apiUrl}/Chat/getUserChats`, { Id: props.userId }, {
                 toast.error(error);
                 await new Promise(resolve => setTimeout(resolve, 2000));
         });
+} 
 
 </script>
 
@@ -88,7 +89,6 @@ axios.post(`${config.apiUrl}/Chat/getUserChats`, { Id: props.userId }, {
         background-color: #141414;
     }
     .chats {
-        flex-basis: 30%;
         width: 100%;
         height: 100%;
         border-right: solid 1px #363738;

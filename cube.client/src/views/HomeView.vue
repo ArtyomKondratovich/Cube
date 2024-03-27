@@ -10,18 +10,18 @@
             <ul>
                 <li @click="selectTab(0)" :class="{ 'active': activeTab == 0 }">
                     <img src="../assets/icons/homeIcon.png">
-                    <router-link :to="{ path: '/home/posts' }">Home</router-link>
+                    <router-link :to="{ path: '/feed' }">News</router-link>
                 </li>
                 <li @click="selectTab(1)" :class="{ 'active': activeTab == 1 }">
                     <img src="../assets/icons/messangerIcon.png">
-                    <router-link :to="{ path: `/home/messanger/${user.id}` }">Messanger</router-link>
+                    <router-link :to="{ path: `/messanger` }">Messanger</router-link>
                 </li>
                 <li @click="selectTab(2)" :class="{ 'active': activeTab == 2 }">
-                    <router-link :to="{ path: '/home' }">Notifications</router-link>
+                    <router-link :to="{ path: '/feed' }">Notifications</router-link>
                 </li>
                 <li @click="selectTab(3)" :class="{ 'active': activeTab == 3 }">
                     <img src="../assets/icons/friendsIcon.png">
-                    <router-link :to="{ path: `/home/friends/${user.id}` }">Friends</router-link>
+                    <router-link :to="{ path: `/friends` }">Friends</router-link>
                 </li>
                 <li @click="selectTab(4)" :class="{ 'active': activeTab == 4 }">
                     <img src="../assets/icons/settingsIcon.png">

@@ -1,32 +1,32 @@
 <template>
     <div class="messanger">
-        <ChatsBlock :userId="userId" @select-chat="selectChat"/>
+        <div style="display: flex; flex-basis: 30%;">
+            <ChatsBlock @select-chat="selectChat"/>
+        </div>
         <div v-if="!isAnyChatSelected" class="selectAnyChat">
             <p>Select any chat</p>
         </div>
-        <ChatBlock v-if="isAnyChatSelected" :chatId="selectedChat" :userId="userId"/>
+        <div v-if="isAnyChatSelected" style="display: flex; flex-basis: 70%;">
+            <router-view></router-view>
+        </div>
     </div>
 </template>
 
 <script setup lang="ts">
     import { ref } from 'vue'
-    import ChatBlock from './ChatBlock.vue';
     import ChatsBlock from './ChatsBlock.vue';
+    import router from '@/helpers/router';
 
-    const props = defineProps({
-        userId: {
-            type: Number,
-            required: true
-        }
-    });
 
     const isAnyChatSelected = ref(false);
     const selectedChat = ref<number>(0);
     
-    function selectChat(id: number) {
-        selectedChat.value = id;
+    function selectChat(chatId: number) {
+        selectedChat.value = chatId;
         isAnyChatSelected.value = true;
+        router.push({ path: `/messanger/chat/${chatId}` })
     }
+
 </script>
 
 

@@ -54,7 +54,7 @@ export default defineComponent({
             localStorage.setItem('user', JSON.stringify(data.value.user));
             store.$state.user = data.value.user;
             store.$state.token = data.value.token;
-            this.$router.push({ path: '/home/posts' });
+            this.$router.push({ path: '/feed' });
           }
           else{
             toast.error(data.responseResult);
