@@ -14,6 +14,7 @@ using Cube.Application.Services.User.Auth;
 using Cube.Application.Services.Image;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Cube.Application.Services.Notification;
 
 namespace Cube.Web.Api.Configuration
 {
@@ -39,6 +40,10 @@ namespace Cube.Web.Api.Configuration
                     options.GetRequiredService<IRepositoryWrapper>(),
                     builder.Configuration.GetSection("ImagesDirectoryPath").Value
                     ));
+
+            builder.Services.AddScoped<INotificationService>(
+                options => new NotificationService(
+                    options.GetRequiredService<IRepositoryWrapper>()));
         }
 
         public static void ConfigureRepository(this WebApplicationBuilder builder)

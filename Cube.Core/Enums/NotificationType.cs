@@ -4,6 +4,7 @@
     {
         FriendRequest,
         FriendResponse,
-        ChatNotification
+        ChatNotification,
+        NewsNotification
     }
 }

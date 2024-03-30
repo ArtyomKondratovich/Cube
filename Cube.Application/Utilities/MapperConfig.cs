@@ -6,7 +6,9 @@ using Cube.Application.Services.User.Dto;
 using Cube.Core.Entities;
 using Cube.Core.Models;
 using Cube.Core.Models.Friendship;
+using Cube.Core.Models.Image;
 using Cube.Core.Models.Messages;
+using Cube.Core.Models.User;
 using Cube.EntityFramework.Repository;
 
 namespace Cube.Application.Utilities
@@ -52,8 +54,15 @@ namespace Cube.Application.Utilities
                 cfg.CreateMap<ImageEntity, ImageModel>()
                     .ForMember(dest => dest.Id, act => act.MapFrom(src => src.Id))
                     .ForMember(dest => dest.Type, act => act.MapFrom(src => src.Type))
-                    .ForMember(dest => dest.OwnerId, act => act.MapFrom(src => src.OwnerId))
-                    .ForMember(dest => dest.Path, act => act.MapFrom(src => src.Path));
+                    .ForMember(dest => dest.OwnerId, act => act.MapFrom(src => src.OwnerId));
+
+                cfg.CreateMap<UserEntity, UserModel>()
+                    .ForMember(dest => dest.Id, act => act.MapFrom(src => src.Id))
+                    .ForMember(dest => dest.Name, act => act.MapFrom(src => src.Name))
+                    .ForMember(dest => dest.Surname, act => act.MapFrom(src => src.Surname))
+                    .ForMember(dest => dest.Email, act => act.MapFrom(src => src.Email))
+                    .ForMember(dest => dest.DateOfBirth, act => act.MapFrom(src => src.DateOfBirth))
+                    .ForMember(dest => dest.RoleId, act => act.MapFrom(src => src.RoleId));
 
             });
 

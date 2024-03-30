@@ -1,24 +1,12 @@
-<script setup lang="ts">
-    import { useAuthStore } from '../store/auth.store';
-    
-    const logout = () : void => {
-        const store = useAuthStore();
-        store.logout();
-    }
-</script>
-
 <template>
         <div class="nav-blocks">
             <div class="logo">
-                <router-link to="/home/posts">
+                <router-link to="/feed">
                     <img src="../assets/icons/cubeIcon.png">
                 </router-link>
             </div>
             <div class="links">
                 <ul>
-                    <li id="home">
-                        <router-link to="/home/posts">Profile</router-link>
-                    </li>
                     <li id="signin">
                         <router-link to="/login">SignIn</router-link>
                     </li>
@@ -33,6 +21,14 @@
         </div>
 </template>
 
+<script setup lang="ts">
+    import { useAuthStore } from '../store/auth.store';
+    
+    const logout = () : void => {
+        const store = useAuthStore();
+        store.logout();
+    }
+</script>
 <style>
     .nav-blocks {
         display: flex;

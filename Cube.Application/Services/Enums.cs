@@ -127,14 +127,14 @@
     {
         Success,
         ValidationError,
-        AccountNotFound,
+        UserNotFound,
 
     }
     public enum GetUserResult
     {
         Success,
         ValidationError,
-        AccountNotFound,
+        UserNotFound
     }
 
     public enum CreateFriendshipResult
@@ -168,5 +168,24 @@
         Success,
         TimeExpired,
         IncorrectToken
+    }
+
+    public enum GetUserNotificationResult
+    {
+        Success,
+        UserNotFound
+    }
+
+    public enum CreateNotificationResult
+    {
+        Success,
+        NotificationSenderNotFound,
+        UsersNotFound,
+    }
+
+    public enum DeleteNotificationResult
+    {
+        Success,
+        NotificationNotFound
     }
 }

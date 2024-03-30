@@ -1,5 +1,4 @@
 ﻿using Cube.Application.Services.User.Dto;
-using Cube.Core.Entities;
 using Cube.Core.Models.Friendship;
 using Cube.Core.Models.User;
 
@@ -9,12 +8,12 @@ namespace Cube.Application.Services.User
     {
         public Task<Response<UserAuthModel, LoginResult>> Login(LoginDto dto);
         public Task<Response<bool, RegisterResult>> Register(RegisterDto dto);
-        public Task<Response<UserEntity, GetUserResult>> GetUserById(FindUserDto dto);
-        public Task<Response<UserEntity, DeleteUserResult>> DeleteUser(DeleteUserDto dto);
-        public Task<Response<UserEntity, UpdateUserResult>> UpdateUser(UpdateUserDto dto);
+        public Task<Response<UserModel, GetUserResult>> GetUserById(FindUserDto dto);
+        public Task<Response<bool, DeleteUserResult>> DeleteUser(DeleteUserDto dto);
+        public Task<Response<UserModel, UpdateUserResult>> UpdateUser(UpdateUserDto dto);
         public Task<Response<FriendshipModel, CreateFriendshipResult>> CreateFriendshipAsync(FriendshipDto dto);
-        public Task<Response<List<UserEntity>, GetUserFriends>> GetUserFriendsAsync(FindUserDto dto);
-        public Task<Response<List<UserEntity>, GetAllUsers>> GetAll();
+        public Task<Response<List<UserModel>, GetUserFriends>> GetUserFriendsAsync(FindUserDto dto);
+        public Task<Response<List<UserModel>, GetAllUsers>> GetAll();
         public Response<string, TokenValidationResult> ValidateToken(TokenDto dto);
     }
 }

@@ -1,7 +1,7 @@
 ﻿using Cube.Application.Services;
 using Cube.Application.Services.Image;
 using Cube.Application.Services.Image.Dto;
-using Cube.Core.Models;
+using Cube.Core.Models.Image;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cube.Api.Controllers
@@ -25,7 +25,7 @@ namespace Cube.Api.Controllers
 
         [Route("create")]
         [HttpPost]
-        public async Task<Response<ImageModel, CreateImageResult>> Create([FromBody] NewImageDto dto)
+        public async Task<Response<ImageModel, CreateImageResult>> Create([FromForm] NewImageDto dto)
         {
             return await _service.CreateImage(dto);
         }

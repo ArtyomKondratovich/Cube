@@ -1,10 +1,8 @@
-﻿using Cube.Core.Entities;
-
-namespace Cube.Core.Models.User
+﻿namespace Cube.Core.Models.User
 {
     public class UserAuthModel
     {
         public string Token { get; set; }
-        public UserEntity User { get; set; }
+        public UserModel User { get; set; }
     }
 }

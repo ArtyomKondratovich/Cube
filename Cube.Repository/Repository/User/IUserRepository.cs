@@ -9,5 +9,6 @@ namespace Cube.EntityFramework.Repository.User
         UserEntity GetUserById(int id);
         Task<UserEntity> UserAssociatedWithTheEmail(string email);
         Task<List<UserEntity>> GetAll();
+        Task<bool> DeleteUserAsync(int id);
     }
 }

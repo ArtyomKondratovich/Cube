@@ -1,5 +1,4 @@
-﻿using Cube.Application.Services.Image.Dto;
-using Cube.Application.Services.User.Auth;
+﻿using Cube.Application.Services.User.Auth;
 using Cube.Application.Services.User.Dto;
 using Cube.Application.Utilities;
 using Cube.Core.Entities;
@@ -11,6 +10,10 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Net.Http.Json;
+using Microsoft.AspNetCore.Http;
+using System.Net.Http.Headers;
+using Cube.Core.Models.Image;
 
 namespace Cube.Application.Services.User
 {
@@ -61,30 +64,66 @@ namespace Cube.Application.Services.User
             return response;
         }
 
-        public Task<Response<UserEntity, DeleteUserResult>> DeleteUser(DeleteUserDto dto)
+        public async Task<Response<bool, DeleteUserResult>> DeleteUser(DeleteUserDto dto)
         {
-            throw new NotImplementedException();
-        }
+            var response = new Response<bool, DeleteUserResult>();
 
-        public async Task<Response<List<UserEntity>, GetAllUsers>> GetAll()
-        {
-            var response = new Response<List<UserEntity>, GetAllUsers>
+            var result = await _repository.UserRepository.DeleteUserAsync(dto.Id);
+
+            if (result)
             {
-                Value = await _repository.UserRepository.GetAll(),
-                ResponseResult = GetAllUsers.Success
-            };
+                response.ResponseResult = DeleteUserResult.UserNotFound;
+                return response;
+            }
 
+            response.Value = result;
+            response.ResponseResult = DeleteUserResult.Success;
             return response;
         }
 
-        public Task<Response<UserEntity, GetUserResult>> GetUserById(FindUserDto dto)
+        public async Task<Response<List<UserModel>, GetAllUsers>> GetAll()
         {
-            throw new NotImplementedException();
+            var response = new Response<List<UserModel>, GetAllUsers>();
+
+            var entities = await _repository.UserRepository.GetAll();
+
+            var models = entities
+                .Select(x => MapperConfig.InitializeAutomapper().Map<UserModel>(x))
+                .ToList();
+
+            foreach (var model in models)
+            {
+                model.AvatarBytes = await GetUserAvatar(model.Id);
+            }
+
+            response.ResponseResult = GetAllUsers.Success;
+            response.Value = models;
+            return response;
         }
 
-        public async Task<Response<List<UserEntity>, GetUserFriends>> GetUserFriendsAsync(FindUserDto dto)
+        public async Task<Response<UserModel, GetUserResult>> GetUserById(FindUserDto dto)
         {
-            var response = new Response<List<UserEntity>, GetUserFriends>();
+            var response = new Response<UserModel, GetUserResult>();
+
+            var entity = await _repository.UserRepository.GetUserByIdAsync(dto.Id);
+
+            if (entity == null)
+            {
+                response.ResponseResult = GetUserResult.UserNotFound;
+                return response;
+            }
+
+            var model = MapperConfig.InitializeAutomapper().Map<UserModel>(entity);
+            model.AvatarBytes = await GetUserAvatar(model.Id);
+
+            response.Value = model;
+            response.ResponseResult = GetUserResult.Success;
+            return response;
+        }
+
+        public async Task<Response<List<UserModel>, GetUserFriends>> GetUserFriendsAsync(FindUserDto dto)
+        {
+            var response = new Response<List<UserModel>, GetUserFriends>();
 
             var user = await _repository.UserRepository.GetUserByIdAsync(dto.Id);
 
@@ -106,6 +145,7 @@ namespace Cube.Application.Services.User
             var friends = friendships
                 .Select(async x => await _repository.UserRepository.GetUserByIdAsync(x.FriendId))
                 .Select(x => x.Result)
+                .Select(x => MapperConfig.InitializeAutomapper().Map<UserModel>(x))
                 .ToList();
 
             if (friends == null) 
@@ -113,6 +153,11 @@ namespace Cube.Application.Services.User
                 response.ResponseResult = GetUserFriends.Success;
                 response.Value = new();
                 return response;
+            }
+
+            foreach (var friend in friends)
+            {
+                friend.AvatarBytes = await GetUserAvatar(friend.Id);
             }
 
             response.ResponseResult = GetUserFriends.Success;
@@ -127,21 +172,23 @@ namespace Cube.Application.Services.User
                 Value = new UserAuthModel()
             };
 
-            var user = await _repository.UserRepository.UserAssociatedWithTheEmail(dto.Email);
+            var entity = await _repository.UserRepository.UserAssociatedWithTheEmail(dto.Email);
 
-            if (user != null)
+            if (entity != null)
             {
-                var role = await _repository.RoleRepository.GetRoleByIdAsync(user.RoleId);
+                var role = await _repository.RoleRepository.GetRoleByIdAsync(entity.RoleId);
                 
                 if (role != null)
                 {
                     var hash = dto.Password.GetHash();
 
-                    if (hash.Equals(user.Password))
+                    if (hash.Equals(entity.Password))
                     {
-                        var token = GenerateJWT(user, role.Name);
+                        var token = GenerateJWT(entity, role.Name);
                         response.Value.Token = token;
-                        response.Value.User = user;
+                        var model = MapperConfig.InitializeAutomapper().Map<UserModel>(entity);
+                        model.AvatarBytes = await GetUserAvatar(model.Id);
+                        response.Value.User = model;
                         response.ResponseResult = LoginResult.Success;
                     }
                     else
@@ -219,21 +266,31 @@ namespace Cube.Application.Services.User
             }
             else 
             {
-                //updload image
-                var image = new NewImageDto
-                {
-                    OwnerId = result.Id,
-                    Type = ImageType.Profile,
-                    File = dto.File
-                };
+                var client = new HttpClient();
+                var form = new MultipartFormDataContent();
 
+                using (var stream = (dto.File as FormFile).OpenReadStream())
+                {
+                    var fileBytes = new byte[stream.Length];
+                    await stream.ReadAsync(fileBytes);
+                    var fileContent = new ByteArrayContent(fileBytes);
+                    fileContent.Headers.ContentType = new MediaTypeHeaderValue(dto.File.ContentType);
+                    form.Add(fileContent, "File", dto.File.FileName);
+                }
+
+                form.Add(new StringContent(result.Id.ToString()), "OwnerId");
+                form.Add(new StringContent(ImageType.Profile.ToString()), "Type");
+
+                var clientResponse = await client.PostAsync("https://localhost:7159/api/Image/create", form);
+                var imageResponse = await clientResponse.Content.ReadFromJsonAsync<Response<ImageModel, CreateImageResult>>();
+
+                Console.WriteLine(imageResponse);
             }
 
-            
             return response;
         }
 
-        public Task<Response<UserEntity, UpdateUserResult>> UpdateUser(UpdateUserDto dto)
+        public Task<Response<UserModel, UpdateUserResult>> UpdateUser(UpdateUserDto dto)
         {
             throw new NotImplementedException();
         }
@@ -290,6 +347,25 @@ namespace Cube.Application.Services.User
                 signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        private async Task<byte[]?> GetUserAvatar(int id) 
+        {
+            if (await _repository.UserRepository.GetUserByIdAsync(id) == null)
+            {
+                return null;
+            }
+
+            var image = await _repository.ImageRepository.GetImageByTypeAndOwnerAsync(ImageType.Profile, id);
+
+            if (image == null) 
+            {
+                return null;
+            }
+
+            var imageBytes = await File.ReadAllBytesAsync(image.Path);
+
+            return imageBytes;
         }
     }
 }

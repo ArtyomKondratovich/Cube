@@ -3,6 +3,7 @@ using Cube.EntityFramework.Repository.Message;
 using Cube.EntityFramework.Repository.User;
 using Cube.Repository.Repository.Friendship;
 using Cube.Repository.Repository.Image;
+using Cube.Repository.Repository.Notification;
 using Cube.Repository.Repository.Role;
 
 namespace Cube.EntityFramework.Repository
@@ -16,6 +17,7 @@ namespace Cube.EntityFramework.Repository
         private IRoleRepository _roleRepository;
         private IFriendshipRepository _friendshipRepository;
         private IImageRepository _imageRepository;
+        private INotificationRepository _notificationRepository;
 
         public IUserRepository UserRepository 
         {
@@ -74,6 +76,16 @@ namespace Cube.EntityFramework.Repository
                 _imageRepository ??= new ImageRepository(_dbContext);
 
                 return _imageRepository;
+            }
+        }
+
+        public INotificationRepository NotificationRepository
+        {
+            get
+            {
+                _notificationRepository ??= new NotificationRepository(_dbContext);
+
+                return _notificationRepository;
             }
         }
 

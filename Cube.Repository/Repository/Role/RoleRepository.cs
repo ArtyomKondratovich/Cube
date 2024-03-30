@@ -35,7 +35,7 @@ namespace Cube.Repository.Repository.Role
         public async Task<RoleEntity?> GetRoleByNameAsync(string roleName)
         {
             return await _dbContext.Roles
-                .FirstAsync(x => x.Name == roleName);
+                .FirstOrDefaultAsync(x => x.Name == roleName);
         }
     }
 }

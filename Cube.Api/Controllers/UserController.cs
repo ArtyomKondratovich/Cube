@@ -45,7 +45,7 @@ namespace Cube.Web.Api.Controllers
         [Authorize]
         [HttpPost]
         [Route("getUserFriends")]
-        public async Task<Response<List<UserEntity>, GetUserFriends>> GetFriends([FromBody] FindUserDto dto)
+        public async Task<Response<List<UserModel>, GetUserFriends>> GetFriends([FromBody] FindUserDto dto)
         {
             return await _service.GetUserFriendsAsync(dto);
         }
@@ -53,7 +53,7 @@ namespace Cube.Web.Api.Controllers
         [Authorize]
         [HttpPost]
         [Route("getAllUsers")]
-        public async Task<Response<List<UserEntity>, GetAllUsers>> GetAll() 
+        public async Task<Response<List<UserModel>, GetAllUsers>> GetAll() 
         {
             return await _service.GetAll();
         }
@@ -63,6 +63,14 @@ namespace Cube.Web.Api.Controllers
         public Response<string, TokenValidationResult> ValidateToken([FromBody] TokenDto dto)
         {
             return _service.ValidateToken(dto);
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("getUser")]
+        public async Task<Response<UserModel, GetUserResult>> GetUser([FromBody] FindUserDto dto)
+        {
+            return await _service.GetUserById(dto);
         }
     }
 }

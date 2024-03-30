@@ -1,5 +1,4 @@
-﻿using Cube.Application.Services.Chat.Dto;
-using Cube.Application.Services.Message.Dto;
+﻿using Cube.Application.Services.Message.Dto;
 using Cube.Core.Models.Messages;
 
 namespace Cube.Application.Services.Message

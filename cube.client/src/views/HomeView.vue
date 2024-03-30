@@ -1,31 +1,33 @@
 <template>
     <div class="homeView">
         <div class="menu">
-            <router-link :to="{ path: `/home/profile/${user.id}` }">
+            <router-link :to="{ path: `/profile/${user.id}` }">
                 <div class="profile">
-                    <img src="../assets/Images/Profile/Profile_default.png">
+                    <img v-if="user.avatarBytes != null" :src="userAvatar()">
+                    <img v-if="user.avatarBytes == null" src="../assets/Images/Profile/Profile_default.png">
                     <div class="userName"> {{ user?.name }} {{ user?.surname }} </div>
                 </div>
             </router-link>
             <ul>
                 <li @click="selectTab(0)" :class="{ 'active': activeTab == 0 }">
-                    <img src="../assets/icons/homeIcon.png">
-                    <router-link :to="{ path: '/feed' }">News</router-link>
+                    <img src="../assets/icons/newsIcon.png">
+                    <router-link :to="{ path: '/feed' }">News {{ newPosts }}</router-link>
                 </li>
                 <li @click="selectTab(1)" :class="{ 'active': activeTab == 1 }">
                     <img src="../assets/icons/messangerIcon.png">
-                    <router-link :to="{ path: `/messanger` }">Messanger</router-link>
+                    <router-link :to="{ path: `/messanger` }">Messanger {{ newMessagesCount }}</router-link>
                 </li>
                 <li @click="selectTab(2)" :class="{ 'active': activeTab == 2 }">
+                    <img src="../assets/icons/notificationIcon.png">
                     <router-link :to="{ path: '/feed' }">Notifications</router-link>
                 </li>
                 <li @click="selectTab(3)" :class="{ 'active': activeTab == 3 }">
                     <img src="../assets/icons/friendsIcon.png">
-                    <router-link :to="{ path: `/friends` }">Friends</router-link>
+                    <router-link :to="{ path: `/friends` }">Friends {{ newFriend }}</router-link>
                 </li>
                 <li @click="selectTab(4)" :class="{ 'active': activeTab == 4 }">
                     <img src="../assets/icons/settingsIcon.png">
-                    <router-link :to="{ path: '/home' }">Settings</router-link>
+                    <router-link :to="{ path: '/settings' }">Settings</router-link>
                 </li>
             </ul>
         </div>
@@ -36,15 +38,52 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import type { IUser } from '@/api/types';
+import { ref, computed, onMounted } from 'vue';
+import type { IUser, IResponse, IImageModel, 
+    INotificationModel, IUserNotifications } from '@/api/types';
+import axios from 'axios';
+import config from '@/config';
 
 const user = JSON.parse(localStorage.getItem('user') ?? '{}') as IUser;
+const image = ref<IImageModel | null>(null);
 const activeTab = ref(0);
+const notifications = ref<INotificationModel[]>([]);
+const newMessagesCount = computed(() => {
+    return notifications.value.filter(x => x.type == 'ChatNotification').length;
+});
+const newFriend = computed(() => {
+    return notifications.value.filter(x => x.type == 'FriendRequest' || x.type == 'FriendResponse').length;
+});
+const newPosts = computed(() => {
+    return notifications.value.filter(x => x.type == 'NewsNotification').length;
+});
 
 function selectTab(id: number) {
     activeTab.value = id;
 }
+
+function userAvatar(): string {
+    return 'data:image/jpeg;base64,' + user.avatarBytes;
+}
+
+function getNotifications(): void {
+    axios.post(`${config.apiUrl}/Notification/get`, { Id: user.id },
+    {
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Content-Type': 'application/json'
+        }
+    }).then(response => {
+        const data = response.data as IResponse<IUserNotifications>;
+        
+        if (data.responseResult == 'Success' && data.value)
+        {
+            notifications.value = data.value.notifications;
+        }
+    }).catch(error => console.log(error));
+}
+
+setInterval(getNotifications, 10000);
 
 </script>
 

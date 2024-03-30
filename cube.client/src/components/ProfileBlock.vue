@@ -7,10 +7,11 @@
             <div class="colored-backgroud"></div>
             <div class="profileHeader-content">
                 <div id="img-block">
-                    <img id="profileImage" src="../assets/Images/Profile/Profile_default.png">
+                    <img v-if="user?.avatarBytes != null && !loading" id="profileImage" :src="userAvatar()">
+                    <img v-if="user?.avatarBytes == null" id="profileImage" src="../assets/Images/Profile/Profile_default.png">
                 </div>
                 <div id="info-block">
-                    {{ "Artyom" + " " + "Kondratovich" }}
+                    {{ user?.name + " " + user?.surname }}
                 </div>
                 <div id="actions-block">
                     <div id="add-friend" v-if="!isUserProfile" @click="">
@@ -32,7 +33,7 @@ import { VueSpinner } from 'vue3-spinners';
 import config from '@/config';
 import { useAuthStore } from '@/store/auth.store';
 import axios from 'axios';
-import { ref } from 'vue';
+import { ref, onMounted, watch, toRef } from 'vue';
 
     const props = defineProps({
         userId: {
@@ -42,11 +43,24 @@ import { ref } from 'vue';
     });
 
     const store = useAuthStore();
-    const isUserProfile = ref(store.$state.user?.id != props.userId);
-    const loading = ref(false);
+    const isUserProfile = ref(store.$state.user?.id == props.userId);
+    const loading = ref(true);
     const user = ref<IUser | null>(null);
 
-    axios.post(`${config.apiUrl}/User/GetUser}`, { id: props.userId },
+    async function updateInfo(id: number) {
+        await fetchUser(id);
+        isUserProfile.value = store.$state.user?.id == props.userId;
+    }
+
+    function userAvatar(): string {
+        if (user.value){
+            return 'data:image/jpeg;base64,' + user.value.avatarBytes;
+        }
+        return '';
+    }
+
+    async function fetchUser(id: number) {
+        axios.post(`${config.apiUrl}/User/getUser`, { id: id },
         {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -55,12 +69,21 @@ import { ref } from 'vue';
         })
         .then(async (response) => {
             const data = response.data as IResponse<IUser>;
-
             if (data.responseResult == 'Success' && data.value) {
                 user.value = data.value;
                 loading.value = false;
             }
         })
+    }
+
+    onMounted(async () => {
+        await updateInfo(props.userId);
+    });
+
+    watch(toRef(props, 'userId'), async (newUserId) => {
+        await updateInfo(newUserId);
+    });
+
 </script>
 
 <style>

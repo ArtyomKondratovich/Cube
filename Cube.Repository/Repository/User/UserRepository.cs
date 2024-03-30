@@ -47,5 +47,17 @@ namespace Cube.EntityFramework.Repository.User
         {
             return await _dbContext.Users.ToListAsync();
         }
+
+        public async Task<bool> DeleteUserAsync(int id)
+        {
+            var user = await _dbContext.Users.FirstAsync(x => x.Id == id);
+
+            if (user != null) {
+                _dbContext.Users.Remove(user);
+                await _dbContext.SaveChangesAsync();
+            }
+
+            return user != null;
+        }
     }
 }

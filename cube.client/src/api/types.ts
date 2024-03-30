@@ -2,7 +2,10 @@ export interface IUser {
     id: number;
     name: string;
     surname: string;
+    email: string;
     dateOfBirth: Date | null;
+    roleId: number;
+    avatarBytes: [];
 }
 
 export interface ILoginInput {
@@ -58,4 +61,27 @@ export interface IMesssageInput{
     chatId: number;
     message: string; 
 }
-  
+
+export interface IImageModel{
+    id: number;
+    ownerId: number;
+    imgBytes: [];
+    type: string;
+}
+
+export interface IImageInput{
+    ownerId: number;
+    type: string;
+}
+
+export interface INotificationModel{
+    id: number;
+    userid: number;
+    notificationSenderId: number;
+    isReaded: boolean;
+    type: string;
+}
+
+export interface IUserNotifications{
+    notifications: INotificationModel[];
+}

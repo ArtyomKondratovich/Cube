@@ -23,9 +23,10 @@
         <div v-if="!loadingAllUsers" class="usersContainer">
             <ul>
                 <li v-for="user in allUsers" :key="user.id">
-                    <router-link :to="{ path: `/home/profile/${user.id}`}">
+                    <router-link :to="{ path: `/profile/${user.id}`}">
                         <div class="userProfile">
-                            <img src="../assets/Images/Profile/Profile_default.png">
+                            <img v-if="user.avatarBytes == null" src="../assets/Images/Profile/Profile_default.png">
+                            <img v-if="user.avatarBytes != null" :src="userAvatar(user.avatarBytes)">
                             <div class="userName"> {{ user.name }} {{ user.surname }} </div>
                         </div>
                     </router-link>
@@ -38,64 +39,63 @@
 <script setup lang="ts">
 
 import { VueSpinner } from 'vue3-spinners'
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import type { IResponse, IUser } from '@/api/types';
 import axios from 'axios';
 import config from '@/config';
 import router from '@/helpers/router';
     
-    const pops = defineProps({
-        userId: {
-            type: Number,
-            required: true
+const user = ref(JSON.parse(localStorage.getItem('user') ?? '{}') as IUser);
+const friends = ref([] as IUser[])
+const allUsers = ref([] as IUser[])
+const loadingFriends = ref(true);
+const loadingAllUsers = ref(true);
+
+function fetchData(): void {
+    axios.post(`${config.apiUrl}/User/getUserFriends`, { Id: user.value.id }, { 
+    headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        'Content-Type': 'application/json'
+    }}).then(async (response) => {
+        const data = response.data as IResponse<IUser[]>;
+        if (data.responseResult == 'Success' && data.value){
+            friends.value = data.value;
+        }
+        else {
+            console.log(data.responseResult);
+        }
+        loadingFriends.value = false;
+    }).catch(error => console.log(error));
+
+axios.post(`${config.apiUrl}/User/getAllUsers`,{}, { 
+    headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        'Content-Type': 'application/json'
+    }}).then(async (response) => {
+        const data = response.data as IResponse<IUser[]>;
+        if (data.responseResult == 'Success' && data.value){
+            allUsers.value = data.value;
+            allUsers.value = allUsers.value.filter((x) => x.id != user.value.id);
+        }
+        else {
+            console.log(data.responseResult);
+        }
+        loadingAllUsers.value = false;
+    }).catch(error => {
+        if (error.response && error.response.status == 401){
+            console.log(error);
+            router.push({ path: '/login'})
         }
     });
+}
 
-    const friends = ref([] as IUser[])
-    const allUsers = ref([] as IUser[])
-    const loadingFriends = ref(true);
-    const loadingAllUsers = ref(true);
+function userAvatar(bytes: []): string {
+    return 'data:image/jpeg;base64,' + bytes;
+}
 
-    axios.post(`${config.apiUrl}/User/getUserFriends`, { Id: pops.userId }, { 
-        headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-            'Content-Type': 'application/json'
-        }}).then(async (response) => {
-            const data = response.data as IResponse<IUser[]>;
-
-            if (data.responseResult == 'Success' && data.value){
-                friends.value = data.value;
-            }
-            else {
-                console.log(data.responseResult);
-            }
-
-            loadingFriends.value = false;
-        }).catch(error => console.log(error));
-
-    axios.post(`${config.apiUrl}/User/getAllUsers`,{}, { 
-        headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-            'Content-Type': 'application/json'
-        }}).then(async (response) => {
-            const data = response.data as IResponse<IUser[]>;
-
-            if (data.responseResult == 'Success' && data.value){
-                allUsers.value = data.value;
-            }
-            else {
-                console.log(data.responseResult);
-            }
-
-            loadingAllUsers.value = false;
-        }).catch(error => {
-            if (error.response && error.response.status == 401){
-                console.log(error);
-                router.push({ path: '/login'})
-            }
-        });
-
-
+onMounted(() => {
+        fetchData();
+})
 </script>
 
 <style>

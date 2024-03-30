@@ -2,9 +2,9 @@
 using Cube.Application.Utilities;
 using Cube.Core.Entities;
 using Cube.Core.Enums;
-using Cube.Core.Models;
+using Cube.Core.Models.Image;
+using Cube.Core.Models.Messages;
 using Cube.EntityFramework.Repository;
-using Microsoft.AspNetCore.Hosting;
 
 namespace Cube.Application.Services.Image
 {
@@ -35,13 +35,7 @@ namespace Cube.Application.Services.Image
                 return response;
             }
 
-            if (dto.ImgBytes.Length == 0)
-            {
-                response.ResponseResult = CreateImageResult.CurruptedFile;
-                return response;
-            }
-
-            var path = Path.Combine(_imagesDirectoryPath, $"\\{dto.Type}\\");
+            var path = _imagesDirectoryPath + $"\\{dto.Type}\\";
 
             if (!Directory.Exists(path)) 
             {
@@ -50,7 +44,9 @@ namespace Cube.Application.Services.Image
 
             var fileName = $"{dto.Type}_{dto.OwnerId}.png";
 
-            var fullPath = Path.Combine(path, fileName);
+            var fullPath = path + fileName;
+
+            Console.WriteLine(fullPath);
 
             if (File.Exists(fullPath))
             {
@@ -95,17 +91,15 @@ namespace Cube.Application.Services.Image
             }
 
             var entity = await _repository.ImageRepository.GetImageByTypeAndOwnerAsync(dto.Type, dto.OwnerId);
-
-            if (entity == null) 
+            
+            if (entity != null) 
             {
-                response.ResponseResult = GetImageResult.Success;
-                var defaultImage = await _repository.ImageRepository.GetImageByTypeAndOwnerAsync(dto.Type, 0);
-                response.Value = MapperConfig.InitializeAutomapper().Map<ImageModel>(defaultImage);
-                return response;
+                var model = MapperConfig.InitializeAutomapper().Map<ImageModel>(entity);
+                model.ImgBytes = File.ReadAllBytes(entity.Path);
+                response.Value = model;
             }
 
             response.ResponseResult = GetImageResult.Success;
-            response.Value = MapperConfig.InitializeAutomapper().Map<ImageModel>(entity);
             return response;
         }
 
@@ -124,7 +118,5 @@ namespace Cube.Application.Services.Image
             _ => throw new NotSupportedException()
         };
 
-        
-         
     }
 }

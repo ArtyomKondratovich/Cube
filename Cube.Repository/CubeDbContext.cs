@@ -19,6 +19,8 @@ namespace Cube.EntityFramework
 
         public DbSet<ImageEntity> Images { get; set; }
 
+        public DbSet<NotificationEntity> Notifications { get; set; }
+
         public CubeDbContext(DbContextOptions options) :
             base(options)
         {

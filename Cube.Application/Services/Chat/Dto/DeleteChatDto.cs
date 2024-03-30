@@ -1,4 +1,4 @@
-﻿using Cube.Core.Utilities;
+﻿using Cube.Core.Models.Utilities;
 using System.Text.Json.Serialization;
 
 namespace Cube.Application.Services.Chat.Dto

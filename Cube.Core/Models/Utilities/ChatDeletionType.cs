@@ -1,4 +1,4 @@
-﻿namespace Cube.Core.Utilities
+﻿namespace Cube.Core.Models.Utilities
 {
     public enum ChatDeletionType
     {
@@ -8,6 +8,6 @@
 
         // deltionOptions for admin
         CompleteRemoval
-    
+
     }
 }
