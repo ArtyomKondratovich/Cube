@@ -16,6 +16,7 @@ export interface IRegisterInput {
     dateOfBirth: Date | null;
     email: string;
     password: string;
+    file: File | null;
 }
 
 export interface IResponse<TResult> {

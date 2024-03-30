@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
 
 namespace Cube.Application.Services.User.Dto
 {
@@ -10,11 +11,10 @@ namespace Cube.Application.Services.User.Dto
 
         public DateOnly? DateOfBirth { get; set; }
 
-        [EmailAddress]
-        [Required]
         public string Email { get; set; }
 
-        [Required]
         public string Password { get; set; }
+
+        public IFormFile? File { get; set; }
     }
 }

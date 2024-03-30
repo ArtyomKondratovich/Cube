@@ -1,9 +1,11 @@
 <template>
     <div class="register-form">
         <h2>SignUp</h2>
-        <p>Current timeoffset={{ currentTZoffset }}</p>
         <form @submit.prevent="handleSubmit">
             <ul>
+                <li>
+                    <input type="file" ref="imageInput" accept=".png, .jpeg, .jpg" @change="previewAvatar"/>
+                </li>
                 <li>
                     <input type="text" v-model="user.name" name="name" placeholder="name" class="form-control" :class="{ 'is-invalid': submitted && !user.name }" />
                     <div v-show="submitted && !user.name" class="invalid-feedback">name is required</div>
@@ -38,12 +40,18 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useAuthStore } from '@/store/auth.store';
-import type { IRegisterInput } from '@/api/types';
+import type { IAuth, IRegisterInput, IResponse } from '@/api/types';
+import { preview } from 'vite';
+import axios from 'axios';
+import config from '@/config';
+import { toast } from 'vue3-toastify';
+import router from '@/helpers/router';
 
 const submitted = ref(false);
 const user = ref<IRegisterInput>({} as IRegisterInput);
 const confirmPassword = ref('');
-const currentTZoffset = ref(new Date().toLocaleString('en', {timeZoneName: 'shortOffset'}))
+const imageInput = ref<HTMLInputElement | null>(null);
+const imagePreview = ref<string | null>(null);
 
 function isLoggedIn(): boolean {
     const store = useAuthStore();
@@ -51,8 +59,56 @@ function isLoggedIn(): boolean {
 }
 
 async function handleSubmit(){
-    const store = useAuthStore();
-    await store.register(user.value);
+    const selectedImage = imageInput.value?.files?.[0];
+
+    if (selectedImage)
+    {
+        let formData = new FormData();
+        formData.append('name', user.value.name);
+        formData.append('surname', user.value.surname);
+        formData.append('dateOfBirth', user.value.dateOfBirth ? user.value.dateOfBirth.toString() : "");
+        formData.append('email', user.value.email);
+        formData.append('password', user.value.password)
+        formData.append('file', selectedImage);
+
+        axios.post(`${config.apiUrl}/User/register`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        }).then(async (response) => {
+              const data = response.data as IResponse<IAuth>;
+
+              if (data.responseResult == 'Success')
+              {
+                toast.success('You register successfully!');
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                router.push('/login');
+              }
+              else
+              {
+                toast.error(data.responseResult);
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                router.push('/register');
+              }
+          }).catch(async error => {
+              //handling error
+              toast.error(error);
+              await new Promise(resolve => setTimeout(resolve, 2000));
+              router.push('/register');
+          });
+
+        const store = useAuthStore();
+        user.value.file = selectedImage;
+        await store.register(user.value);
+    }
+}
+
+function previewAvatar(): void {
+    const selectedImage = imageInput.value?.files?.[0];
+
+    if (selectedImage) {
+        imagePreview.value = selectedImage.name
+    }
 }
 </script>
 

@@ -162,4 +162,11 @@
         ImageFileNotFound,
         ServerError
     }
+
+    public enum TokenValidationResult 
+    { 
+        Success,
+        TimeExpired,
+        IncorrectToken
+    }
 }

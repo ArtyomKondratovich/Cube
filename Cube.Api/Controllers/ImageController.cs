@@ -2,7 +2,6 @@
 using Cube.Application.Services.Image;
 using Cube.Application.Services.Image.Dto;
 using Cube.Core.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cube.Api.Controllers

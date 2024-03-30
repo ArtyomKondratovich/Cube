@@ -4,6 +4,7 @@ using Cube.Core.Entities;
 using Cube.Core.Enums;
 using Cube.Core.Models;
 using Cube.EntityFramework.Repository;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Cube.Application.Services.Image
 {
@@ -12,15 +13,21 @@ namespace Cube.Application.Services.Image
         private readonly IRepositoryWrapper _repository;
         private readonly string _imagesDirectoryPath;
 
-        public ImageService(IRepositoryWrapper repository, string imageDirectoryPath) 
+        public ImageService(IRepositoryWrapper repository, string imagesDirectoryPath) 
         {
             _repository = repository;
-            _imagesDirectoryPath = imageDirectoryPath;
+            _imagesDirectoryPath = imagesDirectoryPath;
         }
 
         public async Task<Response<ImageModel, CreateImageResult>> CreateImage(NewImageDto dto)
         {
             var response = new Response<ImageModel, CreateImageResult>();
+
+            if (dto == null)
+            {
+                Console.WriteLine();
+                return response;
+            }
 
             if (!await IsOwnerExist(dto.Type, dto.OwnerId))
             {
@@ -43,20 +50,22 @@ namespace Cube.Application.Services.Image
 
             var fileName = $"{dto.Type}_{dto.OwnerId}.png";
 
-            if (File.Exists(path + fileName))
+            var fullPath = Path.Combine(path, fileName);
+
+            if (File.Exists(fullPath))
             {
                 response.ResponseResult = CreateImageResult.ImageAlreadyExist;
                 return response;
             }
 
-            using (FileStream fileStream = File.Create(path + fileName)) 
+            using (FileStream fileStream = File.Create(fullPath)) 
             {
                 dto.File.CopyTo(fileStream);
                 fileStream.Flush();
             }
             
             var entity = MapperConfig.InitializeAutomapper().Map<ImageEntity>(dto);
-            entity.Path = path + fileName;
+            entity.Path = fullPath;
 
             if (await _repository.ImageRepository.CreateImageAsync(entity) == null
                 || !File.Exists(entity.Path))

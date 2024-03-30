@@ -15,5 +15,6 @@ namespace Cube.Application.Services.User
         public Task<Response<FriendshipModel, CreateFriendshipResult>> CreateFriendshipAsync(FriendshipDto dto);
         public Task<Response<List<UserEntity>, GetUserFriends>> GetUserFriendsAsync(FindUserDto dto);
         public Task<Response<List<UserEntity>, GetAllUsers>> GetAll();
+        public Response<string, TokenValidationResult> ValidateToken(TokenDto dto);
     }
 }

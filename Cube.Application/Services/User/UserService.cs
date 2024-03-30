@@ -1,7 +1,9 @@
-﻿using Cube.Application.Services.User.Auth;
+﻿using Cube.Application.Services.Image.Dto;
+using Cube.Application.Services.User.Auth;
 using Cube.Application.Services.User.Dto;
 using Cube.Application.Utilities;
 using Cube.Core.Entities;
+using Cube.Core.Enums;
 using Cube.Core.Models.Friendship;
 using Cube.Core.Models.User;
 using Cube.EntityFramework.Repository;
@@ -193,11 +195,7 @@ namespace Cube.Application.Services.User
             var user = MapperConfig.InitializeAutomapper().Map<UserEntity>(dto);
             var role = await _repository.RoleRepository.GetRoleByNameAsync("User");
 
-            if (role == null)
-            {
-                role = await _repository.RoleRepository.CreateRoleAsync(new RoleEntity { Name = "User" });
-            }
-
+            role ??= await _repository.RoleRepository.CreateRoleAsync(new RoleEntity { Name = "User" });
 
             user.RoleId = role.Id;
 
@@ -212,16 +210,62 @@ namespace Cube.Application.Services.User
                 };
                 return response;
             }
+            
+            if (dto.File == null)
+            {
+                response.Value = true;
+                response.ResponseResult = RegisterResult.Success;
+                return response;
+            }
+            else 
+            {
+                //updload image
+                var image = new NewImageDto
+                {
+                    OwnerId = result.Id,
+                    Type = ImageType.Profile,
+                    File = dto.File
+                };
 
-            response.Value = true;
-            response.ResponseResult = RegisterResult.Success;
+            }
 
+            
             return response;
         }
 
         public Task<Response<UserEntity, UpdateUserResult>> UpdateUser(UpdateUserDto dto)
         {
             throw new NotImplementedException();
+        }
+
+        public Response<string, TokenValidationResult> ValidateToken(TokenDto dto)
+        {
+            var response = new Response<string, TokenValidationResult>();
+
+            var handler = new JwtSecurityTokenHandler();
+
+            if (handler.CanReadToken(dto.Token))
+            {
+                var jwtSecurityToken = handler.ReadJwtToken(dto.Token);
+                var tokenExp = jwtSecurityToken.Claims.First(x => x.Type.Equals("exp")).Value;
+                var ticks = long.Parse(tokenExp);
+                var tokenDate = DateTimeOffset.FromUnixTimeSeconds(ticks).UtcDateTime;
+
+                if (tokenDate >= DateTime.UtcNow)
+                {
+                    response.ResponseResult = TokenValidationResult.Success;
+                }
+                else 
+                {
+                    response.ResponseResult = TokenValidationResult.TimeExpired;
+                }
+
+                response.Value = dto.Token;
+                return response;
+            }
+
+            response.ResponseResult = TokenValidationResult.IncorrectToken;
+            return response;
         }
 
         private string GenerateJWT(UserEntity user, string role)

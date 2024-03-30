@@ -64,6 +64,30 @@ export const useAuthStore = defineStore(
         this.$state.token = '';
         this.$state.user = {} as IUser;
         router.push('/login');
+      },
+      validateToken(): boolean {
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+          return false;
+        }
+
+        axios.post(`${config.apiUrl}/User/validateToken`, { token }, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }).then((response) => {
+          const data = response.data as IResponse<string>;
+
+          if (data.responseResult == 'Success' && data.value) {
+            return true;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        })
+
+        return false;
       }
     },
     getters: {

@@ -30,7 +30,7 @@ namespace Cube.Web.Api.Controllers
 
         [Route("register")]
         [HttpPost]
-        public async Task<Response<bool, RegisterResult>> Register([FromBody] RegisterDto dto)
+        public async Task<Response<bool, RegisterResult>> Register([FromForm] RegisterDto dto)
         {
             return await _service.Register(dto);
         }
@@ -56,6 +56,13 @@ namespace Cube.Web.Api.Controllers
         public async Task<Response<List<UserEntity>, GetAllUsers>> GetAll() 
         {
             return await _service.GetAll();
+        }
+
+        [HttpPost]
+        [Route("validateToken")]
+        public Response<string, TokenValidationResult> ValidateToken([FromBody] TokenDto dto)
+        {
+            return _service.ValidateToken(dto);
         }
     }
 }

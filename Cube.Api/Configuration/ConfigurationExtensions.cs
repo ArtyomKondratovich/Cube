@@ -12,6 +12,8 @@ using Cube.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Cube.Application.Services.User.Auth;
 using Cube.Application.Services.Image;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Cube.Web.Api.Configuration
 {
@@ -35,7 +37,7 @@ namespace Cube.Web.Api.Configuration
             builder.Services.AddScoped<IImageService>(
                 options => new ImageService(
                     options.GetRequiredService<IRepositoryWrapper>(),
-                    builder.Configuration.GetSection("ImagesDirectoryPath").Key
+                    builder.Configuration.GetSection("ImagesDirectoryPath").Value
                     ));
         }
 
