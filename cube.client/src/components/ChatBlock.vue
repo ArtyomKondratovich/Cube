@@ -47,6 +47,7 @@ import { toast } from 'vue3-toastify';
 import axios from 'axios';
 import config from '@/config';
 import getUserFromLocalStorage from '@/helpers/getFromLocalStorage';
+import { useNotificationStore } from '@/store/notification.store';
 
 const props = defineProps({
     chatId: {
@@ -60,7 +61,8 @@ const chat = ref({} as IChat);
 const message = ref('');
 const chatMessages = ref<IMessage[]>([]);
 const loading = ref(true);
-const timeZoneOffset = ref((new Date().getTimezoneOffset()) / 60 * (-1))
+const timeZoneOffset = ref((new Date().getTimezoneOffset()) / 60 * (-1));
+const store = ref(useNotificationStore());
 
 onMounted(async () => {
     await fetchChat();
@@ -168,7 +170,27 @@ function sendMessage(): void {
         .catch(error => {
             toast.error('server error');
         });
+
+        console.log(chat.value.users);
+    
+    axios.post(`${config.apiUrl}/Notification/create`, {
+            notificationSenderId: chat.value.id,
+            userIds: chat.value.users,
+            isReaded: false,
+            type: 'ChatNotification',
+            accepted: false
+        },
+        {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                'Content-Type': 'application/json'
+            }
+        }).then(response => {
+            store.value.updateNotificationData();
+        })
     }
+        
+    
 </script>
 
 <style>

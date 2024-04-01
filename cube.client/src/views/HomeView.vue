@@ -7,23 +7,23 @@
                     <img v-if="user.avatarBytes == null" src="../assets/Images/Profile/Profile_default.png">
                     <div class="userName"> {{ user?.name }} {{ user?.surname }} </div>
                 </div>
-            </router-link>
+            </router-link>      
             <ul>
                 <li @click="selectTab(0)" :class="{ 'active': activeTab == 0 }">
                     <img src="../assets/icons/newsIcon.png">
-                    <router-link :to="{ path: '/feed' }">News {{ newPosts }}</router-link>
+                    <router-link :to="{ path: '/feed' }">{{ getLabel(0) }}</router-link>
                 </li>
                 <li @click="selectTab(1)" :class="{ 'active': activeTab == 1 }">
                     <img src="../assets/icons/messangerIcon.png">
-                    <router-link :to="{ path: `/messanger` }">Messanger {{ newMessagesCount }}</router-link>
+                    <router-link :to="{ path: `/messanger` }">{{ getLabel(1) }}</router-link>
                 </li>
                 <li @click="selectTab(2)" :class="{ 'active': activeTab == 2 }">
                     <img src="../assets/icons/notificationIcon.png">
-                    <router-link :to="{ path: '/feed' }">Notifications</router-link>
+                    <router-link :to="{ path: '/feed' }">{{ getLabel(2) }}</router-link>
                 </li>
                 <li @click="selectTab(3)" :class="{ 'active': activeTab == 3 }">
                     <img src="../assets/icons/friendsIcon.png">
-                    <router-link :to="{ path: `/friends` }">Friends {{ newFriend }}</router-link>
+                    <router-link :to="{ path: `/friends` }">Friends</router-link>
                 </li>
                 <li @click="selectTab(4)" :class="{ 'active': activeTab == 4 }">
                     <img src="../assets/icons/settingsIcon.png">
@@ -38,25 +38,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
-import type { IUser, IResponse, IImageModel, 
-    INotificationModel, IUserNotifications } from '@/api/types';
-import axios from 'axios';
-import config from '@/config';
+import { ref } from 'vue';
+import { useNotificationStore } from "@/store/notification.store";
+import type { IUser } from '@/api/types';
 
 const user = JSON.parse(localStorage.getItem('user') ?? '{}') as IUser;
-const image = ref<IImageModel | null>(null);
 const activeTab = ref(0);
-const notifications = ref<INotificationModel[]>([]);
-const newMessagesCount = computed(() => {
-    return notifications.value.filter(x => x.type == 'ChatNotification').length;
-});
-const newFriend = computed(() => {
-    return notifications.value.filter(x => x.type == 'FriendRequest' || x.type == 'FriendResponse').length;
-});
-const newPosts = computed(() => {
-    return notifications.value.filter(x => x.type == 'NewsNotification').length;
-});
+const notificationstore = ref(useNotificationStore());
 
 function selectTab(id: number) {
     activeTab.value = id;
@@ -66,24 +54,33 @@ function userAvatar(): string {
     return 'data:image/jpeg;base64,' + user.avatarBytes;
 }
 
-function getNotifications(): void {
-    axios.post(`${config.apiUrl}/Notification/get`, { Id: user.id },
-    {
-        headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-            'Content-Type': 'application/json'
-        }
-    }).then(response => {
-        const data = response.data as IResponse<IUserNotifications>;
-        
-        if (data.responseResult == 'Success' && data.value)
-        {
-            notifications.value = data.value.notifications;
-        }
-    }).catch(error => console.log(error));
+function getLabel(id: number): string {
+    let count;
+    switch(id){
+        case 0:
+            count = notificationstore.value.getPostsNotifications;
+            if (count == 0) {
+                return 'News';
+            }
+            return 'News ' + `${count}`;
+        case 1:
+            count = notificationstore.value.getMessangerNotifications;
+            if (count == 0) {
+                return 'Messanger';
+            }
+            return 'Messanger ' + `${count}`;
+        case 2:
+            count = notificationstore.value.getFriendNotifications;
+            if (count == 0) {
+                return 'Notifications';
+            }
+            return 'Notifications ' + `${count}`;
+    }
+
+    return '';
 }
 
-setInterval(getNotifications, 10000);
+setInterval(notificationstore.value.updateNotificationData, 10000);
 
 </script>
 

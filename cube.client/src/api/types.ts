@@ -76,7 +76,7 @@ export interface IImageInput{
 
 export interface INotificationModel{
     id: number;
-    userid: number;
+    userId: number;
     notificationSenderId: number;
     isReaded: boolean;
     type: string;
