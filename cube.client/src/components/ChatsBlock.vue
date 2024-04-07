@@ -17,8 +17,8 @@
                         <div class="chat" @click="emit('select-chat', chat.id)">
                             <img src="../assets/icons/pinIcon.png">
                             <p>{{chat.title}}</p>
-                            <div class="circle" v-if="getNotificationsInChat(chat.id) != 0">
-                                <span class="number">{{ getNotificationsInChat(chat.id) }}</span>
+                            <div class="circle" v-if="store.getChatNotifications(chat.id).length != 0">
+                                <span class="number">{{ store.getChatNotifications(chat.id).length }}</span>
                             </div>
                         </div>
                     </li>
@@ -29,10 +29,9 @@
 
 <script setup lang="ts">
 import { VueSpinner } from 'vue3-spinners';
-import { ref, computed } from 'vue';
+import { ref, computed, inject } from 'vue';
 import type {
     IChatLoad,
-    INotificationModel,
     IResponse
 } from '@/api/types';
 import { toast } from 'vue3-toastify';
@@ -40,7 +39,7 @@ import axios from 'axios';
 import config from '@/config';
 import { defineEmits, onMounted } from 'vue';
 import getUserIdFromLocalStorage from '@/helpers/getFromLocalStorage';
-import { useNotificationStore } from '@/store/notification.store';
+import { type INotificationStore } from '@/store/notification.store';
 
 const emit = defineEmits<{
     (e: 'select-chat', id: number): void
@@ -50,8 +49,7 @@ const userId = ref(getUserIdFromLocalStorage());
 const loading = ref(true);
 const chats = ref<IChatLoad[]>([]);
 const searchText = ref('');
-const chatsNotifications = ref<[INotificationModel[]]>([[]]);
-const notificationStore = ref(useNotificationStore());
+const store = inject<INotificationStore>('notificationStore') as INotificationStore;
 
 const filteredChats = computed(() => {
   if (!searchText.value) {
@@ -60,10 +58,6 @@ const filteredChats = computed(() => {
   const searchQuery = searchText.value.toLowerCase();
   return chats.value.filter(chat => chat.title.toLowerCase().includes(searchQuery));
 });
-
-function getNotificationsInChat(chatId: number): number {
-    return notificationStore.value.getChatNotifications(chatId).length;
-}
 
 onMounted(async () => {
     await fetchUserChats();
@@ -81,10 +75,6 @@ async function fetchUserChats() {
 
             if (data.responseResult == 'Success' && data.value){
                 chats.value = data.value;
-                chats.value.forEach(x => {
-                    chatsNotifications.value.push(notificationStore.value.getChatNotifications(x.id));
-                });
-
                 loading.value = false;
             }
             else{

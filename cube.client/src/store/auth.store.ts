@@ -1,64 +1,36 @@
-import { defineStore } from 'pinia'
+import { defineStore, type Store } from 'pinia'
 import { 
   type IUser,
-  type IAuth,
-  type ILoginInput,
-  type IResponse,
-  type IRegisterInput
+  type IResponse
 } from '@/api/types';
 import config from '@/config';
 import axios from 'axios';
 import router from '@/helpers/router';
-import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css'
 
-interface AuthState {
+interface IAuthState {
   user: IUser | null;
   token: string;
 }
 
+export interface IAuthStore extends Store {
+  logout(): void;
+  validateToken(): boolean;
+  isLoggedIn: boolean;
+  $state: {
+    user: IUser;
+    token: string;
+  };
+}
+
 export const useAuthStore = defineStore(
   'auth', {
-    state: (): AuthState => ({
+    state: (): IAuthState => ({
       user: (JSON.parse(localStorage.getItem('user') ?? '{}')) as IUser,
       token: localStorage.getItem('token') ?? ''
     }),
     actions: {
-      async login(loginInput: ILoginInput){
-        return axios.post(`${config.apiUrl}/User/login`, loginInput, {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-      },
-      async register(registerInput: IRegisterInput){
-          axios.post(`${config.apiUrl}/User/register`, registerInput, {
-              headers: {
-                  'Content-Type': 'application/json'
-              }
-          }).then(async (response) => {
-              const data = response.data as IResponse<IAuth>;
-
-              if (data.responseResult == 'Success')
-              {
-                toast.success('You register successfully!');
-                await new Promise(resolve => setTimeout(resolve, 2000));
-                router.push('/login');
-              }
-              else
-              {
-                toast.error(data.responseResult);
-                await new Promise(resolve => setTimeout(resolve, 2000));
-                router.push('/register');
-              }
-          }).catch(async error => {
-              //handling error
-              toast.error(error);
-              await new Promise(resolve => setTimeout(resolve, 2000));
-              router.push('/register');
-          });
-      },
-      logout(){
+      logout(): void{
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         this.$state.token = '';

@@ -1,17 +1,3 @@
-<script lang="ts">
-import { defineComponent } from "vue";
-import MyHeader from "@/components/MyHeader.vue"
-import Toast from "vue3-toastify";
-
-export default defineComponent({
-  Name: 'App',
-  components: {
-    MyHeader,
-    Toast
-  }
-})
-</script>
-
 <template>
   <Toast/>
   <header>
@@ -22,6 +8,20 @@ export default defineComponent({
     <router-view></router-view>
   </main>
 </template>
+
+<script setup lang="ts">
+import MyHeader from "@/components/MyHeader.vue"
+import { inject, onMounted } from "vue";
+import Toast from "vue3-toastify";
+import type { INotificationStore } from "./store/notification.store";
+const notificationStore = inject<INotificationStore>('notificationStore') as INotificationStore;
+
+
+onMounted(async() => {
+  setInterval(notificationStore.updateNotificationData, 10000);
+});
+
+</script>
 
 <style>
   main {

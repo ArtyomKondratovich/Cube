@@ -11,7 +11,7 @@
             <input type="password" title="username" v-model="password" placeholder="password" />
           </li>
           <li>
-            <button type="submit" v-on:click.prevent = "Onsubmit" v-bind:disabled="submitted" class="btn">Login</button>
+            <button type="submit" v-on:click.prevent = "onSubmit" v-bind:disabled="submitted" class="btn">Login</button>
           </li>
         </ul>
       </form>
@@ -19,63 +19,59 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import type { IAuth, IResponse } from '@/api/types';
-import { useAuthStore } from '../store/auth.store';
-import { defineComponent } from 'vue';
+import { type IAuthStore } from '../store/auth.store';
+import {  ref, inject } from 'vue';
 import { toast } from 'vue3-toastify';
+import router from '@/helpers/router';
+import axios from 'axios';
+import config from '@/config';
 
-export default defineComponent({
-  name: 'LoginView',
-  components: {},
-  data() {
-    return {
-      submitted: false,
-      email: '',
-      password: '',
-    }
-  },
-  methods: {
-    async Onsubmit(){
-      this.submitted = true;
-      const store = useAuthStore();
-      let email = this.email;
-      let password = this.password;
-      
-      await store.login({email, password})
-        .then(async (response) => {
-          const data = response.data as IResponse<IAuth>;
-      
-          if (data.responseResult == 'Success' &&  data.value)
-          {
-            toast.success('Authentication was successful');
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            localStorage.setItem('token', data.value.token);
-            localStorage.setItem('user', JSON.stringify(data.value.user));
-            store.$state.user = data.value.user;
-            store.$state.token = data.value.token;
-            this.$router.push({ path: '/feed' });
-          }
-          else{
-            toast.error(data.responseResult);
-            this.$router.push('/login');
-          }
-        })
-        .catch(error => {
-            //handling error
-            toast.error(error);
-            this.$router.push('/login');
-        });
+const submitted = ref(false);
+const email = ref('');
+const password = ref('');
+const store = inject<IAuthStore>('authStore')
 
-      this.email = '';
-      this.password = '';
-      this.submitted = false;
-    }
-  },
-  computed: {
-    
+function onSubmit() {
+  if (store){
+    submitted.value = true;
+    axios.post(`${config.apiUrl}/User/login`, {
+      email: email.value, 
+      password: password.value
+    }, {
+      headers: {
+          'Content-Type': 'application/json'
+      }
+    }).then(async (response) => {
+      const data = response.data as IResponse<IAuth>;
+      
+      if (data.responseResult == 'Success' &&  data.value)
+      {
+        toast.success('Authentication was successful');
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        localStorage.setItem('token', data.value.token);
+        localStorage.setItem('user', JSON.stringify(data.value.user));
+        store.$state.user = data.value.user;
+        store.$state.token = data.value.token;
+        router.push({ path: '/feed' });
+      }
+      else{
+        toast.error(data.responseResult);
+        router.push({ path: '/login' });
+      }
+    })
+    .catch(error => {
+        //handling error
+        toast.error(error);
+        router.push({ path: '/login' });
+    }).finally(() => {
+      email.value = '';
+      password.value = '';
+      submitted.value = false;
+    });
   }
-});
+}
 </script>
 
 <style>

@@ -22,12 +22,15 @@
 </template>
 
 <script setup lang="ts">
-    import { useAuthStore } from '../store/auth.store';
-    
-    const logout = () : void => {
-        const store = useAuthStore();
+import { inject } from 'vue';
+import { type IAuthStore } from '../store/auth.store';
+const store = inject<IAuthStore>('authStore');
+
+function logout() : void {
+    if (store){
         store.logout();
     }
+}
 </script>
 <style>
     .nav-blocks {

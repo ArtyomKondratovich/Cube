@@ -36,7 +36,7 @@
 
 <script setup lang="ts">
     import { VueSpinner } from 'vue3-spinners';
-    import { ref, onMounted, nextTick } from 'vue';
+    import { ref, onMounted, nextTick, inject } from 'vue';
 import type { 
     IChat,
     IMessage,
@@ -47,7 +47,7 @@ import { toast } from 'vue3-toastify';
 import axios from 'axios';
 import config from '@/config';
 import getUserFromLocalStorage from '@/helpers/getFromLocalStorage';
-import { useNotificationStore } from '@/store/notification.store';
+import type { INotificationStore } from '@/store/notification.store';
 
 const props = defineProps({
     chatId: {
@@ -62,14 +62,21 @@ const message = ref('');
 const chatMessages = ref<IMessage[]>([]);
 const loading = ref(true);
 const timeZoneOffset = ref((new Date().getTimezoneOffset()) / 60 * (-1));
-const store = ref(useNotificationStore());
+const notificationStore = inject<INotificationStore>('notificationStore') as INotificationStore;
 
-onMounted(async () => {
-    await fetchChat();
-    await fetchChatMessages();
+onMounted(() => {
+    fetchChat();
+    fetchChatMessages();
+    readChatNotifications();
 });
 
-async function fetchChat() {
+async function readChatNotifications() {
+    const notifications = notificationStore.getChatNotifications(props.chatId);
+    const ids = notifications.map(x => x.id);
+    notificationStore.readNotifications(ids);
+}
+
+function fetchChat() {
     axios.post(`${config.apiUrl}/Chat/getChat`, 
         { Id: props.chatId }, 
         {
@@ -93,7 +100,7 @@ async function fetchChat() {
         });
 }
  
-async function fetchChatMessages() {
+function fetchChatMessages() {
     axios.post(`${config.apiUrl}/Message/getChatMessages`, 
     { 
         Id: props.chatId,
@@ -186,11 +193,9 @@ function sendMessage(): void {
                 'Content-Type': 'application/json'
             }
         }).then(response => {
-            store.value.updateNotificationData();
-        })
-    }
-        
-    
+
+        });
+}
 </script>
 
 <style>

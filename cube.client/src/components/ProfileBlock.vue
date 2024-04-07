@@ -14,7 +14,7 @@
                     {{ user?.name + " " + user?.surname }}
                 </div>
                 <div id="actions-block">
-                    <div id="add-friend" v-if="!isUserProfile" @click="">
+                    <div id="add-friend" v-if="!isUserProfile" @click="friendRequest">
                         <img src="../assets/icons/addFriendIcon.png" width="20px" height="20px">
                     </div>
                     <div id="edit-profile" @click="">
@@ -31,59 +31,69 @@
 import type { IResponse, IUser } from '@/api/types';
 import { VueSpinner } from 'vue3-spinners';
 import config from '@/config';
-import { useAuthStore } from '@/store/auth.store';
+import { type IAuthStore } from '@/store/auth.store';
 import axios from 'axios';
-import { ref, onMounted, watch, toRef } from 'vue';
+import { ref, onMounted, watch, toRef, inject } from 'vue';
+import getUserIdFromLocalStorage from '@/helpers/getFromLocalStorage';
 
-    const props = defineProps({
-        userId: {
-            type: Number,
-            required: true
+const props = defineProps({
+    userId: {
+        type: Number,
+        required: true
+    }
+});
+const store = inject<IAuthStore>('authStore') as IAuthStore;
+const isUserProfile = ref(store.$state.user?.id == props.userId);
+const loading = ref(true);
+const user = ref<IUser | null>(null);
+
+async function updateInfo(id: number) {
+    await fetchUser(id);
+    isUserProfile.value = store.$state.user?.id == props.userId;
+}
+function userAvatar(): string {
+    if (user.value){
+        return 'data:image/jpeg;base64,' + user.value.avatarBytes;
+    }
+    return '';
+}
+async function fetchUser(id: number) {
+    axios.post(`${config.apiUrl}/User/getUser`, { id: id },
+    {
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Content-Type': 'application/json'
         }
-    });
-
-    const store = useAuthStore();
-    const isUserProfile = ref(store.$state.user?.id == props.userId);
-    const loading = ref(true);
-    const user = ref<IUser | null>(null);
-
-    async function updateInfo(id: number) {
-        await fetchUser(id);
-        isUserProfile.value = store.$state.user?.id == props.userId;
-    }
-
-    function userAvatar(): string {
-        if (user.value){
-            return 'data:image/jpeg;base64,' + user.value.avatarBytes;
+    })
+    .then(async (response) => {
+        const data = response.data as IResponse<IUser>;
+        if (data.responseResult == 'Success' && data.value) {
+            user.value = data.value;
+            loading.value = false;
         }
-        return '';
-    }
+    })
+}
 
-    async function fetchUser(id: number) {
-        axios.post(`${config.apiUrl}/User/getUser`, { id: id },
-        {
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(async (response) => {
-            const data = response.data as IResponse<IUser>;
-            if (data.responseResult == 'Success' && data.value) {
-                user.value = data.value;
-                loading.value = false;
-            }
-        })
-    }
-
-    onMounted(async () => {
-        await updateInfo(props.userId);
+function friendRequest() {
+    axios.post(`${config.apiUrl}/Notification/create`, {
+        notificationSenderId: getUserIdFromLocalStorage(),
+        userIds: [
+          props.userId
+        ],
+        isReaded: false,
+        type: "FriendRequest",
+        accepted: false
+    }).then(response => {
+        console.log(response.data);
     });
+}
 
-    watch(toRef(props, 'userId'), async (newUserId) => {
-        await updateInfo(newUserId);
-    });
-
+onMounted(async () => {
+    await updateInfo(props.userId);
+});
+watch(toRef(props, 'userId'), async (newUserId) => {
+    await updateInfo(newUserId);
+});
 </script>
 
 <style>

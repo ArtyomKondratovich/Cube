@@ -13,25 +13,19 @@
 </template>
 
 <script setup lang="ts">
-    import { ref } from 'vue'
-    import ChatsBlock from './ChatsBlock.vue';
-    import router from '@/helpers/router';
-import { useNotificationStore } from '@/store/notification.store';
 
+import { ref } from 'vue'
+import ChatsBlock from './ChatsBlock.vue';
+import router from '@/helpers/router';
 
-    const isAnyChatSelected = ref(false);
-    const selectedChat = ref<number>(0);
-    const notificationStore = ref(useNotificationStore());
-    
-    function selectChat(chatId: number) {
-        selectedChat.value = chatId;
-        isAnyChatSelected.value = true;
-        let chatNotif = notificationStore.value.getChatNotifications(chatId);
-        let ids = chatNotif.map(x => x.id);
-        ids.forEach(id => notificationStore.value.readNotification(id));
-        
-        router.push({ path: `/messanger/chat/${chatId}` })
-    }
+const isAnyChatSelected = ref(false);
+const selectedChat = ref<number>(0);
+
+function selectChat(chatId: number) {
+    selectedChat.value = chatId;
+    isAnyChatSelected.value = true;
+    router.push({ path: `/messanger/chat/${chatId}` })
+}
 
 </script>
 

@@ -9,6 +9,7 @@ import ProfileBlock from '@/components/ProfileBlock.vue'
 import FriendsBlock from '@/components/FriendsBlock.vue'
 import ChatBlock from '@/components/ChatBlock.vue'
 import SettingsBlock from '@/components/SettingsBlock.vue'
+import NotificationBlock from '@/components/NotificationBlock.vue'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -43,6 +44,10 @@ const router = createRouter({
                 {
                     path: 'settings',
                     component: SettingsBlock
+                },
+                {
+                    path: 'notification',
+                    component: NotificationBlock
                 }
             ],
             props: true

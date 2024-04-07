@@ -38,24 +38,26 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useAuthStore } from '@/store/auth.store';
+import { inject, ref } from 'vue';
+import { type IAuthStore } from '@/store/auth.store';
 import type { IAuth, IRegisterInput, IResponse } from '@/api/types';
-import { preview } from 'vite';
 import axios from 'axios';
 import config from '@/config';
 import { toast } from 'vue3-toastify';
 import router from '@/helpers/router';
 
 const submitted = ref(false);
+const authStore = inject<IAuthStore>('authStore');
 const user = ref<IRegisterInput>({} as IRegisterInput);
 const confirmPassword = ref('');
 const imageInput = ref<HTMLInputElement | null>(null);
 const imagePreview = ref<string | null>(null);
 
 function isLoggedIn(): boolean {
-    const store = useAuthStore();
-    return store.isLoggedIn;
+    if (authStore) {
+        return authStore.isLoggedIn;
+    }
+    return false;
 }
 
 async function handleSubmit(){
@@ -96,10 +98,6 @@ async function handleSubmit(){
               await new Promise(resolve => setTimeout(resolve, 2000));
               router.push('/register');
           });
-
-        const store = useAuthStore();
-        user.value.file = selectedImage;
-        await store.register(user.value);
     }
 }
 

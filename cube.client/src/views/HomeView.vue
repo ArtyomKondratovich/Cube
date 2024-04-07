@@ -19,7 +19,7 @@
                 </li>
                 <li @click="selectTab(2)" :class="{ 'active': activeTab == 2 }">
                     <img src="../assets/icons/notificationIcon.png">
-                    <router-link :to="{ path: '/feed' }">{{ getLabel(2) }}</router-link>
+                    <router-link :to="{ path: '/notification' }">{{ getLabel(2) }}</router-link>
                 </li>
                 <li @click="selectTab(3)" :class="{ 'active': activeTab == 3 }">
                     <img src="../assets/icons/friendsIcon.png">
@@ -38,13 +38,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useNotificationStore } from "@/store/notification.store";
+import { ref, inject, computed } from 'vue';
+import { type INotificationStore } from "@/store/notification.store";
 import type { IUser } from '@/api/types';
 
 const user = JSON.parse(localStorage.getItem('user') ?? '{}') as IUser;
 const activeTab = ref(0);
-const notificationstore = ref(useNotificationStore());
+const store = inject<INotificationStore>('notificationStore') as INotificationStore;
+const unreadMessangerNotifications = computed(() => {
+    return store.getMessangerNotifications;
+});
+const unreadFriendNotifications = computed(() => {
+    return store.getFriendNotifications;
+});
+const unreadPostsNotifications = computed(() => {
+    return store.getPostsNotifications
+});
 
 function selectTab(id: number) {
     activeTab.value = id;
@@ -58,19 +67,19 @@ function getLabel(id: number): string {
     let count;
     switch(id){
         case 0:
-            count = notificationstore.value.getPostsNotifications;
+            count = unreadPostsNotifications.value.length;
             if (count == 0) {
                 return 'News';
             }
             return 'News ' + `${count}`;
         case 1:
-            count = notificationstore.value.getMessangerNotifications;
+            count = unreadMessangerNotifications.value.length;
             if (count == 0) {
                 return 'Messanger';
             }
             return 'Messanger ' + `${count}`;
         case 2:
-            count = notificationstore.value.getFriendNotifications;
+            count = unreadFriendNotifications.value.length;
             if (count == 0) {
                 return 'Notifications';
             }
@@ -79,9 +88,6 @@ function getLabel(id: number): string {
 
     return '';
 }
-
-setInterval(notificationstore.value.updateNotificationData, 10000);
-
 </script>
 
 <style>

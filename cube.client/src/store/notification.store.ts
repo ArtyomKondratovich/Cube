@@ -9,83 +9,88 @@ import axios from 'axios';
 import 'vue3-toastify/dist/index.css'
 import getUserIdFromLocalStorage from '@/helpers/getFromLocalStorage';
 
-interface NotificationState {
+interface INotificationState {
   unreadNotifications: INotificationModel[];
   readedNotifications: INotificationModel[];
   userId: number;
-  unreadMessages: number;
-  unreadFriendNotifications: number;
-  unreadPosts: number;
+}
+
+export interface INotificationStore {
+  fecthUserNotifications(): void;
+  updateNotificationData(): void;
+  readNotifications(readNotificationIds: number[]): void;
+  deleteReadedNotifications(): void;
+  getChatNotifications(chatId: number): INotificationModel[];
+  getMessangerNotifications: INotificationModel[];
+  getPostsNotifications: INotificationModel[];
+  getFriendNotifications: INotificationModel[];
+  $state: INotificationState;
 }
 
 export const useNotificationStore = defineStore(
   'notification', {
-    state: (): NotificationState => ({
-        unreadNotifications: [],
-        readedNotifications: [],
-        userId: getUserIdFromLocalStorage(),
-        unreadMessages: 0,
-        unreadPosts: 0,
-        unreadFriendNotifications: 0
+    state: (): INotificationState => ({
+        unreadNotifications: [] as INotificationModel[],
+        readedNotifications: [] as INotificationModel[],
+        userId: getUserIdFromLocalStorage()
     }),
     actions: {
-        fecthUserNotifications(): void {
-            axios.post(`${config.apiUrl}/Notification/get`, { id: this.userId }, 
-            {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + `${localStorage.getItem('token')}`
-                }
-            }).then(response => {
-                const data = response.data as IResponse<IUserNotifications>;
-
-                if (data.responseResult == 'Success' && data.value){
-                    this.unreadNotifications = data.value.notifications;
-                }
-            }).catch(error => console.log(error));
-        },
-        updateNotificationData(): void {
-            this.fecthUserNotifications();
-            this.unreadMessages = this.unreadNotifications.filter(x => x.type == 'ChatNotification' && !x.isReaded).length;
-            this.unreadPosts = this.unreadNotifications.filter(x => x.type == 'NewsNotification' && !x.isReaded).length;
-            this.unreadFriendNotifications = this.unreadNotifications.filter(x => (x.type == 'FriendRequest' || x.type=='FriendResponse') && !x.isReaded).length;
-            if (this.readedNotifications.length > 0)
-            {
-              this.deleteReadedNotifications();
+        async fecthUserNotifications() {
+          axios.post(`${config.apiUrl}/Notification/get`, { id: this.userId }, 
+          {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + `${localStorage.getItem('token')}`
             }
+          }).then(response => {
+            const data = response.data as IResponse<IUserNotifications>;
+            if (data.responseResult == 'Success' && data.value){
+              data.value.notifications.forEach(notification => {
+                if (!this.unreadNotifications.find(x => x.id == notification.id) && !this.readedNotifications.find(x => x.id == notification.id)){
+                  this.unreadNotifications.push(notification);
+                }
+              })
+            }
+          }).catch(error => console.log(error));
         },
-        readNotification(notifId: number): void {
-
-            const index = this.unreadNotifications.findIndex(item => item.id == notifId && item.userId == this.userId);
+        async updateNotificationData() {
+          await this.fecthUserNotifications();
+          if (this.readedNotifications.length > 0)
+          {
+            await this.deleteReadedNotifications();
+          }
+        },
+        readNotifications(readNotificationIds: number[]) {
+          readNotificationIds.forEach(id => {
+            const index = this.unreadNotifications.findIndex(item => item.id == id && item.userId == this.userId);
 
             if (index != -1)
             {
-              console.log('asdasdasdasd')
               const notification = this.unreadNotifications[index];
               this.unreadNotifications.splice(index, 1);
               notification.isReaded = true;
               this.readedNotifications.push(notification);
             }
+          });
         },
-        deleteReadedNotifications(): void {
-            console.log('hi');
-            const ids = this.readedNotifications.map(item => item.id);
-            axios.post(`${config.apiUrl}/Notification/delete`, { readedNotificationTds: ids },
-            {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + `${localStorage.getItem('token')}`
-                }
-            }).then(response => {
-                const data = response.data as IResponse<boolean>;
-
-                if (data.responseResult == 'Success' && data.value)
-                {
-                    this.readedNotifications = [];
-                }
-            }).catch(error => console.log(error));
+        async deleteReadedNotifications() {
+          const ids = this.readedNotifications.map(item => item.id);
+          console.log('Удаляются уведомления:', ids);
+          axios.post(`${config.apiUrl}/Notification/delete`, { readedNotificationTds: ids },
+          {
+              headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': 'Bearer ' + `${localStorage.getItem('token')}`
+              }
+          }).then(response => {
+              const data = response.data as IResponse<boolean>;
+              if (data.responseResult == 'Success' && data.value)
+              {
+                  this.readedNotifications = [];
+              }
+          }).catch(error => console.log(error));
         },
-        getChatNotifications(chatId: number) {
+        getChatNotifications(chatId: number): INotificationModel[] {
           return this.unreadNotifications
           .filter(x => x.notificationSenderId == chatId 
             && !x.isReaded
@@ -93,14 +98,14 @@ export const useNotificationStore = defineStore(
         }
     },
     getters: {
-      getMessangerNotifications(): number {
-        return this.unreadMessages;
+      getMessangerNotifications(): INotificationModel[] {
+        return this.unreadNotifications.filter(x => x.type == 'ChatNotification' && !x.isReaded);
       },
-      getPostsNotifications(): number {
-        return this.unreadPosts;
+      getPostsNotifications(): INotificationModel[] {
+        return this.unreadNotifications.filter(x => x.type == 'NewsNotification' && !x.isReaded);
       },
-      getFriendNotifications(): number {
-        return this.unreadFriendNotifications;
+      getFriendNotifications(): INotificationModel[] {
+        return this.unreadNotifications.filter(x => (x.type == 'FriendRequest' || x.type=='FriendResponse') && !x.isReaded);
       }
     }
   }
