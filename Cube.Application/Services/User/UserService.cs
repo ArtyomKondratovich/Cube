@@ -31,25 +31,36 @@ namespace Cube.Application.Services.User
         public async Task<Response<FriendshipModel, CreateFriendshipResult>> CreateFriendshipAsync(FriendshipDto dto)
         {
             var response = new Response<FriendshipModel, CreateFriendshipResult>();
+            
+            var friendships = await _repository.FriendshipRepository.GetUsersFriendshipsAsync(dto.UserId);
 
-            var user = await _repository.UserRepository.GetUserByIdAsync(dto.UserId);
-            var friend = await _repository.UserRepository.GetUserByIdAsync(dto.FriendId);
+            foreach (var friendship in friendships) 
+            {
+                if (friendship.FirstUserId == dto.FriendId || friendship.SecondUserId == dto.FriendId) 
+                {
+                    response.ResponseResult = CreateFriendshipResult.FriendshipAlreadyExist;
+                    return response;
+                }
+            }
 
-            if (user == null) 
+            var firstUser = await _repository.UserRepository.GetUserByIdAsync(dto.UserId);
+            var secondUser = await _repository.UserRepository.GetUserByIdAsync(dto.FriendId);
+
+            if (firstUser == null) 
             {
                 response.ResponseResult = CreateFriendshipResult.UserNotFound; 
                 return response;
             }
 
-            if (friend == null) 
+            if (secondUser == null) 
             {
                 response.ResponseResult = CreateFriendshipResult.FriendNotFound;
                 return response;
             }
 
             var friendshipEntity = MapperConfig.InitializeAutomapper().Map<FriendshipEntity>(dto);
-            friendshipEntity.Friend = friend;
-            friendshipEntity.User = user;
+            friendshipEntity.SecondUser = secondUser;
+            friendshipEntity.FirstUser = firstUser;
 
             var result = await _repository.FriendshipRepository.CreateFriendshipAsync(friendshipEntity);
 
@@ -142,13 +153,28 @@ namespace Cube.Application.Services.User
                 return response;
             }
 
-            var friends = friendships
-                .Select(async x => await _repository.UserRepository.GetUserByIdAsync(x.FriendId))
-                .Select(x => x.Result)
-                .Select(x => MapperConfig.InitializeAutomapper().Map<UserModel>(x))
-                .ToList();
+            var friends = new List<UserModel>();
 
-            if (friends == null) 
+            foreach (var friend in friendships)
+            {
+                UserEntity? userEntity;
+
+                if (friend.FirstUserId == dto.Id)
+                {
+                    userEntity = await _repository.UserRepository.GetUserByIdAsync(friend.SecondUserId);
+                }
+                else 
+                {
+                    userEntity = await _repository.UserRepository.GetUserByIdAsync(friend.FirstUserId);
+                }
+
+                if (userEntity != null) 
+                {
+                    friends.Add(MapperConfig.InitializeAutomapper().Map<UserModel>(userEntity));
+                }
+            }
+
+            if (!friends.Any()) 
             {
                 response.ResponseResult = GetUserFriends.Success;
                 response.Value = new();
@@ -269,7 +295,7 @@ namespace Cube.Application.Services.User
                 var client = new HttpClient();
                 var form = new MultipartFormDataContent();
 
-                using (var stream = (dto.File as FormFile).OpenReadStream())
+                using (var stream = ((FormFile)dto.File).OpenReadStream())
                 {
                     var fileBytes = new byte[stream.Length];
                     await stream.ReadAsync(fileBytes);

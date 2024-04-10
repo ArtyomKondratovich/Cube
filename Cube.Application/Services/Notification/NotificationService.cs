@@ -30,7 +30,8 @@ namespace Cube.Application.Services.Notification
                             UserId = x,
                             NotificationSenderId = dto.NotificationSenderId,
                             IsReaded = false,
-                            Type = dto.Type
+                            Type = dto.Type,
+                            Accepted = dto.Accepted
                         })
                         .ToList();
 

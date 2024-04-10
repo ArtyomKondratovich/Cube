@@ -27,14 +27,16 @@ import { toast } from 'vue3-toastify';
 import router from '@/helpers/router';
 import axios from 'axios';
 import config from '@/config';
+import type { INotificationStore } from '@/store/notification.store';
 
 const submitted = ref(false);
 const email = ref('');
 const password = ref('');
-const store = inject<IAuthStore>('authStore')
+const authStore = inject<IAuthStore>('authStore');
+const notificationStore = inject<INotificationStore>('notificationStore');
 
 function onSubmit() {
-  if (store){
+  if (authStore && notificationStore){
     submitted.value = true;
     axios.post(`${config.apiUrl}/User/login`, {
       email: email.value, 
@@ -52,8 +54,9 @@ function onSubmit() {
         await new Promise(resolve => setTimeout(resolve, 2000));
         localStorage.setItem('token', data.value.token);
         localStorage.setItem('user', JSON.stringify(data.value.user));
-        store.$state.user = data.value.user;
-        store.$state.token = data.value.token;
+        authStore.$state.user = data.value.user;
+        authStore.$state.token = data.value.token;
+        notificationStore.login(data.value.user.id);
         router.push({ path: '/feed' });
       }
       else{

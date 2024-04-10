@@ -14,8 +14,8 @@ import MyHeader from "@/components/MyHeader.vue"
 import { inject, onMounted } from "vue";
 import Toast from "vue3-toastify";
 import type { INotificationStore } from "./store/notification.store";
-const notificationStore = inject<INotificationStore>('notificationStore') as INotificationStore;
 
+const notificationStore = inject<INotificationStore>('notificationStore') as INotificationStore;
 
 onMounted(async() => {
   setInterval(notificationStore.updateNotificationData, 10000);

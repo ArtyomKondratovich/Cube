@@ -8,16 +8,6 @@ namespace Cube.Repository.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DeleteData(
-                table: "Roles",
-                keyColumn: "Id",
-                keyValue: 1);
-
-            migrationBuilder.DeleteData(
-                table: "Roles",
-                keyColumn: "Id",
-                keyValue: 2);
-
             migrationBuilder.CreateTable(
                 name: "Notifications",
                 columns: table => new
@@ -39,16 +29,6 @@ namespace Cube.Repository.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Notifications");
-
-            migrationBuilder.InsertData(
-                table: "Roles",
-                columns: new[] { "Id", "Name" },
-                values: new object[] { 1, "User" });
-
-            migrationBuilder.InsertData(
-                table: "Roles",
-                columns: new[] { "Id", "Name" },
-                values: new object[] { 2, "Admin" });
         }
     }
 }

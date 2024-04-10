@@ -5,6 +5,7 @@ using Cube.Application.Services.Image.Dto;
 using Cube.Application.Services.User.Dto;
 using Cube.Core.Entities;
 using Cube.Core.Models;
+using Cube.Core.Models.Chat;
 using Cube.Core.Models.Friendship;
 using Cube.Core.Models.Image;
 using Cube.Core.Models.Messages;
@@ -40,12 +41,12 @@ namespace Cube.Application.Utilities
 
                 cfg.CreateMap<FriendshipEntity, FriendshipModel>()
                     .ForMember(dest => dest.Id, act => act.MapFrom(src => src.Id))
-                    .ForMember(dest => dest.UserId, act => act.MapFrom(src => src.UserId))
-                    .ForMember(dest => dest.FriendId, act => act.MapFrom(src => src.FriendId));
+                    .ForMember(dest => dest.UserId, act => act.MapFrom(src => src.FirstUserId))
+                    .ForMember(dest => dest.FriendId, act => act.MapFrom(src => src.SecondUserId));
 
                 cfg.CreateMap<FriendshipDto, FriendshipEntity>()
-                    .ForMember(dest => dest.UserId, act => act.MapFrom(src => src.UserId))
-                    .ForMember(dest => dest.FriendId, act => act.MapFrom(src => src.FriendId));
+                    .ForMember(dest => dest.FirstUserId, act => act.MapFrom(src => src.UserId))
+                    .ForMember(dest => dest.SecondUserId, act => act.MapFrom(src => src.FriendId));
 
                 cfg.CreateMap<NewImageDto, ImageEntity>()
                     .ForMember(dest => dest.Type, act => act.MapFrom(src => src.Type))
@@ -64,6 +65,10 @@ namespace Cube.Application.Utilities
                     .ForMember(dest => dest.DateOfBirth, act => act.MapFrom(src => src.DateOfBirth))
                     .ForMember(dest => dest.RoleId, act => act.MapFrom(src => src.RoleId));
 
+                cfg.CreateMap<ChatEntity, ChatModel>()
+                    .ForMember(dest => dest.Id, act => act.MapFrom(src => src.Id))
+                    .ForMember(dest => dest.Title, act => act.MapFrom(src => src.Title))
+                    .ForMember(dest => dest.Type, act => act.MapFrom(src => src.Type));
             });
 
             var mapper = new Mapper(config);

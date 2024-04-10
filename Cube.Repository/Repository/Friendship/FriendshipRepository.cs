@@ -49,7 +49,7 @@ namespace Cube.Repository.Repository.Friendship
         public async Task<List<FriendshipEntity>> GetUsersFriendshipsAsync(int userId)
         {
             return await _context.Friendships
-                .Where(x => x.UserId == userId || x.FriendId == userId)
+                .Where(x => x.FirstUserId == userId || x.SecondUserId == userId)
                 .ToListAsync();
         }
     }

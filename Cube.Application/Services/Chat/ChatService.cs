@@ -5,6 +5,7 @@ using Cube.Core.Entities;
 using Cube.Core.Enums;
 using Cube.Core.Models;
 using Cube.Core.Models.Chat;
+using Cube.Core.Models.User;
 using Cube.EntityFramework.Repository;
 
 namespace Cube.Application.Services.Chat
@@ -51,7 +52,16 @@ namespace Cube.Application.Services.Chat
                 if (result != null)
                 {
                     responce.ResponseResult = CreateChatResult.Success;
-                    responce.Value = result;
+                    var chatModel = MapperConfig.InitializeAutomapper().Map<ChatModel>(result);
+
+                    foreach (var user in result.Users)
+                    {
+                        var userModel = MapperConfig.InitializeAutomapper().Map<UserModel>(user);
+                        userModel.AvatarBytes = await GetUserAvatar(userModel.Id);
+                        chatModel.Users.Add(userModel);
+                    }
+
+                    responce.Value = chatModel;
                     return responce;
                 }
             }
@@ -100,7 +110,10 @@ namespace Cube.Application.Services.Chat
 
         public async Task<Response<List<ChatModel>, GetAllChatsResult>> GetAllUserChats(FindUserChatsDto dto)
         {
-            var response = new Response<List<ChatModel>, GetAllChatsResult>();
+            var response = new Response<List<ChatModel>, GetAllChatsResult> 
+            { 
+                Value = new()
+            };
 
             if (await _repository.UserRepository.GetUserByIdAsync(dto.Id) == null)
             {
@@ -124,20 +137,29 @@ namespace Cube.Application.Services.Chat
 
                 if (result.ResponseResult == CreateChatResult.Success)
                 {
-                    chats.Add(new ChatModel
-                    {
-                        Id = result.Value.Id,
-                        Title = result.Value.Title,
-                        Type = ChatType.SavedMessages,
-                    });
+                    response.Value.Add(result.Value);
                     response.ResponseResult = GetAllChatsResult.Success;
-                    response.Value = chats;
                     return response;
                 }
             }
 
+            foreach (var chat in chats) 
+            {
+
+                var chatModel = MapperConfig.InitializeAutomapper().Map<ChatModel>(chat);
+                chatModel.Users = new();
+
+                foreach (var user in chat.Users)
+                {
+                    var userModel = MapperConfig.InitializeAutomapper().Map<UserModel>(user);
+                    userModel.AvatarBytes = await GetUserAvatar(userModel.Id);
+                    chatModel.Users.Add(userModel);
+                }
+
+                response.Value.Add(chatModel);
+            }
+
             response.ResponseResult = GetAllChatsResult.Success;
-            response.Value = chats;
 
             return response;
         }
@@ -154,16 +176,17 @@ namespace Cube.Application.Services.Chat
             }
             else
             {
-                response.ResponseResult = GetChatResult.Success;
-                response.Value = new ChatModel
+                var chatModel = MapperConfig.InitializeAutomapper().Map<ChatModel>(chat);
+
+                foreach (var user in chat.Users)
                 {
-                    Id = chat.Id,
-                    Title = chat.Title,
-                    Type = chat.Type,
-                    Users = chat.Users
-                    .Select(x => x.Id)
-                    .ToList()
-                };
+                    var userModel = MapperConfig.InitializeAutomapper().Map<UserModel>(user);
+                    userModel.AvatarBytes = await GetUserAvatar(userModel.Id);
+                    chatModel.Users.Add(userModel);
+                }
+
+                response.Value = chatModel;
+                response.ResponseResult = GetChatResult.Success;
             }
 
             return response;
@@ -234,7 +257,16 @@ namespace Cube.Application.Services.Chat
 
                     if (updateResult != null)
                     {
-                        response.Value = updateResult;
+                        var chatModel = MapperConfig.InitializeAutomapper().Map<ChatModel>(updateResult);
+
+                        foreach (var user in updateResult.Users)
+                        {
+                            var userModel = MapperConfig.InitializeAutomapper().Map<UserModel>(user);
+                            userModel.AvatarBytes = await GetUserAvatar(userModel.Id);
+                            chatModel.Users.Add(userModel);
+                        }
+
+                        response.Value = chatModel;
                         response.ResponseResult = UpdateChatResult.Success;
                         return response;
                     }
@@ -255,6 +287,25 @@ namespace Cube.Application.Services.Chat
             }
 
             return response;
+        }
+
+        private async Task<byte[]?> GetUserAvatar(int id)
+        {
+            if (await _repository.UserRepository.GetUserByIdAsync(id) == null)
+            {
+                return null;
+            }
+
+            var image = await _repository.ImageRepository.GetImageByTypeAndOwnerAsync(ImageType.Profile, id);
+
+            if (image == null)
+            {
+                return null;
+            }
+
+            var imageBytes = await File.ReadAllBytesAsync(image.Path);
+
+            return imageBytes;
         }
     }
 }

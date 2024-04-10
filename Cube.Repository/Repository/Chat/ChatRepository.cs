@@ -13,7 +13,7 @@ namespace Cube.EntityFramework.Repository.Chat
             _dbContext = dbContext;
         }
 
-        public async Task<ChatModel?> CreateChat(ChatEntity entity)
+        public async Task<ChatEntity?> CreateChat(ChatEntity entity)
         {
             var chat = await _dbContext.Chats.AddAsync(entity);
 
@@ -21,12 +21,7 @@ namespace Cube.EntityFramework.Repository.Chat
             {
                 await _dbContext.SaveChangesAsync();
 
-                return new ChatModel 
-                { 
-                    Id = chat.Entity.Id,
-                    Title = chat.Entity.Title,
-                    Type = chat.Entity.Type
-                };
+                return chat.Entity;
             }
             
             return null;
@@ -47,16 +42,11 @@ namespace Cube.EntityFramework.Repository.Chat
             return false;
         }
 
-        public async Task<List<ChatModel>> GetAllUsersChatsAsync(int id)
+        public async Task<List<ChatEntity>> GetAllUsersChatsAsync(int id)
         {
             return await _dbContext.Chats
-                .Where(c => c.Users.Where(x => x.Id == id).Any())
-                .Select(x => new ChatModel 
-                {
-                    Id = x.Id,
-                    Title = x.Title,
-                    Type = x.Type
-                })
+                .Where(c => c.Users.Select(x => x.Id).Contains(id))
+                .Include(x => x.Users)
                 .ToListAsync();
         }
 
@@ -90,19 +80,14 @@ namespace Cube.EntityFramework.Repository.Chat
             return entities;
         }
 
-        public async Task<ChatModel?> UpdateChat(ChatEntity entity)
+        public async Task<ChatEntity?> UpdateChat(ChatEntity entity)
         {
             var result = _dbContext.Chats.Update(entity);
 
             if (result != null)
             {
                 await _dbContext.SaveChangesAsync();
-                return new ChatModel 
-                {
-                    Id = result.Entity.Id,
-                    Title = result.Entity.Title,
-                    Type = result.Entity.Type
-                };
+                return result.Entity;
             }
 
             return null;

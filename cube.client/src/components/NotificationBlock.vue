@@ -12,10 +12,10 @@
                             {{ notificationMessage(notification.id) }}
                         </div>
                         <div class="actions">
-                            <div @click="handleFriendshipResponse(true, notification.id)">
+                            <div @click="handleActionButton(true, notification.id)">
                                 <img src="../assets/icons/acceptfriendshipIcon.png">
                             </div>
-                            <div @click="handleFriendshipResponse(false, notification.id)">
+                            <div v-if="notification.type=='FriendRequest'" @click="handleActionButton(false, notification.id)">
                                 <img src="../assets/icons/rejectfriendshipIcon.png">
                             </div>
                         </div>
@@ -36,12 +36,11 @@ import config from '@/config';
 import type { INotificationStore } from '@/store/notification.store';
 import axios from 'axios';
 import { computed, inject, onMounted, ref } from 'vue';
-import { toast } from 'vue3-toastify';
 
-const store = inject<INotificationStore>('notificationStore') as INotificationStore;
+const notificationStore = inject<INotificationStore>('notificationStore') as INotificationStore;
 const loading = ref(true);
 const notifications = computed<INotificationModel[]>(() => {
-    return store.getFriendNotifications;
+    return notificationStore.getFriendNotifications;
 });
 
 const userProfiles = ref<IUser[]>([]);
@@ -84,29 +83,36 @@ function userAvatar(id: number): string {
 }
 
 function notificationMessage(notificationId: number): string{
-    const id = notifications.value.find(x => x.id == notificationId)?.notificationSenderId;
-    const user = userProfiles.value.find(x => x.id == id) as IUser;
-    return `${user.name} ${user.surname} offers you friendship`;
+    const notification = notifications.value.find(x => x.id == notificationId) as INotificationModel;
+    const user = userProfiles.value.find(x => x.id == notification.notificationSenderId) as IUser;
+
+    return notification.type == 'FriendResponse' ? 
+    `${ user.name } ${ user.surname } ${ notification.accepted ? 'acсepted' : 'rejected' } a friend request` :
+    `${ user.name } ${ user.surname } offers you friendship`;
 }
 
-function handleFriendshipResponse(accept: boolean, id: number){
-    const notification = notifications.value.find(x => x.id == id);
-    const userId = notification?.notificationSenderId;
-    const user = userProfiles.value.find(x => x.id == userId) as IUser;
+function handleActionButton(accept: boolean, id: number): void{
+    const notification = notifications.value.find(x => x.id == id) as INotificationModel;
 
-    if (notification){
-        axios.post(`${config.apiUrl}/User/createFriendship`, {
-            userId: notification.userId,
-            friendId: notification.notificationSenderId
-        }).then(async (response) => {
-            const data = response.data as IResponse<any>;
-            
-            if (data.responseResult == 'Success' && data){
-                toast.success(`${user.name} ${user.surname} and You become friends`);
-                await new Promise(resolve => setTimeout(resolve, 2000));
-            }
+    if (notification.type == 'FriendRequest'){
+        if (accept) {
+            axios.post(`${config.apiUrl}/User/createFriendship`, {
+                userId: notification.userId,
+                friendId: notification.notificationSenderId
+            });
+        }
+        axios.post(`${config.apiUrl}/Notification/create`, {
+            notificationSenderId: notification.userId,
+            userIds: [
+              notification.notificationSenderId
+            ],
+            isReaded: false,
+            type: "FriendResponse",
+            accepted: accept
         });
     }
+    
+    notificationStore.readNotifications([id]);
 }
 
 

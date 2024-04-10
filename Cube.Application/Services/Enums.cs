@@ -143,7 +143,7 @@
         Unsuccess,
         UserNotFound,
         FriendNotFound,
-
+        FriendshipAlreadyExist
     }
 
     public enum CreateImageResult 

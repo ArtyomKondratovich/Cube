@@ -7,10 +7,10 @@ namespace Cube.EntityFramework.Repository.Chat
     {
         Task<ChatEntity?> GetChatByIdAsync(int id);
         ChatEntity? GetChatById(int id);
-        Task<List<ChatModel>> GetAllUsersChatsAsync(int id);
-        Task<ChatModel?> CreateChat(ChatEntity entity);
+        Task<List<ChatEntity>> GetAllUsersChatsAsync(int id);
+        Task<ChatEntity> CreateChat(ChatEntity entity);
         Task<bool> DeleteChat(int id);
-        Task<ChatModel?> UpdateChat(ChatEntity entity);
+        Task<ChatEntity?> UpdateChat(ChatEntity entity);
         ICollection<ChatEntity> GetEntitiesByIds(ICollection<int> ids);
     }
 }

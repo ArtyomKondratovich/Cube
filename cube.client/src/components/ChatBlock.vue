@@ -1,10 +1,10 @@
 <template>
     <div class="chatView">
             <div class="header">
-                <div>
-                    {{ chat.title }}
+                <div style="margin-left: 5px;">
+                    {{ chatTitle(chat) }}
                 </div>
-                <div v-if="chat.type != 'SavedMessages'">
+                <div v-if="chat.type == 'Group'">
                      members
                 </div>
             </div>
@@ -25,7 +25,7 @@
             </div>
             <div class="sender">
                 <form @submit.prevent="sendMessage">
-                    <textarea v-model="message" placeholder="Type your message..." rows="1"></textarea>
+                    <textarea v-model="message" placeholder="Type your message..." @keydown.enter.prevent="sendMessage" rows="1"></textarea>
                     <button type="submit">
                         <img src="../assets/icons/sendIcon.png" />
                     </button>
@@ -36,7 +36,7 @@
 
 <script setup lang="ts">
     import { VueSpinner } from 'vue3-spinners';
-    import { ref, onMounted, nextTick, inject } from 'vue';
+    import { ref, onMounted, nextTick, inject, watch, toRef } from 'vue';
 import type { 
     IChat,
     IMessage,
@@ -65,10 +65,26 @@ const timeZoneOffset = ref((new Date().getTimezoneOffset()) / 60 * (-1));
 const notificationStore = inject<INotificationStore>('notificationStore') as INotificationStore;
 
 onMounted(() => {
-    fetchChat();
-    fetchChatMessages();
+    loadChatData(props.chatId);
     readChatNotifications();
 });
+
+function chatTitle(chat: IChat): string{
+    if (chat.type == 'Private'){
+        let companion = chat.users.filter(x => x.id != userId.value);
+
+        return `${ companion[0].name } ${ companion[0].surname }`;
+    }
+
+    return chat.title;
+}
+
+
+
+function loadChatData(id: number){
+    fetchChat(id);
+    fetchChatMessages(id);
+}
 
 async function readChatNotifications() {
     const notifications = notificationStore.getChatNotifications(props.chatId);
@@ -76,9 +92,9 @@ async function readChatNotifications() {
     notificationStore.readNotifications(ids);
 }
 
-function fetchChat() {
+function fetchChat(id: number) {
     axios.post(`${config.apiUrl}/Chat/getChat`, 
-        { Id: props.chatId }, 
+        { Id: id }, 
         {
             headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -100,10 +116,10 @@ function fetchChat() {
         });
 }
  
-function fetchChatMessages() {
+function fetchChatMessages(id: number) {
     axios.post(`${config.apiUrl}/Message/getChatMessages`, 
     { 
-        Id: props.chatId,
+        Id: id,
         UsersTimezoneOffset: timeZoneOffset.value
     }, 
     {
@@ -177,12 +193,10 @@ function sendMessage(): void {
         .catch(error => {
             toast.error('server error');
         });
-
-        console.log(chat.value.users);
     
     axios.post(`${config.apiUrl}/Notification/create`, {
             notificationSenderId: chat.value.id,
-            userIds: chat.value.users,
+            userIds: chat.value.users.filter(x => x.id != userId.value).map(x => x.id),
             isReaded: false,
             type: 'ChatNotification',
             accepted: false
@@ -196,6 +210,11 @@ function sendMessage(): void {
 
         });
 }
+
+watch(toRef(props, 'chatId'), async (newChatId) => {
+    loadChatData(newChatId);
+});
+
 </script>
 
 <style>
@@ -220,12 +239,12 @@ function sendMessage(): void {
     }
 
     .chatView .header {
-        display: 5%;
+        flex-basis: 10%;
+        max-height: 36px;
+        padding: 5px;
         flex-direction: column;
         border-bottom: 1px solid #363738;
     }
-
-
 
     .chatView .messages li {
         max-width: 50%;
@@ -290,7 +309,6 @@ function sendMessage(): void {
     .sender {
         display: flex;
         flex-direction: row;
-        justify-self: flex-end;
         margin: 5px;
         padding-left: 15px;
         background-color: #292929;
@@ -305,8 +323,7 @@ function sendMessage(): void {
 
     .sender form textarea {
         flex-grow: 1;
-        height: auto;
-        max-height: 100px;
+        max-height: 150px;
         outline: none;
         resize: none;
         border: none;
@@ -318,6 +335,7 @@ function sendMessage(): void {
     }
 
     .sender form button {
+        align-self: flex-end;
         display: flex;
         align-items: center;
         padding: 0px;

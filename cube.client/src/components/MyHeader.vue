@@ -24,11 +24,14 @@
 <script setup lang="ts">
 import { inject } from 'vue';
 import { type IAuthStore } from '../store/auth.store';
-const store = inject<IAuthStore>('authStore');
+import type { INotificationStore } from '@/store/notification.store';
+const authStore = inject<IAuthStore>('authStore');
+const notificationStore = inject<INotificationStore>('notificationStore');
 
 function logout() : void {
-    if (store){
-        store.logout();
+    if (authStore && notificationStore){
+        authStore.logout();
+        notificationStore.logout();
     }
 }
 </script>

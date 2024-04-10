@@ -2,7 +2,7 @@
     <div class="friends">
         <div class="searchHeader">
             <div id="searchBar1">
-                <input type="text" placeholder="Search">
+                <input type="text" placeholder="Search" v-model="searchFriendText">
                 <img src="../assets/icons/searchIcon.png">
             </div>
         </div>
@@ -13,16 +13,29 @@
             Add some friends
         </div>
         <div v-if="!loadingFriends && friends.length > 0" class="friendsContainer">
-
+            <ul>
+                <li v-for="friend in filteredFriends" :key="friend.id">
+                    <router-link :to="{ path: `/profile/${friend.id}`}">
+                        <div class="userProfile">
+                            <img v-if="friend.avatarBytes == null" src="../assets/Images/Profile/Profile_default.png">
+                            <img v-if="friend.avatarBytes != null" :src="userAvatar(friend.avatarBytes)">
+                            <div class="userName"> {{ friend.name }} {{ friend.surname }} </div>
+                        </div>
+                    </router-link>
+                </li>
+            </ul>
         </div>
     </div>
     <div class="search">
+        <div style="display: flex; width: 100%; height: 38px; align-items: center; justify-content: center; border-bottom: 1px solid #363738;">
+            All existing users
+        </div>
         <div v-if="loadingAllUsers" style="display: flex; width: 100%; height: 100%; justify-content: center; align-items: center;">
             <VueSpinner :size="20"/>
         </div>
         <div v-if="!loadingAllUsers" class="usersContainer">
             <ul>
-                <li v-for="user in allUsers" :key="user.id">
+                <li v-for="user in searchUsers" :key="user.id">
                     <router-link :to="{ path: `/profile/${user.id}`}">
                         <div class="userProfile">
                             <img v-if="user.avatarBytes == null" src="../assets/Images/Profile/Profile_default.png">
@@ -39,7 +52,7 @@
 <script setup lang="ts">
 
 import { VueSpinner } from 'vue3-spinners'
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import type { IResponse, IUser } from '@/api/types';
 import axios from 'axios';
 import config from '@/config';
@@ -50,6 +63,20 @@ const friends = ref([] as IUser[])
 const allUsers = ref([] as IUser[])
 const loadingFriends = ref(true);
 const loadingAllUsers = ref(true);
+const searchFriendText = ref('');
+
+const searchUsers = computed(() => {
+    let users = allUsers.value.filter(x => x.id != user.value.id && friends.value.findIndex(y => y.id == x.id) == -1);
+    return users;
+});
+
+const filteredFriends = computed(() => {
+  if (!searchFriendText.value) {
+    return friends.value;
+  }
+  const searchQuery = searchFriendText.value.toLowerCase();
+  return friends.value.filter(friend => (friend.name + " " + friend.surname).toLowerCase().includes(searchQuery));
+});
 
 function fetchData(): void {
     axios.post(`${config.apiUrl}/User/getUserFriends`, { Id: user.value.id }, { 
@@ -60,6 +87,7 @@ function fetchData(): void {
         const data = response.data as IResponse<IUser[]>;
         if (data.responseResult == 'Success' && data.value){
             friends.value = data.value;
+            friends.value = friends.value.filter(x => x.id != user.value.id);
         }
         else {
             console.log(data.responseResult);
@@ -75,7 +103,6 @@ axios.post(`${config.apiUrl}/User/getAllUsers`,{}, {
         const data = response.data as IResponse<IUser[]>;
         if (data.responseResult == 'Success' && data.value){
             allUsers.value = data.value;
-            allUsers.value = allUsers.value.filter((x) => x.id != user.value.id);
         }
         else {
             console.log(data.responseResult);
@@ -94,7 +121,7 @@ function userAvatar(bytes: []): string {
 }
 
 onMounted(() => {
-        fetchData();
+    fetchData();
 })
 </script>
 
@@ -123,6 +150,7 @@ onMounted(() => {
 
 .searchHeader {
     display: flex;
+    height: 24px;
     justify-content: center;
     width: 100%;
     padding: 5px;
@@ -140,6 +168,7 @@ onMounted(() => {
 .search {
     display: flex;
     flex-basis: 70%;
+    flex-direction: column;
 }
 
 .search ul {
@@ -173,6 +202,27 @@ onMounted(() => {
     border: none;
     border-radius: 10px;
     background-color: #292929;
+}
+
+.friendsContainer {
+    display: flex;
+    width: 100%;
+
+}
+
+.friendsContainer ul{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+
+.friendsContainer li{
+    padding: 5px;
+}
+
+.friendsContainer a{
+    width: 100%;
+    
 }
 
 </style>

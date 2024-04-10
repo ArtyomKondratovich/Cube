@@ -12,5 +12,6 @@ namespace Cube.Core.Entities
 
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public NotificationType Type { get; set; }
+        public bool Accepted { get; set; }
     }
 }

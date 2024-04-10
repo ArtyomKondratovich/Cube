@@ -14,8 +14,11 @@
                     {{ user?.name + " " + user?.surname }}
                 </div>
                 <div id="actions-block">
+                    <div id="send-message" v-if="!isUserProfile" @click="sendMessage">
+                        <img src="../assets/icons/sendMessageIcon.png">
+                    </div>
                     <div id="add-friend" v-if="!isUserProfile" @click="friendRequest">
-                        <img src="../assets/icons/addFriendIcon.png" width="20px" height="20px">
+                        <img src="../assets/icons/addFriendIcon.png">
                     </div>
                     <div id="edit-profile" @click="">
                         <img src="../assets/icons/editIcon.png">
@@ -28,13 +31,15 @@
 </template>
 
 <script setup lang="ts">
-import type { IResponse, IUser } from '@/api/types';
+import type { IChat, IResponse, IUser } from '@/api/types';
 import { VueSpinner } from 'vue3-spinners';
 import config from '@/config';
 import { type IAuthStore } from '@/store/auth.store';
 import axios from 'axios';
 import { ref, onMounted, watch, toRef, inject } from 'vue';
 import getUserIdFromLocalStorage from '@/helpers/getFromLocalStorage';
+import { toast } from 'vue3-toastify';
+import router from '@/helpers/router';
 
 const props = defineProps({
     userId: {
@@ -45,7 +50,7 @@ const props = defineProps({
 const store = inject<IAuthStore>('authStore') as IAuthStore;
 const isUserProfile = ref(store.$state.user?.id == props.userId);
 const loading = ref(true);
-const user = ref<IUser | null>(null);
+const user = ref<IUser>({} as IUser);
 
 async function updateInfo(id: number) {
     await fetchUser(id);
@@ -75,6 +80,8 @@ async function fetchUser(id: number) {
 }
 
 function friendRequest() {
+    toast.success(`Send friend request to ${user.value?.name} ${user.value?.surname}`);
+
     axios.post(`${config.apiUrl}/Notification/create`, {
         notificationSenderId: getUserIdFromLocalStorage(),
         userIds: [
@@ -83,9 +90,62 @@ function friendRequest() {
         isReaded: false,
         type: "FriendRequest",
         accepted: false
+    },
+    {
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Content-Type': 'application/json'
+        }
     }).then(response => {
         console.log(response.data);
     });
+}
+
+async function sendMessage() {
+    let chats = [] as IChat[];
+
+    await axios.post(`${ config.apiUrl }/Chat/getUserChats`, { id: store.$state.user?.id }, {
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Content-Type': 'application/json'
+        }
+    }).then(response => {
+        const data = response.data as IResponse<IChat[]>;
+
+        if (data.responseResult == 'Success' && data.value)
+        {
+            chats = data.value;
+        }
+        
+    });
+
+    let chat = chats.find(x => x.type == 'Private' && x.users.find(x => x.id == props.userId));
+
+    if (chat) {
+        router.push({ path: `/messanger/chat/${chat.id}`});
+    }
+    else {
+        await axios.post(`${config.apiUrl}/Chat/create`, {
+            title: 'PrivateChat',
+            type: 'Private',
+            patricipantsIds: [
+                props.userId,
+                store.$state.user.id
+            ]
+        }, { 
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                'Content-Type': 'application/json'
+            }
+        }).then(response => {
+            const data = response.data as IResponse<IChat>;
+
+            if (data.responseResult == 'Success' && data.value){
+                router.push({ path: `/messanger/chat/${data.value.id}`});
+            }
+        })
+    }
+
 }
 
 onMounted(async () => {
@@ -156,6 +216,12 @@ watch(toRef(props, 'userId'), async (newUserId) => {
         align-self: flex-end;
     }
 
+    #actions-block div{
+        margin-left: 5px;
+        
+    }
+
+
     #edit-profile {
         display: flex;
         width: 24px;
@@ -165,6 +231,14 @@ watch(toRef(props, 'userId'), async (newUserId) => {
     }
 
     #add-friend {
+        display: flex;
+        align-items: center;
+        width: 24px;
+        height: 24px;
+        cursor: pointer;
+    }
+
+    #send-message {
         display: flex;
         align-items: center;
         width: 24px;

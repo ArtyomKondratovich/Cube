@@ -14,13 +14,15 @@
             <div v-if="!loading" class="chatsList">
                 <ul>
                     <li v-for="chat in filteredChats" :key="chat.id">
-                        <div class="chat" @click="emit('select-chat', chat.id)">
-                            <img src="../assets/icons/pinIcon.png">
-                            <p>{{chat.title}}</p>
+                        <router-link class="chat" :to="{ path: `/messanger/chat/${chat.id}`}">
+                            <img v-if="chat.type == 'SavedMessages'" src="../assets/icons/pinIcon.png">
+                            <img v-if="chat.type == 'Private' && !companionAvatar(chat)" src="../assets/Images/Profile/Profile_default.png">
+                            <img v-if="chat.type == 'Private' && companionAvatar(chat)" :src="userAvatar(chat)">
+                            <p style="margin-left: 5px;">{{ chatTitle(chat) }}</p>
                             <div class="circle" v-if="store.getChatNotifications(chat.id).length != 0">
                                 <span class="number">{{ store.getChatNotifications(chat.id).length }}</span>
                             </div>
-                        </div>
+                        </router-link>
                     </li>
                 </ul>
             </div>
@@ -32,22 +34,20 @@ import { VueSpinner } from 'vue3-spinners';
 import { ref, computed, inject } from 'vue';
 import type {
     IChatLoad,
-    IResponse
+    IResponse,
+    IChat,
+    IUser
 } from '@/api/types';
 import { toast } from 'vue3-toastify';
 import axios from 'axios';
 import config from '@/config';
-import { defineEmits, onMounted } from 'vue';
+import { onMounted } from 'vue';
 import getUserIdFromLocalStorage from '@/helpers/getFromLocalStorage';
 import { type INotificationStore } from '@/store/notification.store';
 
-const emit = defineEmits<{
-    (e: 'select-chat', id: number): void
-}>();
-
 const userId = ref(getUserIdFromLocalStorage());
 const loading = ref(true);
-const chats = ref<IChatLoad[]>([]);
+const chats = ref<IChat[]>([]);
 const searchText = ref('');
 const store = inject<INotificationStore>('notificationStore') as INotificationStore;
 
@@ -62,6 +62,26 @@ const filteredChats = computed(() => {
 onMounted(async () => {
     await fetchUserChats();
 });
+
+function chatTitle(chat: IChat): string{
+    if (chat.type == 'Private'){
+        let companion = chat.users.filter(x => x.id != userId.value);
+
+        return `${ companion[0].name } ${ companion[0].surname }`;
+    }
+
+    return chat.title;
+}
+
+function companionAvatar(chat: IChat): boolean{
+    let companion = chat.users.find(x => x.id != userId.value) as IUser;
+    return companion.avatarBytes != null;
+}
+
+function userAvatar(chat: IChat): string{
+    let companion = chat.users.find(x => x.id != userId.value) as IUser;
+    return 'data:image/jpeg;base64,' + companion.avatarBytes;
+}
 
 async function fetchUserChats() {
     axios.post(`${config.apiUrl}/Chat/getUserChats`, { Id: userId.value }, {
@@ -85,7 +105,7 @@ async function fetchUserChats() {
                 toast.error(error);
                 await new Promise(resolve => setTimeout(resolve, 2000));
         });
-} 
+}
 
 </script>
 

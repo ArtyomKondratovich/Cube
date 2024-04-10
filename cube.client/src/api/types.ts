@@ -53,7 +53,13 @@ export interface IChat{
     id: number;
     title: string;
     type: string;
-    users: number[];
+    users: IUser[];
+}
+
+export interface IChatInput{
+    title: string;
+    type: ChatType;
+    patricipantsIds: number[];
 }
 
 export interface IMesssageInput{
@@ -80,8 +86,15 @@ export interface INotificationModel{
     notificationSenderId: number;
     isReaded: boolean;
     type: string;
+    accepted: boolean;
 }
 
 export interface IUserNotifications{
     notifications: INotificationModel[];
+}
+
+export enum ChatType {
+    Private,
+    Group,
+    SavedMessages
 }

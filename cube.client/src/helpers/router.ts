@@ -8,6 +8,7 @@ import PostsBlock from '@/components/PostsBlock.vue'
 import ProfileBlock from '@/components/ProfileBlock.vue'
 import FriendsBlock from '@/components/FriendsBlock.vue'
 import ChatBlock from '@/components/ChatBlock.vue'
+import ChatsBlock from '@/components/ChatsBlock.vue'
 import SettingsBlock from '@/components/SettingsBlock.vue'
 import NotificationBlock from '@/components/NotificationBlock.vue'
 
@@ -25,11 +26,23 @@ const router = createRouter({
                     path: 'messanger',
                     component: MessangerBlock,
                     children: [
-                        {
-                            path: 'chat/:chatId',
-                            component: ChatBlock,
-                            props: (route) => ({ chatId: Number(route.params.chatId) })
+                      {
+                        path: '',
+                        components: {
+                          ChatsBlock
                         }
+                      },
+                      {
+                        path: 'chat/:chatId',
+                        components: {
+                          ChatsBlock,
+                          ChatBlock
+                        },
+                        props: {
+                          ChatsBlock: false,
+                          ChatBlock: (route) => ({ chatId: Number(route.params.chatId) })
+                        }
+                      }
                     ]
                 },
                 {
@@ -59,7 +72,7 @@ const router = createRouter({
             path: '/register', component: RegisterView 
         }
     ]
-})
+});
 
 router.beforeEach((to, from, next) => {
     const publicPages = ['/login', '/register'];

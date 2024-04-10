@@ -31,15 +31,15 @@ namespace Cube.EntityFramework
         {
 
             modelBuilder.Entity<FriendshipEntity>()
-            .HasOne(f => f.User)
+            .HasOne(f => f.FirstUser)
             .WithMany(u => u.Friends)
-            .HasForeignKey(f => f.UserId)
+            .HasForeignKey(f => f.FirstUserId)
             .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<FriendshipEntity>()
-                .HasOne(f => f.Friend)
+                .HasOne(f => f.SecondUser)
                 .WithMany()
-                .HasForeignKey(f => f.FriendId)
+                .HasForeignKey(f => f.SecondUserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<ImageEntity>()
@@ -53,6 +53,14 @@ namespace Cube.EntityFramework
                 .HasConversion(
                     t => t.ToString(),
                     t => (ChatType)Enum.Parse(typeof(ChatType), t));
+
+            modelBuilder.Entity<NotificationEntity>()
+                .Property(e => e.Accepted)
+                .HasColumnType("BOOLEAN");
+
+            modelBuilder.Entity<NotificationEntity>()
+                .Property(e => e.IsReaded)
+                .HasColumnType("BOOLEAN");
 
             base.OnModelCreating(modelBuilder);
         }
