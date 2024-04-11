@@ -1,5 +1,5 @@
 <template>
-    <div class="notification-list" v-if="!loading">
+    <div class="notification-list" v-if="!loading && notifications.length > 0">
         <ul>
             <li class="notification-elem" v-for="notification in notifications" :key="notification.id">
                 <div class="notification-card">
@@ -27,6 +27,9 @@
     <div v-if="loading" style="display: flex; width: 100%; height: 100%; justify-content: center; align-items: center;">
         <VueSpinner :size="20"/>
     </div>
+    <div v-if="!loading && notifications.length == 0" style="width: 100%; height: 100%;">
+        <TextBlock message="No notifications"></TextBlock>
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -36,6 +39,7 @@ import config from '@/config';
 import type { INotificationStore } from '@/store/notification.store';
 import axios from 'axios';
 import { computed, inject, onMounted, ref } from 'vue';
+import TextBlock from './TextBlock.vue';
 
 const notificationStore = inject<INotificationStore>('notificationStore') as INotificationStore;
 const loading = ref(true);

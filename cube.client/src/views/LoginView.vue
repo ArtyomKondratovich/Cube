@@ -1,19 +1,19 @@
 <template>
   <div class="login-form">
     <div class="log-block">
-      <h2>SignIn</h2>
+      <h2>Login</h2>
       <form>
-        <ul>
-          <li>
-            <input type="email" title="email" v-model="email" placeholder="example@gmail.com" />
-          </li>
-          <li>
-            <input type="password" title="username" v-model="password" placeholder="password" />
-          </li>
-          <li>
-            <button type="submit" v-on:click.prevent = "onSubmit" v-bind:disabled="submitted" class="btn">Login</button>
-          </li>
-        </ul>
+        <div style="display: flex; align-items: center; margin-top: 5px;">
+          <img src="../assets/icons/emailIcon.png">
+          <input type="email" title="email" v-model="email" placeholder="example@gmail.com" />
+        </div>
+        <div style="display: flex; align-items: center; margin-top: 5px;">
+          <img src="../assets/icons/passwordIcon.png">
+          <input type="password" title="username" v-model="password" placeholder="password" />
+        </div>
+        <div style="display: flex; justify-content: center; margin-top: 5px; width: 50%;">
+          <button type="submit" v-on:click.prevent = "onSubmit" v-bind:disabled="submitted" class="btn">Login</button>
+        </div>
       </form>
     </div>
   </div>
@@ -79,20 +79,59 @@ function onSubmit() {
 
 <style>
     .login-form {
-      width: 20%;
-      margin-top: 10%;
-      margin-left: 40%;
-      margin-right: 40%;
-    }
-    form li{
-      display: block;
+      display: flex;
+      justify-content: center;
       align-items: center;
+      width: 100%;
+      height: 100%;
     }
-    form ul{
-      text-align: center;
+
+    .log-block {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background-color: #222222;
+      border-radius: 10px;
+      width: 50%;
+      max-width: 500px;
+      box-shadow: 0 0 10px #222222;
+      height: 30%;
     }
-    h2 {
-      text-align: center;
+
+    form {
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    form input{
+      color: white;
+      background-color: #222222;
+      border: none;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      -ms-appearance: none;
+      outline: none;
+    }
+
+    form button {
+      width: 40%;
+      border-radius: 10px;
+      border: none;
+      height: 30px;
+      background-color: #363738;
+      color: white;
+    }
+
+    form button:active {
+      background-color: #222222;
+    }
+
+    form button:disabled {
+      background-color: #222222;
+      opacity: 0.5;
+      cursor: not-allowed;
     }
     
 </style>

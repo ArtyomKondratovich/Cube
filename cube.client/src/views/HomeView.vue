@@ -9,23 +9,23 @@
                 </div>
             </router-link>      
             <ul>
-                <li @click="selectTab(0)" :class="{ 'active': activeTab == 0 }">
+                <li :class="{ 'active': activeTab == 0 }">
                     <img src="../assets/icons/newsIcon.png">
                     <router-link :to="{ path: '/feed' }">{{ getLabel(0) }}</router-link>
                 </li>
-                <li @click="selectTab(1)" :class="{ 'active': activeTab == 1 }">
+                <li :class="{ 'active': activeTab == 1 }">
                     <img src="../assets/icons/messangerIcon.png">
                     <router-link :to="{ path: `/messanger` }">{{ getLabel(1) }}</router-link>
                 </li>
-                <li @click="selectTab(2)" :class="{ 'active': activeTab == 2 }">
+                <li :class="{ 'active': activeTab == 2 }">
                     <img src="../assets/icons/notificationIcon.png">
                     <router-link :to="{ path: '/notification' }">{{ getLabel(2) }}</router-link>
                 </li>
-                <li @click="selectTab(3)" :class="{ 'active': activeTab == 3 }">
+                <li :class="{ 'active': activeTab == 3 }">
                     <img src="../assets/icons/friendsIcon.png">
                     <router-link :to="{ path: `/friends` }">Friends</router-link>
                 </li>
-                <li @click="selectTab(4)" :class="{ 'active': activeTab == 4 }">
+                <li :class="{ 'active': activeTab == 4 }">
                     <img src="../assets/icons/settingsIcon.png">
                     <router-link :to="{ path: '/settings' }">Settings</router-link>
                 </li>
@@ -38,12 +38,33 @@
 </template>
 
 <script setup lang="ts">
-import { ref, inject, computed } from 'vue';
+import { inject, computed } from 'vue';
 import { type INotificationStore } from "@/store/notification.store";
 import type { IUser } from '@/api/types';
+import router from '@/helpers/router';
 
 const user = JSON.parse(localStorage.getItem('user') ?? '{}') as IUser;
-const activeTab = ref(0);
+const activeTab = computed(() => {
+    let currentPath = router.currentRoute.value.fullPath;
+
+    if (currentPath.includes('/feed')) {
+        return 0;
+    }
+    else if (currentPath.includes('/messanger')){
+        return 1;
+    }
+    else if (currentPath.includes('/notification')){
+        return 2;
+    }
+    else if (currentPath.includes('/friends')){
+        return 3;
+    }
+    else if (currentPath.includes('/settings')){
+        return 4;
+    }
+
+    return -1;
+})
 const store = inject<INotificationStore>('notificationStore') as INotificationStore;
 const unreadMessangerNotifications = computed(() => {
     return store.getMessangerNotifications;

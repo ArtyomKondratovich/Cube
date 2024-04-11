@@ -1,5 +1,4 @@
 ﻿using Cube.Application.Services.Chat.Dto;
-using Cube.Application.Services.User.Dto;
 using Cube.Application.Utilities;
 using Cube.Core.Entities;
 using Cube.Core.Enums;

@@ -20,7 +20,7 @@
                     <div id="add-friend" v-if="!isUserProfile" @click="friendRequest">
                         <img src="../assets/icons/addFriendIcon.png">
                     </div>
-                    <div id="edit-profile" @click="">
+                    <div id="edit-profile" v-if="isUserProfile" @click="">
                         <img src="../assets/icons/editIcon.png">
                     </div>
                 </div>

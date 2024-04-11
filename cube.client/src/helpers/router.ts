@@ -11,6 +11,7 @@ import ChatBlock from '@/components/ChatBlock.vue'
 import ChatsBlock from '@/components/ChatsBlock.vue'
 import SettingsBlock from '@/components/SettingsBlock.vue'
 import NotificationBlock from '@/components/NotificationBlock.vue'
+import TextBlock from '@/components/TextBlock.vue'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -29,7 +30,14 @@ const router = createRouter({
                       {
                         path: '',
                         components: {
-                          ChatsBlock
+                          ChatsBlock,
+                          ChatBlock: TextBlock
+                        },
+                        props: {
+                            ChatsBlock: false,
+                            ChatBlock: {
+                                message: 'Select any chat'
+                            }
                         }
                       },
                       {

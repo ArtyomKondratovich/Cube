@@ -4,8 +4,8 @@
                 <div style="margin-left: 5px;">
                     {{ chatTitle(chat) }}
                 </div>
-                <div v-if="chat.type == 'Group'">
-                     members
+                <div v-if="chat.type == 'Group'" style="margin-left: 5px; font-size: 11px;">
+                    {{ chat.users.length }} members
                 </div>
             </div>
             <div v-if="loading" class="loadingSpinner">
@@ -35,8 +35,8 @@
 </template>
 
 <script setup lang="ts">
-    import { VueSpinner } from 'vue3-spinners';
-    import { ref, onMounted, nextTick, inject, watch, toRef } from 'vue';
+import { VueSpinner } from 'vue3-spinners';
+import { ref, onMounted, nextTick, inject, watch, toRef } from 'vue';
 import type { 
     IChat,
     IMessage,
@@ -102,7 +102,7 @@ function fetchChat(id: number) {
             }
         })
         .then(async (response) => {
-            const data = response.data as IResponse<IChat>  
+            const data = response.data as IResponse<IChat>;
             if (data.responseResult == 'Success' && data.value) {
                 chat.value = data.value;
             }
@@ -217,7 +217,7 @@ watch(toRef(props, 'chatId'), async (newChatId) => {
 
 </script>
 
-<style>
+<style scoped>
     .chatView {
         display: flex;
         width: 100%;
@@ -341,6 +341,8 @@ watch(toRef(props, 'chatId'), async (newChatId) => {
         padding: 0px;
         background: none;
         border: none;
+        width: 30px;
+        height: 30px;
     }
 
 </style>

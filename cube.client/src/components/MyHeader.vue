@@ -7,8 +7,8 @@
             </div>
             <div class="links">
                 <ul>
-                    <li id="signin">
-                        <router-link to="/login">SignIn</router-link>
+                    <li v-if="!authStore?.isLoggedIn" id="signin">
+                        <router-link to="/login">Login</router-link>
                     </li>
                     <li id="signup">
                         <router-link to="/register">SignUp</router-link>
