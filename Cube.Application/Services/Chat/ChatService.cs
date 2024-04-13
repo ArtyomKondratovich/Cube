@@ -176,7 +176,8 @@ namespace Cube.Application.Services.Chat
             else
             {
                 var chatModel = MapperConfig.InitializeAutomapper().Map<ChatModel>(chat);
-
+                chatModel.Users = new();
+                
                 foreach (var user in chat.Users)
                 {
                     var userModel = MapperConfig.InitializeAutomapper().Map<UserModel>(user);

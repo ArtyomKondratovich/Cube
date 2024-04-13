@@ -76,10 +76,6 @@ const unreadPostsNotifications = computed(() => {
     return store.getPostsNotifications
 });
 
-function selectTab(id: number) {
-    activeTab.value = id;
-}
-
 function userAvatar(): string {
     return 'data:image/jpeg;base64,' + user.avatarBytes;
 }
@@ -92,19 +88,19 @@ function getLabel(id: number): string {
             if (count == 0) {
                 return 'News';
             }
-            return 'News ' + `${count}`;
+            return 'News *';
         case 1:
             count = unreadMessangerNotifications.value.length;
             if (count == 0) {
                 return 'Messanger';
             }
-            return 'Messanger ' + `${count}`;
+            return 'Messanger *';
         case 2:
             count = unreadFriendNotifications.value.length;
             if (count == 0) {
                 return 'Notifications';
             }
-            return 'Notifications ' + `${count}`;
+            return 'Notifications *';
     }
 
     return '';

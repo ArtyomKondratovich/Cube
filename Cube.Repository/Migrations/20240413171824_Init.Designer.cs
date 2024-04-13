@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cube.Repository.Migrations
 {
     [DbContext(typeof(CubeDbContext))]
-    [Migration("20240330223813_AddNotifications")]
-    partial class AddNotifications
+    [Migration("20240413171824_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -40,17 +40,17 @@ namespace Cube.Repository.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("FriendId")
+                    b.Property<int>("FirstUserId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("UserId")
+                    b.Property<int>("SecondUserId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FriendId");
+                    b.HasIndex("FirstUserId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("SecondUserId");
 
                     b.ToTable("Friendships");
                 });
@@ -83,8 +83,11 @@ namespace Cube.Repository.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<bool>("Accepted")
+                        .HasColumnType("BOOLEAN");
+
                     b.Property<bool>("IsReaded")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("BOOLEAN");
 
                     b.Property<int>("NotificationSenderId")
                         .HasColumnType("INTEGER");
@@ -217,21 +220,21 @@ namespace Cube.Repository.Migrations
 
             modelBuilder.Entity("Cube.Core.Entities.FriendshipEntity", b =>
                 {
-                    b.HasOne("Cube.Core.Entities.UserEntity", "Friend")
-                        .WithMany()
-                        .HasForeignKey("FriendId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Cube.Core.Entities.UserEntity", "User")
+                    b.HasOne("Cube.Core.Entities.UserEntity", "FirstUser")
                         .WithMany("Friends")
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("FirstUserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Friend");
+                    b.HasOne("Cube.Core.Entities.UserEntity", "SecondUser")
+                        .WithMany()
+                        .HasForeignKey("SecondUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.Navigation("User");
+                    b.Navigation("FirstUser");
+
+                    b.Navigation("SecondUser");
                 });
 
             modelBuilder.Entity("Cube.Core.Entities.UserEntity", b =>
