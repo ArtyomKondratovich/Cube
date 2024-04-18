@@ -14,6 +14,8 @@ using System.Net.Http.Json;
 using Microsoft.AspNetCore.Http;
 using System.Net.Http.Headers;
 using Cube.Core.Models.Image;
+using Cube.Core.Models;
+using System.Linq.Expressions;
 
 namespace Cube.Application.Services.User
 {
@@ -32,7 +34,9 @@ namespace Cube.Application.Services.User
         {
             var response = new Response<FriendshipModel, CreateFriendshipResult>();
             
-            var friendships = await _repository.FriendshipRepository.GetUsersFriendshipsAsync(dto.UserId);
+            Expression<Func<FriendshipEntity, bool>> filter = friendship => friendship.FirstUserId == dto.UserId || friendship.SecondUserId == dto.UserId;
+
+            var friendships = await _repository.FriendshipRepository.GetByFilterAsync(filter);
 
             foreach (var friendship in friendships) 
             {
@@ -43,8 +47,8 @@ namespace Cube.Application.Services.User
                 }
             }
 
-            var firstUser = await _repository.UserRepository.GetUserByIdAsync(dto.UserId);
-            var secondUser = await _repository.UserRepository.GetUserByIdAsync(dto.FriendId);
+            var firstUser = await _repository.UserRepository.GetByIdAsync(dto.UserId);
+            var secondUser = await _repository.UserRepository.GetByIdAsync(dto.FriendId);
 
             if (firstUser == null) 
             {
@@ -62,7 +66,7 @@ namespace Cube.Application.Services.User
             friendshipEntity.SecondUser = secondUser;
             friendshipEntity.FirstUser = firstUser;
 
-            var result = await _repository.FriendshipRepository.CreateFriendshipAsync(friendshipEntity);
+            var result = await _repository.FriendshipRepository.CreateAsync(friendshipEntity);
 
             if (result == null) 
             {
@@ -78,16 +82,23 @@ namespace Cube.Application.Services.User
         public async Task<Response<bool, DeleteUserResult>> DeleteUser(DeleteUserDto dto)
         {
             var response = new Response<bool, DeleteUserResult>();
+            var user = await _repository.UserRepository.GetByIdAsync(dto.UserId);
 
-            var result = await _repository.UserRepository.DeleteUserAsync(dto.Id);
-
-            if (result)
+            if (user == null) 
             {
                 response.ResponseResult = DeleteUserResult.UserNotFound;
                 return response;
             }
 
-            response.Value = result;
+            var isUserDeleted = await _repository.UserRepository.DeleteAsync(user);
+
+            if (isUserDeleted)
+            {
+                response.ResponseResult = DeleteUserResult.DatabaseError;
+                return response;
+            }
+
+            response.Value = isUserDeleted;
             response.ResponseResult = DeleteUserResult.Success;
             return response;
         }
@@ -116,7 +127,7 @@ namespace Cube.Application.Services.User
         {
             var response = new Response<UserModel, GetUserResult>();
 
-            var entity = await _repository.UserRepository.GetUserByIdAsync(dto.Id);
+            var entity = await _repository.UserRepository.GetByIdAsync(dto.Id);
 
             if (entity == null)
             {
@@ -136,7 +147,7 @@ namespace Cube.Application.Services.User
         {
             var response = new Response<List<UserModel>, GetUserFriends>();
 
-            var user = await _repository.UserRepository.GetUserByIdAsync(dto.Id);
+            var user = await _repository.UserRepository.GetByIdAsync(dto.Id);
 
             if (user == null) 
             {
@@ -144,7 +155,9 @@ namespace Cube.Application.Services.User
                 return response;
             }
 
-            var friendships = await _repository.FriendshipRepository.GetUsersFriendshipsAsync(dto.Id);
+            Expression<Func<FriendshipEntity, bool>> filter = friendship => friendship.FirstUserId == dto.Id || friendship.SecondUserId == dto.Id;
+
+            var friendships = await _repository.FriendshipRepository.GetByFilterAsync(filter);
 
             if (friendships == null || !friendships.Any())
             {
@@ -161,11 +174,11 @@ namespace Cube.Application.Services.User
 
                 if (friend.FirstUserId == dto.Id)
                 {
-                    userEntity = await _repository.UserRepository.GetUserByIdAsync(friend.SecondUserId);
+                    userEntity = await _repository.UserRepository.GetByIdAsync(friend.SecondUserId);
                 }
                 else 
                 {
-                    userEntity = await _repository.UserRepository.GetUserByIdAsync(friend.FirstUserId);
+                    userEntity = await _repository.UserRepository.GetByIdAsync(friend.FirstUserId);
                 }
 
                 if (userEntity != null) 
@@ -198,11 +211,13 @@ namespace Cube.Application.Services.User
                 Value = new UserAuthModel()
             };
 
-            var entity = await _repository.UserRepository.UserAssociatedWithTheEmail(dto.Email);
+            Expression<Func<UserEntity, bool>> predicate = user => user.Email == dto.Email;
+
+            var entity = await _repository.UserRepository.GetByPredicateAsync(predicate);
 
             if (entity != null)
             {
-                var role = await _repository.RoleRepository.GetRoleByIdAsync(entity.RoleId);
+                var role = await _repository.RoleRepository.GetByIdAsync(entity.RoleId);
                 
                 if (role != null)
                 {
@@ -234,8 +249,14 @@ namespace Cube.Application.Services.User
 
         public async Task<Response<bool, RegisterResult>> Register(RegisterDto dto)
         {
+
+            //TODO create all method into transaction 
+
             var response = new Response<bool, RegisterResult>();
-            var existUser = await _repository.UserRepository.UserAssociatedWithTheEmail(dto.Email);
+
+            Expression<Func<UserEntity, bool>> userPredicate = user => user.Email == dto.Email;
+
+            var existUser = await _repository.UserRepository.GetByPredicateAsync(userPredicate);
 
             if (existUser != null)
             {
@@ -266,15 +287,17 @@ namespace Cube.Application.Services.User
             }
 
             var user = MapperConfig.InitializeAutomapper().Map<UserEntity>(dto);
-            var role = await _repository.RoleRepository.GetRoleByNameAsync("User");
+            Expression<Func<RoleEntity, bool>> predicate = role => role.Name == "User";
 
-            role ??= await _repository.RoleRepository.CreateRoleAsync(new RoleEntity { Name = "User" });
+            var role = await _repository.RoleRepository.GetByPredicateAsync(predicate);
+
+            role ??= await _repository.RoleRepository.CreateAsync(new RoleEntity { Name = "User" });
 
             user.RoleId = role.Id;
 
-            var result = await _repository.UserRepository.CreteUserAsync(user);
+            var createdUser = await _repository.UserRepository.CreateAsync(user);
 
-            if (result == null)
+            if (createdUser == null)
             {
                 response.ResponseResult = RegisterResult.DataBaseError;
                 response.Messages = new List<string>()
@@ -283,7 +306,23 @@ namespace Cube.Application.Services.User
                 };
                 return response;
             }
-            
+
+            // default chat for every user
+            var savedMessages = new ChatEntity 
+            {
+                Title = "Saved Messages",
+                Type = ChatType.SavedMessages,
+                Users = { createdUser }
+            };
+
+            var createdChat = await _repository.ChatRepository.CreateAsync(savedMessages);
+
+            if (createdChat == null)
+            {
+                response.ResponseResult = RegisterResult.DataBaseError;
+                return response;
+            }
+
             if (dto.File == null)
             {
                 response.Value = true;
@@ -304,7 +343,7 @@ namespace Cube.Application.Services.User
                     form.Add(fileContent, "File", dto.File.FileName);
                 }
 
-                form.Add(new StringContent(result.Id.ToString()), "OwnerId");
+                form.Add(new StringContent(createdUser.Id.ToString()), "OwnerId");
                 form.Add(new StringContent(ImageType.Profile.ToString()), "Type");
 
                 var clientResponse = await client.PostAsync("https://localhost:7159/api/Image/create", form);
@@ -377,12 +416,13 @@ namespace Cube.Application.Services.User
 
         private async Task<byte[]?> GetUserAvatar(int id) 
         {
-            if (await _repository.UserRepository.GetUserByIdAsync(id) == null)
+            if (await _repository.UserRepository.GetByIdAsync(id) == null)
             {
                 return null;
             }
+            Expression<Func<ImageEntity, bool>> predicate = image => image.OwnerId == id && image.Type == ImageType.Profile;
 
-            var image = await _repository.ImageRepository.GetImageByTypeAndOwnerAsync(ImageType.Profile, id);
+            var image = await _repository.ImageRepository.GetByPredicateAsync(predicate);
 
             if (image == null) 
             {

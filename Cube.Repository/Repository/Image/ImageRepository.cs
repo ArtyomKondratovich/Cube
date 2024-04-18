@@ -2,59 +2,72 @@
 using Cube.Core.Enums;
 using Cube.EntityFramework;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
+using System.Linq.Expressions;
 
 namespace Cube.Repository.Repository.Image
 {
     public class ImageRepository : IImageRepository
     {
-        private readonly CubeDbContext _context;
+        private readonly CubeDbContext _dbContext;
 
         public ImageRepository(CubeDbContext context) 
         {
-            _context = context;
+            _dbContext = context;
         }
 
-        public async Task<ImageEntity> CreateImageAsync(ImageEntity entity)
+        public async Task<ImageEntity?> CreateAsync(ImageEntity entity, CancellationToken token = default)
         {
-            var result = await _context.Images.AddAsync(entity);
+            var createdImage = await _dbContext.Images.AddAsync(entity, token);
 
-            if (result != null)
+            if (createdImage != null)
             {
-                await _context.SaveChangesAsync();
-                return result.Entity;
+                await _dbContext.SaveChangesAsync(token);
+                return createdImage.Entity;
             }
 
             return null;
         }
 
-        public async Task<bool> DeleteImageAsync(int id)
+        public async Task<bool> DeleteAsync(ImageEntity entity, CancellationToken token = default)
         {
-            var image = _context.Images
-                .FirstOrDefault(x => x.Id == id);
+            var deletedImage = _dbContext.Images.Remove(entity);
 
-            if (image != null) 
+            if (deletedImage != null) 
             {
-                _context.Images.Remove(image);
-                await _context.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync(token);
             }
 
-            return image != null;
+            return deletedImage != null;
         }
 
-        public async Task<ImageEntity> GetImageByTypeAndOwnerAsync(ImageType type, int ownerId)
+        public async Task<IEnumerable<ImageEntity>> GetByFilterAsync(Expression<Func<ImageEntity, bool>> filter, CancellationToken token = default)
         {
-            return await _context.Images
-                .FirstOrDefaultAsync(x => x.Type == type && x.OwnerId == ownerId);
+            return await _dbContext.Images
+                .Where(filter)
+                .ToListAsync(token);
         }
 
-        public async Task<ImageEntity> UpdateImageAsync(ImageEntity entity)
+        public async Task<ImageEntity?> GetByIdAsync(int id, CancellationToken token = default)
         {
-            var result = _context.Images.Update(entity);
+            return await _dbContext.Images
+                .FirstOrDefaultAsync(x => x.Id == id, token);
+        }
 
-            if (result != null) 
+        public async Task<ImageEntity?> GetByPredicateAsync(Expression<Func<ImageEntity, bool>> predicate, CancellationToken token = default)
+        {
+            return await _dbContext.Images
+                .FirstOrDefaultAsync(predicate, token);
+        }
+
+        public async Task<ImageEntity?> UpdateAsync(ImageEntity entity, CancellationToken token = default)
+        {
+            var updatedImage = _dbContext.Images.Update(entity);
+
+            if (updatedImage != null)
             {
-                await _context.SaveChangesAsync();
-                return result.Entity;
+                await _dbContext.SaveChangesAsync(token);
+                return updatedImage.Entity;
             }
 
             return null;

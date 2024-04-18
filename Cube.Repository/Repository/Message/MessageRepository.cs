@@ -1,5 +1,6 @@
 ﻿using Cube.Core.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Cube.EntityFramework.Repository.Message
 {
@@ -12,55 +13,60 @@ namespace Cube.EntityFramework.Repository.Message
             _dbContext = contex;
         }
 
-        public async Task<MessageEntity?> DeleteMessage(MessageEntity model)
+        public async Task<MessageEntity?> CreateAsync(MessageEntity entity, CancellationToken token = default)
         {
-            var message = _dbContext.Messages.Remove(model);
+            var createdMessage = await _dbContext.Messages.AddAsync(entity, token);
 
-            if (message != null)
+            if (createdMessage != null)
             {
-                await _dbContext.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync(token);
 
-                return message.Entity;
+                return createdMessage.Entity;
             }
 
             return null;
         }
 
-        public async Task<List<MessageEntity>> GetChatMessagesAsync(int chatId)
+        public async Task<bool> DeleteAsync(MessageEntity entity, CancellationToken token = default)
+        {
+            var deletedMessage = _dbContext.Messages.Remove(entity);
+
+            if (deletedMessage != null)
+            {
+                await _dbContext.SaveChangesAsync(token);
+            }
+
+            return deletedMessage != null;
+        }
+
+        public async Task<IEnumerable<MessageEntity>> GetByFilterAsync(Expression<Func<MessageEntity, bool>> filter, CancellationToken token = default)
         {
             return await _dbContext.Messages
-                .Where(x => x.ChatId == chatId)
-                .ToListAsync();
+                .Where(filter)
+                .ToListAsync(token);
         }
 
-        public async Task<MessageEntity?> GetMessageById(int id)
+        public async Task<MessageEntity?> GetByIdAsync(int id, CancellationToken token = default)
         {
-            return await _dbContext.Messages.FindAsync(id);
+            return await _dbContext.Messages
+                .FirstOrDefaultAsync(x => x.Id == id, token);
         }
 
-        public async Task<MessageEntity?> SendMessage(MessageEntity model)
+        public async Task<MessageEntity?> GetByPredicateAsync(Expression<Func<MessageEntity, bool>> predicate, CancellationToken token = default)
         {
-            var message = await _dbContext.Messages.AddAsync(model);
+            return await _dbContext.Messages
+                .FirstOrDefaultAsync(predicate, token);
+        }
 
-            if (message != null)
+        public async Task<MessageEntity?> UpdateAsync(MessageEntity entity, CancellationToken token = default)
+        {
+            var updatedMessage = _dbContext.Messages.Update(entity);
+
+            if (updatedMessage != null)
             {
-                await _dbContext.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync(token);
 
-                return message.Entity;
-            }
-
-            return null;
-        }
-
-        public async Task<MessageEntity?> UpdateMessage(MessageEntity model)
-        {
-            var message = _dbContext.Messages.Update(model);
-
-            if (message != null)
-            {
-                await _dbContext.SaveChangesAsync();
-
-                return message.Entity;
+                return updatedMessage.Entity;
             }
 
             return null;

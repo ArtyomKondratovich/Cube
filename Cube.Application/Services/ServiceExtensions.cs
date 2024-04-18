@@ -18,9 +18,9 @@ namespace Cube.Application.Services
 
             var repositoryMethodMap = new Dictionary<Type, Func<int, Task<object?>>>
             {
-                { typeof(MessageEntity), async id => await wrapper.MessageRepository.GetMessageById(id) },
-                { typeof(ChatEntity), async id => await wrapper.ChatRepository.GetChatByIdAsync(id) },
-                { typeof(UserEntity), async id => await wrapper.UserRepository.GetUserByIdAsync(id) }
+                { typeof(MessageEntity), async id => await wrapper.MessageRepository.GetByIdAsync(id) },
+                { typeof(ChatEntity), async id => await wrapper.ChatRepository.GetByIdAsync(id) },
+                { typeof(UserEntity), async id => await wrapper.UserRepository.GetByIdAsync(id) }
             };
 
             if (!repositoryMethodMap.TryGetValue(typeof(TEntity), out var repositoryMethod))

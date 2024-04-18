@@ -3,6 +3,7 @@ using Cube.Application.Utilities;
 using Cube.Core.Models;
 using Cube.Core.Models.Messages;
 using Cube.EntityFramework.Repository;
+using System.Linq.Expressions;
 
 namespace Cube.Application.Services.Message
 {
@@ -19,14 +20,14 @@ namespace Cube.Application.Services.Message
         {
             var response = new Response<bool, DeleteMessageResult>();
 
-            var message = await _repository.MessageRepository.GetMessageById(dto.Id);
+            var message = await _repository.MessageRepository.GetByIdAsync(dto.MessageId);
 
             if (message == null)
             {
                 response.ResponseResult = DeleteMessageResult.MessageNotFound;
-                response.Messages.Add($"Message with id = {dto.Id} not found");
+                response.Messages.Add($"Message with id = {dto.MessageId} not found");
             }
-            else if (await _repository.MessageRepository.DeleteMessage(message) != null)
+            else if (await _repository.MessageRepository.DeleteAsync(message))
             {
                 response.ResponseResult = DeleteMessageResult.Success;
                 response.Value = true;
@@ -39,7 +40,7 @@ namespace Cube.Application.Services.Message
         {
             var response = new Response<List<MessageModel>, GetChatMessagesResult>();
 
-            var chat = await _repository.ChatRepository.GetChatByIdAsync(dto.Id);
+            var chat = await _repository.ChatRepository.GetByIdAsync(dto.ChatId);
 
             if (chat == null) 
             {
@@ -47,7 +48,9 @@ namespace Cube.Application.Services.Message
                 return response;
             }
 
-            var messages = await _repository.MessageRepository.GetChatMessagesAsync(dto.Id);
+            Expression<Func<MessageEntity, bool>> filter = message => message.ChatId == dto.ChatId;
+
+            var messages = await _repository.MessageRepository.GetByFilterAsync(filter);
             
             if (messages != null)
             {
@@ -79,12 +82,12 @@ namespace Cube.Application.Services.Message
         {
             var response = new Response<MessageModel, GetMessageResult>();
 
-            var message = await _repository.MessageRepository.GetMessageById(dto.Id);
+            var message = await _repository.MessageRepository.GetByIdAsync(dto.MessageId);
 
             if (message == null)
             {
                 response.ResponseResult = GetMessageResult.MessageNotFound;
-                response.Messages.Add($"Message with id = {dto.Id} not found");
+                response.Messages.Add($"Message with id = {dto.MessageId} not found");
             }
             else 
             {
@@ -100,8 +103,8 @@ namespace Cube.Application.Services.Message
             var response = new Response<MessageModel, SendMessageResult>(); 
             
 
-            var user = await _repository.UserRepository.GetUserByIdAsync(dto.SenderId);
-            var chat = await _repository.ChatRepository.GetChatByIdAsync(dto.ChatId);
+            var user = await _repository.UserRepository.GetByIdAsync(dto.SenderId);
+            var chat = await _repository.ChatRepository.GetByIdAsync(dto.ChatId);
 
             if (user == null)
             {
@@ -132,7 +135,7 @@ namespace Cube.Application.Services.Message
                 ChatId = chat.Id
             };
 
-            var result = await _repository.MessageRepository.SendMessage(message);
+            var result = await _repository.MessageRepository.CreateAsync(message);
 
             if (result == null)
             {
@@ -153,8 +156,8 @@ namespace Cube.Application.Services.Message
         {
             var response = new Response<MessageModel, UpdateMessageResult>();
 
-            var message = await _repository.MessageRepository.GetMessageById(dto.Id);
-            var updater = await _repository.UserRepository.GetUserByIdAsync(dto.UpdaterId);
+            var message = await _repository.MessageRepository.GetByIdAsync(dto.MessageId);
+            var updater = await _repository.UserRepository.GetByIdAsync(dto.UpdaterId);
 
             if (updater == null)
             {
@@ -166,7 +169,7 @@ namespace Cube.Application.Services.Message
             if (message == null)
             {
                 response.ResponseResult = UpdateMessageResult.MessageNotFound;
-                response.Messages.Add($"Message with id = {dto.Id} not found");
+                response.Messages.Add($"Message with id = {dto.MessageId} not found");
                 return response;
             }
             
@@ -180,7 +183,7 @@ namespace Cube.Application.Services.Message
             {
                 message.Message = dto.NewMessage;
                 message.UpdateDate = DateTime.UtcNow;
-                var result = await _repository.MessageRepository.UpdateMessage(message);
+                var result = await _repository.MessageRepository.UpdateAsync(message);
 
                 if (result != null)
                 {

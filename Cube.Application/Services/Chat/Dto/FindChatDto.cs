@@ -3,5 +3,6 @@
     public class FindChatDto
     {
         public int Id { get; set; }
+
     }
 }

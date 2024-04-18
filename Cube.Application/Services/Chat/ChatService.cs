@@ -6,6 +6,7 @@ using Cube.Core.Models;
 using Cube.Core.Models.Chat;
 using Cube.Core.Models.User;
 using Cube.EntityFramework.Repository;
+using System.Linq.Expressions;
 
 namespace Cube.Application.Services.Chat
 {
@@ -41,12 +42,12 @@ namespace Cube.Application.Services.Chat
 
                 var chat = MapperConfig.InitializeAutomapper().Map<ChatEntity>(dto);
 
-                chat.Users = dto.PatricipantsIds.Select(async x => await _repository.UserRepository.GetUserByIdAsync(x))
+                chat.Users = dto.PatricipantsIds.Select(async x => await _repository.UserRepository.GetByIdAsync(x))
                    .Select(t => t.Result)
                    .Where(i => i != null)
                    .ToList();
 
-                var result = await _repository.ChatRepository.CreateChat(chat);
+                var result = await _repository.ChatRepository.CreateAsync(chat);
 
                 if (result != null)
                 {
@@ -72,8 +73,8 @@ namespace Cube.Application.Services.Chat
         {
             var response = new Response<bool, DeleteChatResult>();
 
-            var chat = await _repository.ChatRepository.GetChatByIdAsync(dto.Id);
-            var user = await _repository.UserRepository.GetUserByIdAsync(dto.UserId);
+            var chat = await _repository.ChatRepository.GetByIdAsync(dto.Id);
+            var user = await _repository.UserRepository.GetByIdAsync(dto.UserId);
 
             if (user == null)
             {
@@ -91,14 +92,14 @@ namespace Cube.Application.Services.Chat
                 .Where(x => x.Id != dto.UserId)
                 .ToList();
 
-            if (!chat.Users.Any() && await _repository.ChatRepository.DeleteChat(chat.Id))
+            if (!chat.Users.Any() && await _repository.ChatRepository.DeleteAsync(chat))
             {
                 response.ResponseResult = DeleteChatResult.Success;
                 response.Value = true;
                 return response;
             }
 
-            if (await _repository.ChatRepository.UpdateChat(chat) != null)
+            if (await _repository.ChatRepository.UpdateAsync(chat) != null)
             {
                 response.ResponseResult = DeleteChatResult.Success;
                 response.Value = true;
@@ -114,33 +115,15 @@ namespace Cube.Application.Services.Chat
                 Value = new()
             };
 
-            if (await _repository.UserRepository.GetUserByIdAsync(dto.Id) == null)
+            if (await _repository.UserRepository.GetByIdAsync(dto.Id) == null)
             {
                 response.ResponseResult = GetAllChatsResult.UserNotFound;
                 return response;
             }
 
-            var chats = await _repository.ChatRepository.GetAllUsersChatsAsync(dto.Id);
+            Expression<Func<ChatEntity, bool>> filter = chat => chat.Users.Select(x => x.Id).Contains(dto.Id);
 
-            if (!chats.Any())
-            {
-                // default adding SavedMessage chat
-                var savedMessages = new NewChatDto 
-                {
-                    Title = "Saved Messages",
-                    Type = ChatType.SavedMessages,
-                    PatricipantsIds = new List<int> { dto.Id }
-                };
-
-                var result = await CreateChat(savedMessages);
-
-                if (result.ResponseResult == CreateChatResult.Success)
-                {
-                    response.Value.Add(result.Value);
-                    response.ResponseResult = GetAllChatsResult.Success;
-                    return response;
-                }
-            }
+            var chats = await _repository.ChatRepository.GetByFilterAsync(filter);
 
             foreach (var chat in chats) 
             {
@@ -167,7 +150,7 @@ namespace Cube.Application.Services.Chat
         {
             var response = new Response<ChatModel, GetChatResult>();
 
-            var chat = await _repository.ChatRepository.GetChatByIdAsync(dto.Id);
+            var chat = await _repository.ChatRepository.GetByIdAsync(dto.Id);
 
             if (chat == null)
             {
@@ -197,8 +180,8 @@ namespace Cube.Application.Services.Chat
             var response = new Response<ChatModel, UpdateChatResult>();
 
             if (dto.IsModified)
-            {
-                var chat = await _repository.ChatRepository.GetChatByIdAsync(dto.Id);
+            {   
+                var chat = await _repository.ChatRepository.GetByIdAsync(dto.Id);
 
                 if (chat == null)
                 {
@@ -244,7 +227,7 @@ namespace Cube.Application.Services.Chat
                     }
 
                     var newChatUsers = dto.NewParticipants!
-                        .Select(async x => await _repository.UserRepository.GetUserByIdAsync(x))
+                        .Select(async x => await _repository.UserRepository.GetByIdAsync(x))
                         .Select(t => t.Result)
                         .ToList();
 
@@ -253,13 +236,13 @@ namespace Cube.Application.Services.Chat
                         chat.Users.Add(item);
                     }
 
-                    var updateResult = await _repository.ChatRepository.UpdateChat(chat);
+                    var updatedChat = await _repository.ChatRepository.UpdateAsync(chat);
 
-                    if (updateResult != null)
+                    if (updatedChat != null)
                     {
-                        var chatModel = MapperConfig.InitializeAutomapper().Map<ChatModel>(updateResult);
+                        var chatModel = MapperConfig.InitializeAutomapper().Map<ChatModel>(updatedChat);
 
-                        foreach (var user in updateResult.Users)
+                        foreach (var user in updatedChat.Users)
                         {
                             var userModel = MapperConfig.InitializeAutomapper().Map<UserModel>(user);
                             userModel.AvatarBytes = await GetUserAvatar(userModel.Id);
@@ -291,12 +274,14 @@ namespace Cube.Application.Services.Chat
 
         private async Task<byte[]?> GetUserAvatar(int id)
         {
-            if (await _repository.UserRepository.GetUserByIdAsync(id) == null)
+            if (await _repository.UserRepository.GetByIdAsync(id) == null)
             {
                 return null;
             }
 
-            var image = await _repository.ImageRepository.GetImageByTypeAndOwnerAsync(ImageType.Profile, id);
+            Expression<Func<ImageEntity, bool>> predicate = image => image.OwnerId == id && image.Type == ImageType.Profile;
+
+            var image = await _repository.ImageRepository.GetByPredicateAsync(predicate);
 
             if (image == null)
             {

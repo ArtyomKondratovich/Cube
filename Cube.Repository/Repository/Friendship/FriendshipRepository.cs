@@ -1,56 +1,67 @@
 ﻿using Cube.Core.Entities;
 using Cube.EntityFramework;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Cube.Repository.Repository.Friendship
 {
     public class FriendshipRepository : IFriendshipRepository
     {
-        private readonly CubeDbContext _context;
+        private readonly CubeDbContext _dbContext;
         
         public FriendshipRepository(CubeDbContext context) 
         {
-            _context = context;
+            _dbContext = context;
         }
 
-        public async Task<FriendshipEntity> CreateFriendshipAsync(FriendshipEntity friendship)
+        public async Task<FriendshipEntity?> CreateAsync(FriendshipEntity entity, CancellationToken token = default)
         {
-            var result = await _context.Friendships.AddAsync(friendship);
+            var createdFriendship = await _dbContext.Friendships.AddAsync(entity, token);
 
-            if (result != null) 
+            if (createdFriendship != null)
             {
-                await _context.SaveChangesAsync();
-                return result.Entity;
+                await _dbContext.SaveChangesAsync(token);
+                return createdFriendship.Entity;
             }
 
             return null;
         }
 
-        public async Task<bool> DeleteFriendshipAsync(int id)
+        public async Task<bool> DeleteAsync(FriendshipEntity entity, CancellationToken token = default)
         {
-            
-            var friendship = await _context.Friendships
-                .FirstOrDefaultAsync(x => x.Id == id);
+            var deletedFriendship = _dbContext.Friendships.Remove(entity);
 
-            if (friendship != null)
+            if (deletedFriendship != null)
             {
-                _context.Friendships.Remove(friendship);
-                await _context.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync(token);
             }
 
-            return friendship != null;
+            return deletedFriendship != null;
         }
 
-        public async Task<FriendshipEntity> GetFriendshipByIdAsync(int id)
+        public async Task<IEnumerable<FriendshipEntity>> GetByFilterAsync(Expression<Func<FriendshipEntity, bool>> filter, CancellationToken token = default)
         {
-            return await _context.Friendships.FirstOrDefaultAsync(x => x.Id == id);
+            return await _dbContext.Friendships
+                .Where(filter)
+                .ToListAsync(token);
         }
 
-        public async Task<List<FriendshipEntity>> GetUsersFriendshipsAsync(int userId)
+        public async Task<FriendshipEntity?> GetByIdAsync(int id, CancellationToken token = default)
         {
-            return await _context.Friendships
-                .Where(x => x.FirstUserId == userId || x.SecondUserId == userId)
-                .ToListAsync();
+            return await _dbContext.Friendships
+                .FirstOrDefaultAsync(x => x.Id == id, token);
+        }
+
+        public async Task<FriendshipEntity?> GetByPredicateAsync(Expression<Func<FriendshipEntity, bool>> predicate, CancellationToken token = default)
+        {
+            return await _dbContext.Friendships
+                .FirstOrDefaultAsync(predicate, token);
+        }
+
+        // update for friendship is unnessary
+        public Task<FriendshipEntity?> UpdateAsync(FriendshipEntity entity, CancellationToken token = default)
+        {
+            throw new NotSupportedException();
         }
     }
 }

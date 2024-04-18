@@ -1,5 +1,6 @@
 ﻿using Cube.Core.Entities;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Cube.EntityFramework.Repository.User
 {
@@ -12,52 +13,66 @@ namespace Cube.EntityFramework.Repository.User
             _dbContext = context;
         }
 
-        public async Task<UserEntity> GetUserByIdAsync(int id)
+        public async Task<List<UserEntity>> GetAll(CancellationToken token = default)
         {
-            return await _dbContext.Users
-                .FirstOrDefaultAsync(x => x.Id == id);
+            return await _dbContext.Users.ToListAsync(token);
         }
 
-        public UserEntity GetUserById(int id) 
+        public async Task<UserEntity?> CreateAsync(UserEntity entity, CancellationToken token = default)
         {
-            return _dbContext.Users
-                .FirstOrDefault(x => x.Id == id);
-        }
+            var createdUser = await _dbContext.Users.AddAsync(entity, token);
 
-        public async Task<UserEntity> UserAssociatedWithTheEmail(string email)
-        {
-            return await _dbContext.Users
-                .FirstOrDefaultAsync(x => x.Email == email);
-        }
-
-        public async Task<UserEntity> CreteUserAsync(UserEntity user)
-        {
-            var result = await _dbContext.Users.AddAsync(user);
-
-            if (result != null)
+            if (createdUser != null)
             {
-                await _dbContext.SaveChangesAsync();
-                return result.Entity;
+                await _dbContext.SaveChangesAsync(token);
+                return createdUser.Entity;
             }
 
             return null;
         }
 
-        public async Task<List<UserEntity>> GetAll()
+        public async Task<UserEntity?> UpdateAsync(UserEntity entity, CancellationToken token = default)
         {
-            return await _dbContext.Users.ToListAsync();
-        }
+            var updatedUser = _dbContext.Users.Update(entity);
 
-        public async Task<bool> DeleteUserAsync(int id)
-        {
-            var user = await _dbContext.Users.FirstAsync(x => x.Id == id);
-
-            if (user != null) {
-                _dbContext.Users.Remove(user);
-                await _dbContext.SaveChangesAsync();
+            if (updatedUser != null) 
+            {
+                await _dbContext.SaveChangesAsync(token);
+                return updatedUser.Entity;
             }
 
-            return user != null;
+            return null;
+        }
+
+        public async Task<bool> DeleteAsync(UserEntity entity, CancellationToken token = default)
+        {
+            var deletedUser = _dbContext.Users.Remove(entity);
+
+            if (deletedUser != null) 
+            {
+                await _dbContext.SaveChangesAsync(token);
+            }
+
+            return deletedUser != null;
+        }
+
+        public async Task<UserEntity?> GetByIdAsync(int id, CancellationToken token = default)
+        {
+            return await _dbContext.Users
+                .FirstOrDefaultAsync(x => x.Id == id, token);
+        }
+
+        public async Task<UserEntity?> GetByPredicateAsync(Expression<Func<UserEntity, bool>> predicate, CancellationToken token = default)
+        {
+            return await _dbContext.Users
+                .FirstOrDefaultAsync(predicate, token);
+        }
+
+        public async Task<IEnumerable<UserEntity>> GetByFilterAsync(Expression<Func<UserEntity, bool>> filter, CancellationToken token = default)
+        {
+            return await _dbContext.Users
+                .Where(filter)
+                .ToListAsync(token);
         }
     }
 }

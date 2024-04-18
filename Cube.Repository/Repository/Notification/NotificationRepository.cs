@@ -1,53 +1,67 @@
 ﻿using Cube.Core.Entities;
 using Cube.EntityFramework;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Cube.Repository.Repository.Notification
 {
     public class NotificationRepository : INotificationRepository
     {
-        private readonly CubeDbContext _context;
+        private readonly CubeDbContext _dbContext;
 
         public NotificationRepository(CubeDbContext context)
         {
-            _context = context;
+            _dbContext = context;
         }
 
-        public async Task<NotificationEntity?> CreateNotification(NotificationEntity entity)
+        public async Task<NotificationEntity?> CreateAsync(NotificationEntity entity, CancellationToken token = default)
         {
-            var result = await _context.Notifications.AddAsync(entity);
+            var createdNotification = await _dbContext.Notifications.AddAsync(entity, token);
 
-            if (result != null) 
+            if (createdNotification != null)
             {
-                await _context.SaveChangesAsync();
-                return result.Entity;
+                await _dbContext.SaveChangesAsync(token);
+                return createdNotification.Entity;
             }
 
             return null;
         }
 
-        public async Task<bool> DeleteNotification(NotificationEntity entity)
+        public async Task<bool> DeleteAsync(NotificationEntity entity, CancellationToken token = default)
         {
-            var result = _context.Notifications.Remove(entity);
+            var deletedNotofocation = _dbContext.Notifications.Remove(entity);
 
-            if (result != null) 
+            if (deletedNotofocation != null)
             {
-                await _context.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync(token);
             }
 
-            return result != null;
+            return deletedNotofocation != null;
         }
 
-        public async Task<NotificationEntity?> GetNotificationById(int id)
+        public async Task<IEnumerable<NotificationEntity>> GetByFilterAsync(Expression<Func<NotificationEntity, bool>> filter, CancellationToken token = default)
         {
-            return await _context.Notifications.FirstOrDefaultAsync(x => x.Id == id);
+            return await _dbContext.Notifications
+                .Where(filter)
+                .ToListAsync(token);
         }
 
-        public Task<List<NotificationEntity>> GetUserNotifications(int userId)
+        public async Task<NotificationEntity?> GetByIdAsync(int id, CancellationToken token = default)
         {
-            return _context.Notifications
-                .Where(x => x.UserId == userId && !x.IsReaded)
-                .ToListAsync();
+            return await _dbContext.Notifications
+                .FirstOrDefaultAsync(x => x.Id == id, token);
+        }
+
+        public async Task<NotificationEntity?> GetByPredicateAsync(Expression<Func<NotificationEntity, bool>> predicate, CancellationToken token = default)
+        {
+            return await _dbContext.Notifications
+                .FirstOrDefaultAsync(predicate, token);
+        }
+
+        // unnessesary to update notification
+        public Task<NotificationEntity?> UpdateAsync(NotificationEntity entity, CancellationToken token = default)
+        {
+            throw new NotSupportedException();
         }
     }
 }

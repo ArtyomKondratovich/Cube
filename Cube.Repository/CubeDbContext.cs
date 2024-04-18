@@ -21,6 +21,8 @@ namespace Cube.EntityFramework
 
         public DbSet<NotificationEntity> Notifications { get; set; }
 
+        public DbSet<ConfigEntity> Configs { get; set; }
+
         public CubeDbContext(DbContextOptions options) :
             base(options)
         {

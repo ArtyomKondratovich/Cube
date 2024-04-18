@@ -5,6 +5,7 @@ using Cube.Core.Enums;
 using Cube.Core.Models.Image;
 using Cube.Core.Models.Messages;
 using Cube.EntityFramework.Repository;
+using System.Linq.Expressions;
 
 namespace Cube.Application.Services.Image
 {
@@ -63,7 +64,7 @@ namespace Cube.Application.Services.Image
             var entity = MapperConfig.InitializeAutomapper().Map<ImageEntity>(dto);
             entity.Path = fullPath;
 
-            if (await _repository.ImageRepository.CreateImageAsync(entity) == null
+            if (await _repository.ImageRepository.CreateAsync(entity) == null
                 || !File.Exists(entity.Path))
             {
                 response.ResponseResult = CreateImageResult.ServerError;
@@ -90,7 +91,9 @@ namespace Cube.Application.Services.Image
                 return response;
             }
 
-            var entity = await _repository.ImageRepository.GetImageByTypeAndOwnerAsync(dto.Type, dto.OwnerId);
+            Expression<Func<ImageEntity, bool>> predicate = image => image.OwnerId == dto.OwnerId && image.Type == dto.Type;
+
+            var entity = await _repository.ImageRepository.GetByPredicateAsync(predicate);
             
             if (entity != null) 
             {
@@ -111,9 +114,9 @@ namespace Cube.Application.Services.Image
         private async Task<bool> IsOwnerExist(ImageType type, int ownerId) => type switch
         {
             ImageType.Profile => await _repository.UserRepository
-                .GetUserByIdAsync(ownerId) != null,
+                .GetByIdAsync(ownerId) != null,
             ImageType.Chat => await _repository.ChatRepository
-                .GetChatByIdAsync(ownerId) != null,
+                .GetByIdAsync(ownerId) != null,
             ImageType.Post => throw new NotImplementedException(),
             _ => throw new NotSupportedException()
         };

@@ -1,4 +1,7 @@
-﻿namespace Cube.Application.Services
+﻿using Newtonsoft.Json;
+using System.Text.Json;
+
+namespace Cube.Application.Services
 {
     public static class ValidationExtensions
     {
@@ -39,6 +42,24 @@
             }
 
             return 1;
+        }
+
+        public static bool TryParseJson(this string? json)
+        {
+            if (string.IsNullOrWhiteSpace(json))
+            {
+                return false;
+            }
+
+            try
+            {
+                JsonDocument.Parse(json);
+                return true;
+            }
+            catch (System.Text.Json.JsonException)
+            {
+                return false;
+            }
         }
     }
 }

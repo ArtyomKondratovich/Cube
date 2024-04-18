@@ -1,14 +1,10 @@
 ﻿using Cube.Core.Entities;
+using Cube.Repository.Repository;
 
 namespace Cube.EntityFramework.Repository.User
 {
-    public interface IUserRepository
+    public interface IUserRepository : IRepositoryBase<UserEntity>
     {
-        Task<UserEntity> CreteUserAsync(UserEntity entity);
-        Task<UserEntity> GetUserByIdAsync(int id);
-        UserEntity GetUserById(int id);
-        Task<UserEntity> UserAssociatedWithTheEmail(string email);
-        Task<List<UserEntity>> GetAll();
-        Task<bool> DeleteUserAsync(int id);
+        Task<List<UserEntity>> GetAll(CancellationToken token = default);
     }
 }

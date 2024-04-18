@@ -1,6 +1,7 @@
 ﻿using Cube.Core.Entities;
 using Cube.EntityFramework;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Cube.Repository.Repository.Role
 {
@@ -13,29 +14,54 @@ namespace Cube.Repository.Repository.Role
             _dbContext = dbContext;
         }
 
-        public async Task<RoleEntity?> CreateRoleAsync(RoleEntity entity)
+        public async Task<RoleEntity?> CreateAsync(RoleEntity entity, CancellationToken token = default)
         {
-            var result = await _dbContext.Roles.AddAsync(entity);
+            var createdRole = await _dbContext.AddAsync(entity, token);
 
-            if (result != null) 
+            if (createdRole != null) 
             {
-                await _dbContext.SaveChangesAsync();
-                return result.Entity;
+                await _dbContext.SaveChangesAsync(token);
+                return createdRole.Entity;
             }
 
             return null;
         }
 
-        public async Task<RoleEntity?> GetRoleByIdAsync(int id)
+        public async Task<bool> DeleteAsync(RoleEntity entity, CancellationToken token = default)
         {
-            return await _dbContext.Roles
-                .FirstOrDefaultAsync(x => x.Id == id);
+            var deletedRole = _dbContext.Roles.Remove(entity);
+
+            if (deletedRole != null) 
+            { 
+                await _dbContext.SaveChangesAsync(token);
+            }
+
+            return deletedRole != null;
         }
 
-        public async Task<RoleEntity?> GetRoleByNameAsync(string roleName)
+        public async Task<IEnumerable<RoleEntity>> GetByFilterAsync(Expression<Func<RoleEntity, bool>> filter, CancellationToken token = default)
         {
             return await _dbContext.Roles
-                .FirstOrDefaultAsync(x => x.Name == roleName);
+                .Where(filter)
+                .ToListAsync(token);
+        }
+
+        public async Task<RoleEntity?> GetByIdAsync(int id, CancellationToken token = default)
+        {
+            return await _dbContext.Roles
+                .FirstOrDefaultAsync(x => x.Id == id, token);
+        }
+
+        public async Task<RoleEntity?> GetByPredicateAsync(Expression<Func<RoleEntity, bool>> predicate, CancellationToken token = default)
+        {
+            return await _dbContext.Roles
+                .FirstOrDefaultAsync(predicate, token);
+        }
+
+        // unnessesary to update role
+        public Task<RoleEntity?> UpdateAsync(RoleEntity entity, CancellationToken token = default)
+        {
+            throw new NotSupportedException();
         }
     }
 }

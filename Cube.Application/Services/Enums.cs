@@ -1,5 +1,36 @@
 ﻿namespace Cube.Application.Services
 {
+
+    public enum CreateConfigResult 
+    { 
+        Success,
+        UserNotFound,
+        DatabaseError
+    }
+    public enum DeleteConfigResult 
+    {
+        Success,
+        UserNotFound,
+        ConfigNotFound,
+        DatabaseError
+    }
+
+    public enum GetConfigResult
+    {
+        Success,
+        UserNotFound,
+        ConfigNotFound
+    }
+
+    public enum UpdateConfigResult 
+    {
+        Success,
+        UserNotFound,   
+        ConfigNotFound,
+        ValidationError,
+        DatabaseError
+    }
+
     public enum GetAllUsers
     {
         Success
@@ -128,6 +159,7 @@
         Success,
         ValidationError,
         UserNotFound,
+        DatabaseError
 
     }
     public enum GetUserResult

@@ -2,7 +2,7 @@
 {
     public class FindChatMessagesDto
     {
-        public int Id { get; set; }
+        public int ChatId { get; set; }
         public int UsersTimezoneOffset { get; set; }
     }
 }

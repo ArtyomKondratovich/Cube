@@ -1,6 +1,7 @@
 ﻿using Cube.EntityFramework.Repository.Chat;
 using Cube.EntityFramework.Repository.Message;
 using Cube.EntityFramework.Repository.User;
+using Cube.Repository.Repository.Config;
 using Cube.Repository.Repository.Friendship;
 using Cube.Repository.Repository.Image;
 using Cube.Repository.Repository.Notification;
@@ -17,5 +18,6 @@ namespace Cube.EntityFramework.Repository
         public IFriendshipRepository FriendshipRepository { get; }
         public IImageRepository ImageRepository { get; }
         public INotificationRepository NotificationRepository { get; }
+        public IConfigRepositrory ConfigRepositrory { get; }
     }
 }

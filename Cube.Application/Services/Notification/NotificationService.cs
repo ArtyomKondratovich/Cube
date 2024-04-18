@@ -4,6 +4,7 @@ using Cube.Core.Entities;
 using Cube.Core.Enums;
 using Cube.Core.Models.Notification;
 using Cube.EntityFramework.Repository;
+using System.Linq.Expressions;
 
 namespace Cube.Application.Services.Notification
 {
@@ -35,9 +36,9 @@ namespace Cube.Application.Services.Notification
                         })
                         .ToList();
 
-                    foreach (var entity in notificationEntities)
+                    foreach (var notification in notificationEntities)
                     {
-                        await _repository.NotificationRepository.CreateNotification(entity);
+                        await _repository.NotificationRepository.CreateAsync(notification);
                     }
 
                     response.ResponseResult = CreateNotificationResult.Success;
@@ -63,7 +64,7 @@ namespace Cube.Application.Services.Notification
             if (dto.ReadedNotificationTds.Count > 0)
             {
                 var notifications = dto.ReadedNotificationTds
-                    .Select(async x => await _repository.NotificationRepository.GetNotificationById(x))
+                    .Select(async notificationId => await _repository.NotificationRepository.GetByIdAsync(notificationId))
                     .Select(x => x.Result)
                     .ToList();
 
@@ -71,7 +72,7 @@ namespace Cube.Application.Services.Notification
                 {
                     if (notification != null) 
                     {
-                        await _repository.NotificationRepository.DeleteNotification(notification);
+                        await _repository.NotificationRepository.DeleteAsync(notification);
                     }
                 }
             }
@@ -85,7 +86,7 @@ namespace Cube.Application.Services.Notification
         {
             var response = new Response<UserNotifications, GetUserNotificationResult>();
 
-            var user = await _repository.UserRepository.GetUserByIdAsync(dto.Id);
+            var user = await _repository.UserRepository.GetByIdAsync(dto.Id);
 
             if (user == null)
             {
@@ -93,9 +94,10 @@ namespace Cube.Application.Services.Notification
             }
             else 
             {
+                Expression<Func<NotificationEntity, bool>> filter = notification => notification.UserId == user.Id;
                 response.Value = new UserNotifications
                 {
-                    Notifications = await _repository.NotificationRepository.GetUserNotifications(user.Id)
+                    Notifications = await _repository.NotificationRepository.GetByFilterAsync(filter)
                 };
                 response.ResponseResult = GetUserNotificationResult.Success;
             }
@@ -106,10 +108,10 @@ namespace Cube.Application.Services.Notification
         private async Task<bool> IsNotificationSenderExists(int id, NotificationType type)
             => type switch
             {
-                NotificationType.FriendRequest => await _repository.UserRepository.GetUserByIdAsync(id) != null,
-                NotificationType.FriendResponse => await _repository.UserRepository.GetUserByIdAsync(id) != null,
+                NotificationType.FriendRequest => await _repository.UserRepository.GetByIdAsync(id) != null,
+                NotificationType.FriendResponse => await _repository.UserRepository.GetByIdAsync(id) != null,
                 NotificationType.NewsNotification => throw new NotSupportedException(),
-                NotificationType.ChatNotification => await _repository.ChatRepository.GetChatByIdAsync(id) != null,
+                NotificationType.ChatNotification => await _repository.ChatRepository.GetByIdAsync(id) != null,
                 _ => throw new NotSupportedException()
             };
     }

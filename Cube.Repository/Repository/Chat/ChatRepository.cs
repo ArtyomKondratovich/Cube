@@ -1,6 +1,6 @@
 ﻿using Cube.Core.Models;
-using Cube.Core.Models.Chat;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Cube.EntityFramework.Repository.Chat
 {
@@ -13,84 +13,58 @@ namespace Cube.EntityFramework.Repository.Chat
             _dbContext = dbContext;
         }
 
-        public async Task<ChatEntity?> CreateChat(ChatEntity entity)
+        public async Task<ChatEntity?> CreateAsync(ChatEntity entity, CancellationToken token = default)
         {
-            var chat = await _dbContext.Chats.AddAsync(entity);
+            var createdChat = await _dbContext.Chats.AddAsync(entity, token);
 
-            if (chat != null)
+            if (createdChat != null)
             {
-                await _dbContext.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync(token);
 
-                return chat.Entity;
-            }
-            
-            return null;
-
-        }
-
-        public async Task<bool> DeleteChat(int id)
-        {
-            var chat = await _dbContext.Chats
-                .FirstAsync(c => c.Id == id);
-
-            if (_dbContext.Chats.Remove(chat) != null) 
-            {
-                await _dbContext.SaveChangesAsync();
-                return true;
-            }
-
-            return false;
-        }
-
-        public async Task<List<ChatEntity>> GetAllUsersChatsAsync(int id)
-        {
-            return await _dbContext.Chats
-                .Where(c => c.Users.Select(x => x.Id).Contains(id))
-                .Include(x => x.Users)
-                .ToListAsync();
-        }
-
-        public ChatEntity? GetChatById(int id)
-        {
-            return _dbContext.Chats
-                .FirstOrDefault(x => x.Id == id);
-        }
-
-        public async Task<ChatEntity?> GetChatByIdAsync(int id)
-        {
-            return await _dbContext.Chats
-                .Include(x => x.Users)
-                .FirstOrDefaultAsync(x => x.Id == id);
-        }
-
-        public ICollection<ChatEntity> GetEntitiesByIds(ICollection<int> ids)
-        {
-            var entities = new List<ChatEntity>();
-
-            foreach (var id in ids)
-            {
-                var entity = _dbContext.Chats.Find(id);
-
-                if (entity != null)
-                {
-                    entities.Add(entity);
-                }
-            }
-
-            return entities;
-        }
-
-        public async Task<ChatEntity?> UpdateChat(ChatEntity entity)
-        {
-            var result = _dbContext.Chats.Update(entity);
-
-            if (result != null)
-            {
-                await _dbContext.SaveChangesAsync();
-                return result.Entity;
+                return createdChat.Entity;
             }
 
             return null;
+        }
+
+        public async Task<bool> DeleteAsync(ChatEntity entity, CancellationToken token = default)
+        {
+            var deletedEntity = _dbContext.Chats.Remove(entity);
+
+            if (deletedEntity != null)
+            {
+                await _dbContext.SaveChangesAsync(token);
+            }
+
+            return deletedEntity != null;
+        }
+
+        public async Task<ChatEntity?> GetByPredicateAsync(Expression<Func<ChatEntity, bool>> predicate, CancellationToken token = default)
+        {
+            return await _dbContext.Chats.FirstOrDefaultAsync(predicate, token);
+        }
+
+        public async Task<ChatEntity?> UpdateAsync(ChatEntity entity, CancellationToken token = default)
+        {
+            var updatedChat = _dbContext.Chats.Update(entity);
+
+            if (updatedChat != null)
+            {
+                await _dbContext.SaveChangesAsync(token);
+                return updatedChat.Entity;
+            }
+
+            return null;
+        }
+
+        public async Task<IEnumerable<ChatEntity>> GetByFilterAsync(Expression<Func<ChatEntity, bool>> filter, CancellationToken token = default)
+        {
+            return await _dbContext.Chats.Where(filter).ToListAsync(token);
+        }
+
+        public async Task<ChatEntity?> GetByIdAsync(int id, CancellationToken token = default)
+        {
+            return await _dbContext.Chats.FirstOrDefaultAsync(x => x.Id == id, token);
         }
     }
 }
