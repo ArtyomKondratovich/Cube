@@ -25,7 +25,7 @@ namespace Cube.Application.Services
 
             if (!repositoryMethodMap.TryGetValue(typeof(TEntity), out var repositoryMethod))
             {
-                return false; // Unsupported entity type
+                return false;
             }
 
             foreach (var id in ids)
@@ -91,11 +91,6 @@ namespace Cube.Application.Services
             }
 
             return a;
-        }
-
-        public static async Task<bool> IsEntityExist(this int id, string entityName, IRepositoryWrapper wrapper)
-        {
-            return false;
         }
     }
 }

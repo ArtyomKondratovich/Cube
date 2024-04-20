@@ -1,5 +1,18 @@
 ﻿namespace Cube.Application.Services
 {
+    public enum SendEmailResult 
+    {
+        Success,
+        ValidationError,
+        UserNotFound
+    }
+
+    public enum EmailConfirmationResut 
+    {
+        Success,
+        ValidationError,
+        AccessDenied
+    }
 
     public enum CreateConfigResult 
     { 

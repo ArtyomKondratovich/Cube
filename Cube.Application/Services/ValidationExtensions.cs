@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using System.Text.Json;
+﻿using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace Cube.Application.Services
 {
@@ -7,26 +7,14 @@ namespace Cube.Application.Services
     {
         public static bool IsValidEmail(this string? email)
         {
-            if (email == null)
+            if (string.IsNullOrWhiteSpace(email))
             {
                 return false;
             }
 
-            var trimmedEmail = email.Trim();
+            var regex = new Regex(@"^\w+@\w+\.\w+$");
 
-            if (trimmedEmail.EndsWith('.'))
-            {
-                return false; // suggested by @TK-421
-            }
-            try
-            {
-                var addr = new System.Net.Mail.MailAddress(email);
-                return addr.Address == trimmedEmail;
-            }
-            catch
-            {
-                return false;
-            }
+            return regex.IsMatch(email);
         }
 
         public static int PasswordCheck(this string? password)

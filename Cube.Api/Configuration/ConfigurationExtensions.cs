@@ -15,6 +15,7 @@ using Cube.Application.Services.Image;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Cube.Application.Services.Notification;
+using Cube.Application.Services.Email;
 
 namespace Cube.Web.Api.Configuration
 {
@@ -44,6 +45,11 @@ namespace Cube.Web.Api.Configuration
             builder.Services.AddScoped<INotificationService>(
                 options => new NotificationService(
                     options.GetRequiredService<IRepositoryWrapper>()));
+
+            builder.Services.AddScoped<IEmailService>(
+                options => new EmailConsoleService(
+                    options.GetRequiredService<IRepositoryWrapper>(),
+                    builder.Configuration));
         }
 
         public static void ConfigureRepository(this WebApplicationBuilder builder)
