@@ -1,19 +1,21 @@
-﻿using Cube.Application.Services.Message.Dto;
-using Cube.Application.Utilities;
+﻿using Cube.Services.Services.Message.Dto;
+using Cube.Services.Utilities;
 using Cube.Core.Models;
-using Cube.Core.Models.Messages;
-using Cube.EntityFramework.Repository;
+using Cube.Core.Models.Message;
+using Cube.Repository.Repositories;
 using System.Linq.Expressions;
 
-namespace Cube.Application.Services.Message
+namespace Cube.Services.Services.Message
 {
     public class MessageService : IMessageService
     {
         private readonly IRepositoryWrapper _repository;
+        private readonly int _maxMessagesRecieve;
 
-        public MessageService(IRepositoryWrapper repository) 
+        public MessageService(IRepositoryWrapper repository, int maxTake) 
         {
             _repository = repository;
+            _maxMessagesRecieve = maxTake;
         }
 
         public async Task<Response<bool, DeleteMessageResult>> DeleteMessage(DeleteMessageDto dto)
@@ -36,7 +38,7 @@ namespace Cube.Application.Services.Message
             return response;
         }
 
-        public async Task<Response<List<MessageModel>, GetChatMessagesResult>> GetChatMessages(FindChatMessagesDto dto)
+        public async Task<Response<List<MessageModel>, GetChatMessagesResult>> GetChatMessages(ChatMessagesDto dto)
         {
             var response = new Response<List<MessageModel>, GetChatMessagesResult>();
 
@@ -48,34 +50,36 @@ namespace Cube.Application.Services.Message
                 return response;
             }
 
-            Expression<Func<MessageEntity, bool>> filter = message => message.ChatId == dto.ChatId;
+            if (dto.Take > _maxMessagesRecieve)
+            {
+                response.ResponseResult = GetChatMessagesResult.ServerError;
+                response.Messages.Add($"The maximum number ({_maxMessagesRecieve}) of messages received has been exceeded, you tried to recive {dto.Take} messages");
+                return response;
+            }
 
-            var messages = await _repository.MessageRepository.GetByFilterAsync(filter);
+            if (dto.Skip < 0)
+            {
+                response.ResponseResult = GetChatMessagesResult.ServerError;
+                response.Messages.Add($"Skip number should be equals or greater than 0, you tried skip {dto.Skip} messages");
+                return response;
+            }
+
+            Expression<Func<MessageEntity, bool>> filter = (message) => message.ChatId == dto.ChatId;
+
+            var messages = await _repository.MessageRepository.GetChatMessagesAsync(dto.ChatId, dto.Take, dto.Skip);
             
             if (messages != null)
             {
                 response.ResponseResult = GetChatMessagesResult.Success;
-
-                foreach (var message in messages) 
-                {
-                    message.CreatedDate = message.CreatedDate.AddHours(dto.UsersTimezoneOffset);
-                }
-
                 response.Value = messages
                     .Select(x => MapperConfig.InitializeAutomapper().Map<MessageModel>(x))
                     .ToList();
-
-                foreach (var message in response.Value)
-                {
-                    message.FormatedCreatedDate = message.CreatedDate.ToString("hh:mm tt");
-                }
 
                 return response;
             }
 
             response.ResponseResult = GetChatMessagesResult.ServerError;
             return response;
-
         }
 
         public async Task<Response<MessageModel, GetMessageResult>> GetMessageById(FindMessageDto dto)
@@ -146,7 +150,6 @@ namespace Cube.Application.Services.Message
                 response.ResponseResult = SendMessageResult.Success;
                 result.CreatedDate = result.CreatedDate.AddHours(dto.TimeZoneOffset);
                 response.Value = MapperConfig.InitializeAutomapper().Map<MessageModel>(result);
-                response.Value.FormatedCreatedDate = response.Value.CreatedDate.ToString("hh:mm tt");
             }
 
             return response;

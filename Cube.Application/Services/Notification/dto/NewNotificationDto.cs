@@ -1,6 +1,6 @@
 ﻿using Cube.Core.Enums;
 
-namespace Cube.Application.Services.Notification.dto
+namespace Cube.Services.Services.Notification.dto
 {
     public class NewNotificationDto
     {

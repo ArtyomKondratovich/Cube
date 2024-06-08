@@ -1,11 +1,11 @@
 ﻿using Cube.Core.Entities;
 using Cube.Core.Enums;
-using Cube.EntityFramework;
+using Cube.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using System.Linq.Expressions;
 
-namespace Cube.Repository.Repository.Image
+namespace Cube.Repository.Repositories.Image
 {
     public class ImageRepository : IImageRepository
     {

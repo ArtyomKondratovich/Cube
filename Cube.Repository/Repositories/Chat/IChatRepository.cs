@@ -1,7 +1,7 @@
 ﻿using Cube.Core.Models;
-using Cube.Repository.Repository;
+using Cube.Repository.Repositories;
 
-namespace Cube.EntityFramework.Repository.Chat
+namespace Cube.Repository.Repositories.Chat
 {
     public interface IChatRepository : IRepositoryBase<ChatEntity>
     {

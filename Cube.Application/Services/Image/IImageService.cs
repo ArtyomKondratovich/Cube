@@ -1,7 +1,7 @@
-﻿using Cube.Application.Services.Image.Dto;
+﻿using Cube.Services.Services.Image.Dto;
 using Cube.Core.Models.Image;
 
-namespace Cube.Application.Services.Image
+namespace Cube.Services.Services.Image
 {
     public interface IImageService
     {

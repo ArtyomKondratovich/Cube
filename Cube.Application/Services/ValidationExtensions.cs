@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using System.Text.RegularExpressions;
 
-namespace Cube.Application.Services
+namespace Cube.Services.Services
 {
     public static class ValidationExtensions
     {

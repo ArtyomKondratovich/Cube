@@ -1,4 +1,4 @@
-﻿namespace Cube.Application.Services.Message.Dto
+﻿namespace Cube.Services.Services.Message.Dto
 {
     public class UpdateMessageDto
     {

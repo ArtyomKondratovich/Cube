@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
-namespace Cube.EntityFramework.Repository.Message
+namespace Cube.Repository.Repositories.Message
 {
     public class MessageRepository : IMessageRepository
     {
@@ -56,6 +56,16 @@ namespace Cube.EntityFramework.Repository.Message
         {
             return await _dbContext.Messages
                 .FirstOrDefaultAsync(predicate, token);
+        }
+
+        public async Task<IEnumerable<MessageEntity>> GetChatMessagesAsync(int chatId, int take, int skip, CancellationToken token)
+        {
+            return await _dbContext.Messages
+                .Where(x => x.ChatId == chatId)
+                .OrderByDescending(x => x.CreatedDate)
+                .Skip(skip)
+                .Take(take)
+                .ToListAsync(token);
         }
 
         public async Task<MessageEntity?> UpdateAsync(MessageEntity entity, CancellationToken token = default)

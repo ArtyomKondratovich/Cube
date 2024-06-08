@@ -1,10 +1,10 @@
 ﻿using Cube.Core.Entities;
 using Cube.Core.Models;
-using Cube.EntityFramework.Repository;
+using Cube.Repository.Repositories;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Cube.Application.Services
+namespace Cube.Services.Services
 {
     public static class ServiceExtensions
     {

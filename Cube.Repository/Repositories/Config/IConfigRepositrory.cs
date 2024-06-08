@@ -1,6 +1,6 @@
 ﻿using Cube.Core.Entities;
 
-namespace Cube.Repository.Repository.Config
+namespace Cube.Repository.Repositories.Config
 {
     public interface IConfigRepositrory : IRepositoryBase<ConfigEntity>
     {

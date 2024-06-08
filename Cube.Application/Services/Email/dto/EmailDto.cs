@@ -1,4 +1,4 @@
-﻿namespace Cube.Application.Services.Email.dto
+﻿namespace Cube.Services.Services.Email.dto
 {
     public class EmailDto
     {

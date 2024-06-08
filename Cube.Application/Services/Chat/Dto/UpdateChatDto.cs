@@ -1,4 +1,4 @@
-﻿namespace Cube.Application.Services.Chat.Dto
+﻿namespace Cube.Services.Services.Chat.Dto
 {
     // if field is null -> nothing to update
     public class UpdateChatDto

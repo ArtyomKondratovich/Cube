@@ -1,13 +1,13 @@
-﻿using Cube.Application.Services.Image.Dto;
-using Cube.Application.Utilities;
+﻿using Cube.Services.Services.Image.Dto;
+using Cube.Services.Utilities;
 using Cube.Core.Entities;
 using Cube.Core.Enums;
 using Cube.Core.Models.Image;
-using Cube.Core.Models.Messages;
-using Cube.EntityFramework.Repository;
+using Cube.Core.Models.Message;
+using Cube.Repository.Repositories;
 using System.Linq.Expressions;
 
-namespace Cube.Application.Services.Image
+namespace Cube.Services.Services.Image
 {
     public class ImageService : IImageService
     {

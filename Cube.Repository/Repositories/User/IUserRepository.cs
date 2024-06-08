@@ -1,7 +1,7 @@
 ﻿using Cube.Core.Entities;
-using Cube.Repository.Repository;
+using Cube.Repository.Repositories;
 
-namespace Cube.EntityFramework.Repository.User
+namespace Cube.Repository.Repositories.User
 {
     public interface IUserRepository : IRepositoryBase<UserEntity>
     {

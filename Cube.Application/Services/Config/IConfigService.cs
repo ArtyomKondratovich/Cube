@@ -1,7 +1,7 @@
-﻿using Cube.Application.Services.Config.dto;
+﻿using Cube.Services.Services.Config.dto;
 using Cube.Core.Models.Config;
 
-namespace Cube.Application.Services.Config
+namespace Cube.Services.Services.Config
 {
     public interface IConfigService
     {

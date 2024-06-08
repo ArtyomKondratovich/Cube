@@ -1,8 +1,8 @@
-﻿using Cube.Application.Services.User.Dto;
+﻿using Cube.Services.Services.User.Dto;
 using Cube.Core.Models.Friendship;
 using Cube.Core.Models.User;
 
-namespace Cube.Application.Services.User
+namespace Cube.Services.Services.User
 {
     public interface IUserService
     {

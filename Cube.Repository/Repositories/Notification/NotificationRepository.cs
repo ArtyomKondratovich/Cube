@@ -1,9 +1,9 @@
 ﻿using Cube.Core.Entities;
-using Cube.EntityFramework;
+using Cube.Repository;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
-namespace Cube.Repository.Repository.Notification
+namespace Cube.Repository.Repositories.Notification
 {
     public class NotificationRepository : INotificationRepository
     {

@@ -1,14 +1,14 @@
-﻿using Cube.Application.Services.Chat.Dto;
-using Cube.Application.Utilities;
+﻿using Cube.Services.Services.Chat.Dto;
+using Cube.Services.Utilities;
 using Cube.Core.Entities;
 using Cube.Core.Enums;
 using Cube.Core.Models;
 using Cube.Core.Models.Chat;
 using Cube.Core.Models.User;
-using Cube.EntityFramework.Repository;
+using Cube.Repository.Repositories;
 using System.Linq.Expressions;
 
-namespace Cube.Application.Services.Chat
+namespace Cube.Services.Services.Chat
 {
     public class ChatService : IChatService
     {

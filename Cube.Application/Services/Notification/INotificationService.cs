@@ -1,8 +1,8 @@
-﻿using Cube.Application.Services.Notification.dto;
-using Cube.Application.Services.User.Dto;
+﻿using Cube.Services.Services.Notification.dto;
+using Cube.Services.Services.User.Dto;
 using Cube.Core.Models.Notification;
 
-namespace Cube.Application.Services.Notification
+namespace Cube.Services.Services.Notification
 {
     public interface INotificationService
     {

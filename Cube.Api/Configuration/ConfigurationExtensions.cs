@@ -1,21 +1,19 @@
-﻿using Cube.Application.Services.Chat;
-using Cube.Application.Services.Message;
-using Cube.Application.Services.User;
-using Cube.EntityFramework.Repository;
+﻿using Cube.Services.Services.Chat;
+using Cube.Services.Services.Message;
+using Cube.Services.Services.User;
+using Cube.Repository.Repositories;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Cube.Application.Utilities;
+using Cube.Services.Utilities;
 using System.Text.Json.Serialization;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
-using Cube.EntityFramework;
+using Cube.Repository;
 using Microsoft.EntityFrameworkCore;
-using Cube.Application.Services.User.Auth;
-using Cube.Application.Services.Image;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Cube.Application.Services.Notification;
-using Cube.Application.Services.Email;
+using Cube.Services.Services.User.Auth;
+using Cube.Services.Services.Image;
+using Cube.Services.Services.Notification;
+using Cube.Services.Services.Email;
 
 namespace Cube.Web.Api.Configuration
 {
@@ -25,7 +23,8 @@ namespace Cube.Web.Api.Configuration
         {
             builder.Services.AddScoped<IMessageService>(
                 options => new MessageService(
-                    options.GetRequiredService<IRepositoryWrapper>()
+                    options.GetRequiredService<IRepositoryWrapper>(),
+                    int.Parse(builder.Configuration.GetSection("MaxMessagesReceive").Value)
                     ));
             builder.Services.AddScoped<IChatService>(
                 options => new ChatService(
@@ -55,7 +54,7 @@ namespace Cube.Web.Api.Configuration
         public static void ConfigureRepository(this WebApplicationBuilder builder)
         {
             builder.Services.AddDbContext<CubeDbContext>(
-                options => options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+                options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             builder.Services.AddScoped<IRepositoryWrapper>(
                 options => new RepositoryWrapper(options.GetRequiredService<CubeDbContext>()));
@@ -115,7 +114,6 @@ namespace Cube.Web.Api.Configuration
                 {
                     options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
                     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-                    //options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
                 });
         }
     }

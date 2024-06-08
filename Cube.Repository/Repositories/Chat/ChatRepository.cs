@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
-namespace Cube.EntityFramework.Repository.Chat
+namespace Cube.Repository.Repositories.Chat
 {
     public class ChatRepository : IChatRepository
     {

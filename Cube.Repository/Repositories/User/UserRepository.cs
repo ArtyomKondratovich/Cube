@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
-namespace Cube.EntityFramework.Repository.User
+namespace Cube.Repository.Repositories.User
 {
     public class UserRepository : IUserRepository
     {

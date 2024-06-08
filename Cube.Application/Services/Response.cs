@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Cube.Application.Services
+namespace Cube.Services.Services
 {
     public class Response<TResult, TEnum>
         where TEnum : Enum

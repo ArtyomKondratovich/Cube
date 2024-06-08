@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using System.Text.Json;
 
-namespace Cube.Application.Utilities
+namespace Cube.Services.Utilities
 {
     public sealed class DateOnlyJsonConverter : JsonConverter<DateOnly>
     {

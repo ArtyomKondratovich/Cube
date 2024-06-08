@@ -1,7 +1,7 @@
-﻿using Cube.Application.Services;
-using Cube.Application.Services.Chat;
-using Cube.Application.Services.Chat.Dto;
-using Cube.Application.Services.User.Dto;
+﻿using Cube.Services.Services;
+using Cube.Services.Services.Chat;
+using Cube.Services.Services.Chat.Dto;
+using Cube.Services.Services.User.Dto;
 using Cube.Core.Models.Chat;
 using Microsoft.AspNetCore.Mvc;
 

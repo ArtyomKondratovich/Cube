@@ -1,9 +1,9 @@
 ﻿using Cube.Core.Entities;
-using Cube.EntityFramework;
+using Cube.Repository;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
-namespace Cube.Repository.Repository.Role
+namespace Cube.Repository.Repositories.Role
 {
     public class RoleRepository : IRoleRepository
     {

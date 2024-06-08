@@ -1,11 +1,11 @@
-﻿using Cube.Application.Services.Config.dto;
-using Cube.Application.Utilities;
+﻿using Cube.Services.Services.Config.dto;
+using Cube.Services.Utilities;
 using Cube.Core.Entities;
 using Cube.Core.Models.Config;
-using Cube.EntityFramework.Repository;
+using Cube.Repository.Repositories;
 using Newtonsoft.Json;
 
-namespace Cube.Application.Services.Config
+namespace Cube.Services.Services.Config
 {
     public class ConfigService : IConfigService
     {

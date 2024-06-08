@@ -1,7 +1,7 @@
-﻿using Cube.Application.Services;
-using Cube.Application.Services.Notification;
-using Cube.Application.Services.Notification.dto;
-using Cube.Application.Services.User.Dto;
+﻿using Cube.Services.Services;
+using Cube.Services.Services.Notification;
+using Cube.Services.Services.Notification.dto;
+using Cube.Services.Services.User.Dto;
 using Cube.Core.Models.Notification;
 using Microsoft.AspNetCore.Mvc;
 

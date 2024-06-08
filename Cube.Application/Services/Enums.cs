@@ -1,4 +1,4 @@
-﻿namespace Cube.Application.Services
+﻿namespace Cube.Services.Services
 {
     public enum SendEmailResult 
     {
@@ -60,7 +60,7 @@
     {
         Success,
         ChatNotFound,
-        ServerError
+        ServerError,
     }
 
     public enum GetChatResult

@@ -1,11 +1,11 @@
-﻿using Cube.Application.Services.User.Auth;
-using Cube.Application.Services.User.Dto;
-using Cube.Application.Utilities;
+﻿using Cube.Services.Services.User.Auth;
+using Cube.Services.Services.User.Dto;
+using Cube.Services.Utilities;
 using Cube.Core.Entities;
 using Cube.Core.Enums;
 using Cube.Core.Models.Friendship;
 using Cube.Core.Models.User;
-using Cube.EntityFramework.Repository;
+using Cube.Repository.Repositories;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -17,7 +17,7 @@ using Cube.Core.Models.Image;
 using Cube.Core.Models;
 using System.Linq.Expressions;
 
-namespace Cube.Application.Services.User
+namespace Cube.Services.Services.User
 {
     public class UserService : IUserService
     {

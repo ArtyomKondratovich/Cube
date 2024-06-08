@@ -1,7 +1,7 @@
 ﻿using Cube.Core.Models.Utilities;
 using System.Text.Json.Serialization;
 
-namespace Cube.Application.Services.Chat.Dto
+namespace Cube.Services.Services.Chat.Dto
 {
     public class DeleteChatDto
     {

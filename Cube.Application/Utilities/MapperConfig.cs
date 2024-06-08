@@ -1,18 +1,18 @@
 ﻿using AutoMapper;
-using Cube.Application.Services;
-using Cube.Application.Services.Chat.Dto;
-using Cube.Application.Services.Image.Dto;
-using Cube.Application.Services.User.Dto;
+using Cube.Services.Services;
+using Cube.Services.Services.Chat.Dto;
+using Cube.Services.Services.Image.Dto;
+using Cube.Services.Services.User.Dto;
 using Cube.Core.Entities;
 using Cube.Core.Models;
 using Cube.Core.Models.Chat;
 using Cube.Core.Models.Friendship;
 using Cube.Core.Models.Image;
-using Cube.Core.Models.Messages;
+using Cube.Core.Models.Message;
 using Cube.Core.Models.User;
-using Cube.EntityFramework.Repository;
+using Cube.Repository.Repositories;
 
-namespace Cube.Application.Utilities
+namespace Cube.Services.Utilities
 {
     public static class MapperConfig
     {

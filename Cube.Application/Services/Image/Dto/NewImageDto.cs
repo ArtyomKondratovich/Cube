@@ -1,7 +1,7 @@
 ﻿using Cube.Core.Enums;
 using Microsoft.AspNetCore.Http;
 
-namespace Cube.Application.Services.Image.Dto
+namespace Cube.Services.Services.Image.Dto
 {
     public class NewImageDto
     {

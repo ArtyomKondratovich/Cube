@@ -1,7 +1,7 @@
-﻿using Cube.Application.Services.Email.dto;
+﻿using Cube.Services.Services.Email.dto;
 using System.Runtime.CompilerServices;
 
-namespace Cube.Application.Services.Email
+namespace Cube.Services.Services.Email
 {
     public interface IEmailService
     {

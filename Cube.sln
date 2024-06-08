@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cube.Api", "Cube.Api\Cube.A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cube.Repository", "Cube.Repository\Cube.Repository.csproj", "{CDFC40CD-5B6F-4A1C-9465-445527E8BA74}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cube.Application", "Cube.Application\Cube.Application.csproj", "{4512D99E-0DED-49C9-BCD6-0D568B7E8A2F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cube.Services", "Cube.Application\Cube.Services.csproj", "{4512D99E-0DED-49C9-BCD6-0D568B7E8A2F}"
 	ProjectSection(ProjectDependencies) = postProject
 		{CDFC40CD-5B6F-4A1C-9465-445527E8BA74} = {CDFC40CD-5B6F-4A1C-9465-445527E8BA74}
 	EndProjectSection

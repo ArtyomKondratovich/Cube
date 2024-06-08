@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace Cube.Repository.Repository
+namespace Cube.Repository.Repositories
 {
     public interface IRepositoryBase<T> 
         where T : class

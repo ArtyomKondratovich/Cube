@@ -1,7 +1,7 @@
-﻿using Cube.Application.Services.Chat.Dto;
+﻿using Cube.Services.Services.Chat.Dto;
 using Cube.Core.Models.Chat;
 
-namespace Cube.Application.Services.Chat
+namespace Cube.Services.Services.Chat
 {
     public interface IChatService
     {

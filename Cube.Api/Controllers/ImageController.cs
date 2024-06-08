@@ -1,6 +1,6 @@
-﻿using Cube.Application.Services;
-using Cube.Application.Services.Image;
-using Cube.Application.Services.Image.Dto;
+﻿using Cube.Services.Services;
+using Cube.Services.Services.Image;
+using Cube.Services.Services.Image.Dto;
 using Cube.Core.Models.Image;
 using Microsoft.AspNetCore.Mvc;
 

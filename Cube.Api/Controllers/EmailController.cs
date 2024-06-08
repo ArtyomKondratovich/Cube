@@ -1,6 +1,6 @@
-﻿using Cube.Application.Services;
-using Cube.Application.Services.Email;
-using Cube.Application.Services.Email.dto;
+﻿using Cube.Services.Services;
+using Cube.Services.Services.Email;
+using Cube.Services.Services.Email.dto;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cube.Api.Controllers

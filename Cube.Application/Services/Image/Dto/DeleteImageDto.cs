@@ -1,4 +1,4 @@
-﻿namespace Cube.Application.Services.Image.Dto
+﻿namespace Cube.Services.Services.Image.Dto
 {
     public class DeleteImageDto
     {

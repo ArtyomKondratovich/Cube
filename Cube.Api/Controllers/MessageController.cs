@@ -1,9 +1,9 @@
-﻿using Cube.Application.Services;
-using Cube.Application.Services.Message;
-using Cube.Application.Services.Message.Dto;
+﻿using Cube.Services.Services;
+using Cube.Services.Services.Message;
+using Cube.Services.Services.Message.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Cube.Core.Models.Messages;
+using Cube.Core.Models.Message;
 
 namespace Cube.Web.Api.Controllers
 {
@@ -42,7 +42,7 @@ namespace Cube.Web.Api.Controllers
 
         [HttpPost]
         [Route("getChatMessages")]
-        public async Task<Response<List<MessageModel>, GetChatMessagesResult>> GetChatMessages([FromBody] FindChatMessagesDto dto)
+        public async Task<Response<List<MessageModel>, GetChatMessagesResult>> GetChatMessages([FromBody] ChatMessagesDto dto)
         {
             return await _service.GetChatMessages(dto);
         }

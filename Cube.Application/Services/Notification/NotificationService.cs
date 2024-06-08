@@ -1,12 +1,12 @@
-﻿using Cube.Application.Services.Notification.dto;
-using Cube.Application.Services.User.Dto;
+﻿using Cube.Services.Services.Notification.dto;
+using Cube.Services.Services.User.Dto;
 using Cube.Core.Entities;
 using Cube.Core.Enums;
 using Cube.Core.Models.Notification;
-using Cube.EntityFramework.Repository;
+using Cube.Repository.Repositories;
 using System.Linq.Expressions;
 
-namespace Cube.Application.Services.Notification
+namespace Cube.Services.Services.Notification
 {
     public class NotificationService : INotificationService
     {

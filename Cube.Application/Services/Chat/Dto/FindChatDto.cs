@@ -1,4 +1,4 @@
-﻿namespace Cube.Application.Services.Chat.Dto
+﻿namespace Cube.Services.Services.Chat.Dto
 {
     public class FindChatDto
     {

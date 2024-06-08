@@ -1,6 +1,6 @@
 ﻿using Cube.Core.Models.User;
 
-namespace Cube.Application.Services.User.Dto
+namespace Cube.Services.Services.User.Dto
 {
     public class NewUserDto
     {

@@ -1,6 +1,6 @@
 ﻿using Cube.Core.Entities;
 
-namespace Cube.Repository.Repository.Role
+namespace Cube.Repository.Repositories.Role
 {
     public interface IRoleRepository : IRepositoryBase<RoleEntity> {}
 }

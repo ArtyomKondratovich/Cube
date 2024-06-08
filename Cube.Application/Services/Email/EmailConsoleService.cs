@@ -1,10 +1,10 @@
-﻿using Cube.Application.Services.Email.dto;
-using Cube.EntityFramework.Repository;
+﻿using Cube.Services.Services.Email.dto;
+using Cube.Repository.Repositories;
 using Microsoft.Extensions.Configuration;
 using System.Net;
 using System.Net.Mail;
 
-namespace Cube.Application.Services.Email
+namespace Cube.Services.Services.Email
 {
     public class EmailConsoleService : IEmailService
     {

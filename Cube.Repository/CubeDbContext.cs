@@ -3,7 +3,7 @@ using Cube.Core.Models;
 using Cube.Core.Entities;
 using Cube.Core.Enums;
 
-namespace Cube.EntityFramework
+namespace Cube.Repository
 {
     public class CubeDbContext : DbContext
     {
@@ -69,7 +69,7 @@ namespace Cube.EntityFramework
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            
+            optionsBuilder.UseNpgsql();
         }
 
     }

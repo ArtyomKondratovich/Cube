@@ -1,4 +1,4 @@
-﻿namespace Cube.Application.Services.Config.dto
+﻿namespace Cube.Services.Services.Config.dto
 {
     public class DeleteConfigDto
     {
