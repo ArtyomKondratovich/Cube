@@ -12,12 +12,14 @@
   "ConnectionStrings": {
     "DefaultConnection": "*"
   },
-  "ImagesDirectoryPath" : "*"
+  "ImagesDirectoryPath" : "*",
+  "MaxMessagesReceive": *
 }
 ```
-Secrete - используется для JWT токена (длина секрета более 32-х символов)
-DefaultConnection - подключение к БД
-ImagesDirectoryPath - путь к папке, где будут храниться картинки загруженные пользователем
+Secrete - используется для JWT токена (длина секрета более 32-х символов);
+DefaultConnection - подключение к БД;
+ImagesDirectoryPath - путь к папке, где будут храниться картинки загруженные пользователем;
+MaxMessagesReceive - максимальное число сообщений, которые пользователь за раз может подгрузить;
 
 * В зависимости от того с какой базой данных вы работаете нужно скачать необходимые инструменты и поменять подключение в файле: ..\Cube\Cube.Api\Configuration\ConfigurationExtensions.cs замените расширение:
 
