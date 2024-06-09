@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Cube.Core\Cube.Domain.csproj" />
+    <ProjectReference Include="..\Cube.Domain\Cube.Domain.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,4 +1,4 @@
-using Cube.Web.Api.Configuration;
+using Cube.Api.Configuration;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);

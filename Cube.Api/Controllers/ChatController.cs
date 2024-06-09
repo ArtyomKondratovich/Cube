@@ -5,7 +5,7 @@ using Cube.Domain.Models.Chat;
 using Cube.Business.Services.Chat.Dto;
 using Cube.Business.Utilities;
 
-namespace Cube.Web.Api.Controllers
+namespace Cube.Api.Controllers
 {
     //[Authorize]
     [ApiController]

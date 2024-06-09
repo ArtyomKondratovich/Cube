@@ -8,7 +8,7 @@ using Cube.Business.Services.User.Dto;
 using Cube.Business.Utilities;
 using Cube.Domain.Models.Friendship;
 
-namespace Cube.Web.Api.Controllers
+namespace Cube.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

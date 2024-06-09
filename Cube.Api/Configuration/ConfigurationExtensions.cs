@@ -15,7 +15,7 @@ using Cube.Business.Services.Image;
 using Cube.Business.Services.Notification;
 using Cube.Business.Services.Email;
 
-namespace Cube.Web.Api.Configuration
+namespace Cube.Api.Configuration
 {
     public static class ConfigurationExtensions
     {
@@ -61,12 +61,19 @@ namespace Cube.Web.Api.Configuration
                 )
             );
 
+
+            #region Email Service
+
+            var smtpSettings = builder.Configuration.GetSection("Smtp").Get<SmtpSettings>();
+
             builder.Services.AddScoped<IEmailService>(
-                options => new EmailConsoleService(
+                options => new EmailService(
                     options.GetRequiredService<IRepositoryWrapper>(),
-                    builder.Configuration
+                    smtpSettings
                 )
             );
+
+            #endregion
         }
 
         public static void ConfigureRepository(this WebApplicationBuilder builder)

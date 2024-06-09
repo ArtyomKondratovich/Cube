@@ -5,7 +5,7 @@ using Cube.Business.Services;
 using Cube.Business.Utilities;
 using Cube.Business.Services.Message.Dto;
 
-namespace Cube.Web.Api.Controllers
+namespace Cube.Api.Controllers
 {
     //[Authorize]
     [Route("api/[controller]")]
