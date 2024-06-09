@@ -1,19 +1,19 @@
-﻿using Cube.Services.Services.Chat;
-using Cube.Services.Services.Message;
-using Cube.Services.Services.User;
-using Cube.Repository.Repositories;
+﻿using Cube.DataAccess.Repositories;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Cube.Services.Utilities;
 using System.Text.Json.Serialization;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
-using Cube.Repository;
+using Cube.DataAccess;
 using Microsoft.EntityFrameworkCore;
-using Cube.Services.Services.User.Auth;
-using Cube.Services.Services.Image;
-using Cube.Services.Services.Notification;
-using Cube.Services.Services.Email;
+using Cube.Business.Services.Chat;
+using Cube.Business.Utilities;
+using Cube.Business.Services.Message;
+using Cube.Business.Services.User;
+using Cube.Business.Services.User.Auth;
+using Cube.Business.Services.Image;
+using Cube.Business.Services.Notification;
+using Cube.Business.Services.Email;
 
 namespace Cube.Web.Api.Configuration
 {
@@ -21,43 +21,67 @@ namespace Cube.Web.Api.Configuration
     {
         public static void ConfigureServices(this WebApplicationBuilder builder)
         {
+            var mapper = MapperConfig.InitializeAutomapper();
+
             builder.Services.AddScoped<IMessageService>(
                 options => new MessageService(
                     options.GetRequiredService<IRepositoryWrapper>(),
-                    int.Parse(builder.Configuration.GetSection("MaxMessagesReceive").Value)
-                    ));
+                    int.Parse(builder.Configuration.GetSection("MaxMessagesReceive").Value),
+                    mapper
+                )
+            );
+
             builder.Services.AddScoped<IChatService>(
                 options => new ChatService(
-                    options.GetRequiredService<IRepositoryWrapper>()
-                    ));
+                    options.GetRequiredService<IRepositoryWrapper>(),
+                    mapper
+                )
+            );
+
             builder.Services.AddScoped<IUserService>(
                 options => new UserService(
                     options.GetRequiredService<IRepositoryWrapper>(),
-                    options.GetRequiredService<IOptions<AuthOptions>>()
-                    ));
+                    options.GetRequiredService<IOptions<AuthOptions>>(),
+                    mapper
+                )
+            );
+
             builder.Services.AddScoped<IImageService>(
                 options => new ImageService(
                     options.GetRequiredService<IRepositoryWrapper>(),
-                    builder.Configuration.GetSection("ImagesDirectoryPath").Value
-                    ));
+                    builder.Configuration.GetSection("ImagesDirectoryPath").Value,
+                    mapper
+                )
+            );
 
             builder.Services.AddScoped<INotificationService>(
                 options => new NotificationService(
-                    options.GetRequiredService<IRepositoryWrapper>()));
+                    options.GetRequiredService<IRepositoryWrapper>(),
+                    mapper
+                )
+            );
 
             builder.Services.AddScoped<IEmailService>(
                 options => new EmailConsoleService(
                     options.GetRequiredService<IRepositoryWrapper>(),
-                    builder.Configuration));
+                    builder.Configuration
+                )
+            );
         }
 
         public static void ConfigureRepository(this WebApplicationBuilder builder)
         {
             builder.Services.AddDbContext<CubeDbContext>(
-                options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+                options => options.UseNpgsql(
+                    builder.Configuration.GetConnectionString("DefaultConnection")
+                )
+            );
 
             builder.Services.AddScoped<IRepositoryWrapper>(
-                options => new RepositoryWrapper(options.GetRequiredService<CubeDbContext>()));
+                options => new RepositoryWrapper(
+                    options.GetRequiredService<CubeDbContext>()
+                )
+            );
         }
 
         public static void ConfigureAuth(this WebApplicationBuilder builder)

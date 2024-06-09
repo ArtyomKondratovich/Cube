@@ -5,16 +5,16 @@ VisualStudioVersion = 17.8.34322.80
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cube.Api", "Cube.Api\Cube.Api.csproj", "{F6E211C1-BCC0-42A1-865E-C3A3BA6CEDEA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cube.Repository", "Cube.Repository\Cube.Repository.csproj", "{CDFC40CD-5B6F-4A1C-9465-445527E8BA74}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cube.DataAccess", "Cube.DataAccess\Cube.DataAccess.csproj", "{CDFC40CD-5B6F-4A1C-9465-445527E8BA74}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cube.Services", "Cube.Application\Cube.Services.csproj", "{4512D99E-0DED-49C9-BCD6-0D568B7E8A2F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cube.Business", "Cube.Business\Cube.Business.csproj", "{4512D99E-0DED-49C9-BCD6-0D568B7E8A2F}"
 	ProjectSection(ProjectDependencies) = postProject
 		{CDFC40CD-5B6F-4A1C-9465-445527E8BA74} = {CDFC40CD-5B6F-4A1C-9465-445527E8BA74}
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cube.Core", "Cube.Core\Cube.Core.csproj", "{76499FBB-F3F2-4A66-9B54-D7D9D2AE6A87}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cube.Domain", "Cube.Domain\Cube.Domain.csproj", "{76499FBB-F3F2-4A66-9B54-D7D9D2AE6A87}"
 EndProject
-Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "cube.client", "Cube.Client\cube.client.esproj", "{CDAFC80C-A929-4366-B5F8-DA7CCEE8D8EA}"
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "Cube.Client", "Cube.Client\Cube.Client.esproj", "{CDAFC80C-A929-4366-B5F8-DA7CCEE8D8EA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

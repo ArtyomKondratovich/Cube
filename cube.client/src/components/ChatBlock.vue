@@ -119,8 +119,9 @@ function fetchChat(id: number) {
 function fetchChatMessages(id: number) {
     axios.post(`${config.apiUrl}/Message/getChatMessages`, 
     { 
-        Id: id,
-        UsersTimezoneOffset: timeZoneOffset.value
+        ChatId: id,
+        take: 10,
+        skip: 0
     }, 
     {
         headers: {

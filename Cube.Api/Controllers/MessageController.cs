@@ -1,9 +1,9 @@
-﻿using Cube.Services.Services;
-using Cube.Services.Services.Message;
-using Cube.Services.Services.Message.Dto;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using Cube.Core.Models.Message;
+﻿using Microsoft.AspNetCore.Mvc;
+using Cube.Business.Services.Message;
+using Cube.Domain.Models.Message;
+using Cube.Business.Services;
+using Cube.Business.Utilities;
+using Cube.Business.Services.Message.Dto;
 
 namespace Cube.Web.Api.Controllers
 {

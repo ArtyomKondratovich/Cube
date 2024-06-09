@@ -1,12 +1,12 @@
-﻿using Cube.Services.Services;
-using Cube.Services.Services.User;
-using Cube.Services.Services.User.Dto;
-using Cube.Core.Entities;
-using Cube.Core.Models.Friendship;
-using Cube.Core.Models.User;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using LoginResult = Cube.Services.Services.LoginResult;
+using LoginResult = Cube.Business.Utilities.LoginResult;
+using Cube.Business.Services.User;
+using Cube.Business.Services;
+using Cube.Domain.Models.User;
+using Cube.Business.Services.User.Dto;
+using Cube.Business.Utilities;
+using Cube.Domain.Models.Friendship;
 
 namespace Cube.Web.Api.Controllers
 {

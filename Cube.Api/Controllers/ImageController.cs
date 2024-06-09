@@ -1,8 +1,9 @@
-﻿using Cube.Services.Services;
-using Cube.Services.Services.Image;
-using Cube.Services.Services.Image.Dto;
-using Cube.Core.Models.Image;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Cube.Business.Services.Image;
+using Cube.Business.Services;
+using Cube.Domain.Models.Image;
+using Cube.Business.Utilities;
+using Cube.Business.Services.Image.Dto;
 
 namespace Cube.Api.Controllers
 {

@@ -1,9 +1,9 @@
-﻿using Cube.Services.Services;
-using Cube.Services.Services.Chat;
-using Cube.Services.Services.Chat.Dto;
-using Cube.Services.Services.User.Dto;
-using Cube.Core.Models.Chat;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Cube.Business.Services.Chat;
+using Cube.Business.Services;
+using Cube.Domain.Models.Chat;
+using Cube.Business.Services.Chat.Dto;
+using Cube.Business.Utilities;
 
 namespace Cube.Web.Api.Controllers
 {
