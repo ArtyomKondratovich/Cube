@@ -3,6 +3,9 @@ using Cube.DataAccess.Repositories;
 using System.Net.Mail;
 using Cube.Business.Utilities;
 using System.Net;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using Cube.Domain.Entities;
+using System.Linq.Expressions;
 
 namespace Cube.Business.Services.Email
 {
@@ -26,25 +29,104 @@ namespace Cube.Business.Services.Email
             _from = new MailAddress(smtpSettings.Credentials.UserName, "Support");
         }
 
-        public Task<Response<bool, EmailConfirmationResut>> ConfirmEmail(ConfirmEmailDto dto, CancellationToken token = default)
+        public async Task<Response<bool, EmailConfirmationResut>> ConfirmEmail(ConfirmEmailDto dto, CancellationToken token = default)
         {
-            throw new NotImplementedException();
+            var response = new Response<bool, EmailConfirmationResut>();
+
+            Expression<Func<UserEntity, bool>> userPredicate = (user) => user.Email == dto.Email;
+
+            var emailExist = await _repository.UserRepository.GetByPredicateAsync(userPredicate, token);
+
+            if (emailExist != null)
+            {
+                response.ResponseResult = EmailConfirmationResut.EmailExists;
+                response.Value = false;
+                return response;
+            }
+
+            Expression<Func<EmailTokenEntity, bool>> tokenPredicate = (t) => t.Email == dto.Email && t.Token == dto.Token;
+
+            var emailToken = await _repository.EmailTokenRepository.GetByPredicateAsync(tokenPredicate, token);
+
+            if (emailToken == null) 
+            {
+                response.ResponseResult = EmailConfirmationResut.ValidationError;
+                response.Value = false;
+                return response;
+            }
+
+            if (emailToken.ExpiredAt < DateTime.UtcNow)
+            {
+                response.ResponseResult = EmailConfirmationResut.TokenExpired;
+                response.Value = false;
+                await _repository.EmailTokenRepository.ClearExpiredTokensAsync(token);
+                return response;
+            }
+
+            await _repository.EmailTokenRepository.ClearExpiredTokensAsync(token);
+
+            response.ResponseResult = EmailConfirmationResut.Success;
+            response.Value = true;
+            return response;
         }
 
-        public async Task<Response<bool, SendEmailResult>> SendConfirmationEmail(EmailDto dto, CancellationToken token = default)
+        public async Task<Response<bool, SendEmailResult>> SendConfirmationCode(EmailDto dto, CancellationToken token = default)
         {
+            var response = new Response<bool, SendEmailResult>();
+
+            Expression<Func<UserEntity, bool>> predicate = (user) => user.Email == dto.Email;
+
+            var emailExist = await _repository.UserRepository.GetByPredicateAsync(predicate, token);
+
+            if (emailExist != null) 
+            {
+                response.ResponseResult = SendEmailResult.EmailExists;
+                response.Value = false;
+                return response;
+            }
+
             var to = new MailAddress(dto.Email);
+
+            var random = new Random();
+
+            var emailToken = new EmailTokenEntity
+            {
+                Token = random.NextInt64(100000, 999999).ToString(),
+                CreatedAt = DateTime.UtcNow,
+                ExpiredAt = DateTime.UtcNow.AddMinutes(5),
+                Email = dto.Email
+            };
+
+            var createdResult = await _repository.EmailTokenRepository.CreateAsync(emailToken, token);
+
+            if (createdResult == null) 
+            {
+                response.ResponseResult = SendEmailResult.DataBaseError;
+                response.Value = false;
+                return response;
+            }
 
             var m = new MailMessage(_from, to)
             {
                 Subject = "Тест",
-                Body = "<h2>Письмо-тест работы smtp-клиента</h2>",
+                Body = $"<h2>проверочный код: {createdResult.Token}</h2>",
                 IsBodyHtml = true
             };
 
-            _smtp.Send(m);
+            try
+            {
+                _smtp.Send(m);
+                response.ResponseResult = SendEmailResult.Success;
+                response.Value = true;
+            }
+            catch (Exception ex) 
+            {
+                response.ResponseResult = SendEmailResult.EmailSendingError;
+                response.Value = false;
+                response.Messages.Add(ex.Message);
+            }  
 
-            return new Response<bool, SendEmailResult>();
+            return response;
         }
     }
 }

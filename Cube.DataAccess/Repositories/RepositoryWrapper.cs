@@ -6,6 +6,7 @@ using Cube.DataAccess.Repositories.Friendship;
 using Cube.DataAccess.Repositories.Image;
 using Cube.DataAccess.Repositories.Notification;
 using Cube.DataAccess.Repositories.Role;
+using Cube.DataAccess.Repositories.EmailToken;
 
 namespace Cube.DataAccess.Repositories
 {
@@ -20,6 +21,7 @@ namespace Cube.DataAccess.Repositories
         private IImageRepository _imageRepository;
         private INotificationRepository _notificationRepository;
         private IConfigRepositrory _configRepository;
+        private IEmailTokenRepository _emailTokenRepository;
 
         public IUserRepository UserRepository 
         {
@@ -98,6 +100,16 @@ namespace Cube.DataAccess.Repositories
                 _configRepository ??= new ConfigRepository(_dbContext);
 
                 return _configRepository;
+            }
+        }
+
+        public IEmailTokenRepository EmailTokenRepository
+        {
+            get
+            {
+                _emailTokenRepository ??= new EmailTokenRepository(_dbContext);
+
+                return _emailTokenRepository;
             }
         }
 

@@ -58,7 +58,7 @@ namespace Cube.DataAccess.Repositories.Friendship
                 .FirstOrDefaultAsync(predicate, token);
         }
 
-        // update for friendship is unnessary
+        // update for friendship is unnecessary
         public Task<FriendshipEntity?> UpdateAsync(FriendshipEntity entity, CancellationToken token = default)
         {
             throw new NotSupportedException();

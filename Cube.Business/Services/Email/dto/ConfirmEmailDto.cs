@@ -2,6 +2,7 @@
 {
     public class ConfirmEmailDto
     {
-        public string ConfirmToken { get; set; }
+        public string Token { get; set; }
+        public string Email { get; set; }
     }
 }

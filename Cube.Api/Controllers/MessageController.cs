@@ -23,7 +23,7 @@ namespace Cube.Api.Controllers
         [Route("send")]
         public async Task<Response<MessageModel, SendMessageResult>> SendMessage([FromBody] NewMessageDto dto)
         {
-            return await _service.SendMessage(dto);
+            return await _service.SendMessageAsync(dto);
         }
 
         [HttpPost]

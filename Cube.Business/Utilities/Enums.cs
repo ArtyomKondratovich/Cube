@@ -3,15 +3,18 @@
     public enum SendEmailResult
     {
         Success,
-        ValidationError,
-        UserNotFound
+        DataBaseError,
+        EmailSendingError,
+        EmailExists
     }
 
     public enum EmailConfirmationResut
     {
         Success,
         ValidationError,
-        AccessDenied
+        EmailExists,
+        TokenExpired
+
     }
 
     public enum CreateConfigResult

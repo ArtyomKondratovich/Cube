@@ -6,6 +6,7 @@ using Cube.DataAccess.Repositories.Friendship;
 using Cube.DataAccess.Repositories.Image;
 using Cube.DataAccess.Repositories.Notification;
 using Cube.DataAccess.Repositories.Role;
+using Cube.DataAccess.Repositories.EmailToken;
 
 namespace Cube.DataAccess.Repositories
 {
@@ -19,5 +20,6 @@ namespace Cube.DataAccess.Repositories
         public IImageRepository ImageRepository { get; }
         public INotificationRepository NotificationRepository { get; }
         public IConfigRepositrory ConfigRepositrory { get; }
+        public IEmailTokenRepository EmailTokenRepository { get; }
     }
 }

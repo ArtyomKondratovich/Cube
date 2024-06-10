@@ -107,7 +107,7 @@ namespace Cube.Business.Services.Message
             return response;
         }
 
-        public async Task<Response<MessageModel, SendMessageResult>> SendMessage(NewMessageDto dto)
+        public async Task<Response<MessageModel, SendMessageResult>> SendMessageAsync(NewMessageDto dto)
         {
             var response = new Response<MessageModel, SendMessageResult>(); 
             

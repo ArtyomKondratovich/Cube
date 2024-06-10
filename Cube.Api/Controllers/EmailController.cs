@@ -18,16 +18,16 @@ namespace Cube.Api.Controllers
 
         [Route("confirm")]
         [HttpPost]
-        public async Task<Response<bool, EmailConfirmationResut>> EmailConfirmationl([FromQuery] ConfirmEmailDto dto)
+        public async Task<Response<bool, EmailConfirmationResut>> EmailConfirmationl([FromBody] ConfirmEmailDto dto)
         {
             return await _service.ConfirmEmail(dto);
         }
 
         [Route("send")]
         [HttpPost]
-        public async Task<Response<bool, SendEmailResult>> SendEmailConfirmation([FromBody] EmailDto dto) 
+        public async Task<Response<bool, SendEmailResult>> SendConfirmationCode([FromBody] EmailDto dto) 
         {
-            return await _service.SendConfirmationEmail(dto);
+            return await _service.SendConfirmationCode(dto);
         }
     }
 }

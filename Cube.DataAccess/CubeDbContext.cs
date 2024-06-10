@@ -23,11 +23,11 @@ namespace Cube.DataAccess
 
         public DbSet<ConfigEntity> Configs { get; set; }
 
+        public DbSet<EmailTokenEntity> EmailTokens { get; set; }
+
         public CubeDbContext(DbContextOptions options) :
             base(options)
-        {
-            Database.EnsureCreated();
-        }
+        {}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -66,11 +66,5 @@ namespace Cube.DataAccess
 
             base.OnModelCreating(modelBuilder);
         }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseNpgsql();
-        }
-
     }
 }
