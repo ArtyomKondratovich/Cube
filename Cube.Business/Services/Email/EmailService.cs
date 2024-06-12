@@ -3,7 +3,6 @@ using Cube.DataAccess.Repositories;
 using System.Net.Mail;
 using Cube.Business.Utilities;
 using System.Net;
-using Microsoft.AspNetCore.Mvc.Formatters;
 using Cube.Domain.Entities;
 using System.Linq.Expressions;
 
