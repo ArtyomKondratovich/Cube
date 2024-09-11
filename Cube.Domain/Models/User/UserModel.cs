@@ -1,7 +1,4 @@
-﻿using Cube.Domain.Entities;
-using System.Text.Json.Serialization;
-
-namespace Cube.Domain.Models.User
+﻿namespace Cube.Domain.Models.User
 {
     public class UserModel
     {

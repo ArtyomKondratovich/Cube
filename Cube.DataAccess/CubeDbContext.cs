@@ -27,7 +27,9 @@ namespace Cube.DataAccess
 
         public CubeDbContext(DbContextOptions options) :
             base(options)
-        {}
+        {
+            Database.Migrate();
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
